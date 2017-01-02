@@ -5,14 +5,11 @@
          xmlns="http://xml.opendap.org/ns/DAP/4.0#"
          xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
     <Dimension name="d2" size="2"/>
-    <Opaque name="vo2">
+    <Opaque name="vo2" _edu.ucar.opaque.size="8">
         <Dim name="/d2"/>
         <Dim name="/d2"/>
-        <Attribute name="_edu.ucar.opaque.size" type="Int64">
-                <Value value="8"/>
-            </Attribute>
-        </Opaque>
-    </Dataset>
+    </Opaque>
+</Dataset>
 /vo2[0,0] = 0x0123456789ABCDEF
 /vo2[0,1] = 0xABCDEF0000000000
 /vo2[1,0] = 0xFEDCBA9876543210

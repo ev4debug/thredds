@@ -12,7 +12,7 @@ netcdf test_struct_nested3.hdf5.raw {
       } field3;
 
     } x;
-      x:_DAP4_Checksum_CRC32 = "0x40f1f2e3";
+      x:_DAP4_Checksum_CRC32 = "0xc9e1efe6";
 
 
   // global attributes:
@@ -33,7 +33,7 @@ netcdf test_struct_nested3.hdf5.raw {
       } field3;
 
     } x;
-      x:_DAP4_Checksum_CRC32 = "0x40f1f2e3";
+      x:_DAP4_Checksum_CRC32 = "0xc9e1efe6";
 
 
   // global attributes:

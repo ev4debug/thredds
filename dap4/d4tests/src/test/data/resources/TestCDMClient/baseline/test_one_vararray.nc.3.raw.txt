@@ -1,22 +1,12 @@
-netcdf test_one_vararray.nc.3.raw {
+netcdf test_one_vararray.3 {
   dimensions:
     d2 = 2;
   variables:
     int t(d2);
-      t:_DAP4_Checksum_CRC32 = "0xd0b1d243";
+      t:_DAP4_Checksum_CRC32 = "0x42dfb1d0";
 
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_one_vararray.nc.3.raw {
-  dimensions:
-    d2 = 2;
-  variables:
-    int t(d2);
-      t:_DAP4_Checksum_CRC32 = "0xd0b1d243";
-
-  // global attributes:
+  :_dap4.ce = "t[1]";
   :_DAP4_Little_Endian = 1B;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:

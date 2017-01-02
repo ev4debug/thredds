@@ -25,8 +25,10 @@ public class TestParserCE extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Constants
+    static final boolean DUMPDMR = false;
     static final boolean DMRPARSEDEBUG = false;
     static final boolean CEPARSEDEBUG = false;
+
     static final String TESTCASEDIR = "src/test/data/resources/TestParsers"; // relative to dap4 root
 
     static final boolean USEDOM = false;
@@ -96,8 +98,8 @@ public class TestParserCE extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(false) {
-            chosentests = locate(8);
+        if(true) {
+            chosentests = locate(9);
         } else {
             for(TestSet tc : alltestsets) {
                 chosentests.add(tc);
@@ -134,6 +136,7 @@ public class TestParserCE extends DapTestCommon
         alltestsets.add(new TestSet(6, CE1_DMR, "/s[0:3][0:2].x;/s[0:3][0:2].y", "/s[0:3][0:2]"));
         alltestsets.add(new TestSet(7, CE1_DMR, "/seq|i1<0", "/seq|i1<0"));
         alltestsets.add(new TestSet(8, CE1_DMR, "/seq|0<i1<10", "/seq|i1>0,i1<10"));
+        alltestsets.add(new TestSet(9, CE2_DMR, "vo[1:1][0,0]", "/vo[1][0]"));
     }
 
     //////////////////////////////////////////////////
@@ -158,6 +161,10 @@ public class TestParserCE extends DapTestCommon
         boolean pass = true;
 
         System.out.println("Test Set: " + testset.constraint);
+
+        if(DUMPDMR) {
+            visual("DMR:",testset.dmr);
+        }
 
         // Create the DMR tree
         System.out.println("Parsing DMR");
@@ -256,4 +263,17 @@ public class TestParserCE extends DapTestCommon
                     + "  </Sequence>"
                     + "</Dataset>";
 
+
+    String CE2_DMR =
+            "<Dataset"
+                    + "         name=\"ce2\""
+                    + "         dapVersion=\"4.0\""
+                    + "         dmrVersion=\"1.0\""
+                    + "         ns=\"http://xml.opendap.org/ns/DAP/4.0#\">"
+                    + "  <Dimension name=\"d2\" size=\"2\"/>"
+                    + "  <Opaque name=\"vo\">"
+                    + "    <Dim name=\"/d2\"/>"
+                    + "    <Dim name=\"/d2\"/>"
+                    + "  </Opaque>"
+                    + "</Dataset>";
 }

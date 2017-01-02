@@ -5,7 +5,7 @@ netcdf test_enum.nc.raw {
   variables:
     enum cloud_class_t primary_cloud;
       primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0x300182a3";
+      primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;
@@ -18,7 +18,7 @@ netcdf test_enum.nc.raw {
   variables:
     enum cloud_class_t primary_cloud;
       primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0x300182a3";
+      primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

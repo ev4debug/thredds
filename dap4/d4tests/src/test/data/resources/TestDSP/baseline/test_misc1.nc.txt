@@ -6,135 +6,44 @@
          xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
     <Dimension name="lat" size="6"/>
     <Dimension name="lon" size="4"/>
-    <Dimension name="time" size="0">
-    <Attribute name="_edu.ucar.isunlim" type="Int8">
-            <Value value="1"/>
+    <Dimension name="time" size="0" unlimited="1"/>
+    <Dimension name="unlim" size="3" unlimited="1"/>
+    <Float32 name="lat">
+        <Dim name="/lat"/>
+        <Attribute name="units" type="Char">
+            <Value value="degrees_north"/>
         </Attribute>
-        </Dimension>
-        <Float32 name="lat">
-            <Dim name="/lat"/>
-            <Attribute name="units" type="Char">
-                    <Value value="d"/>
-                    <Value value="e"/>
-                    <Value value="g"/>
-                    <Value value="r"/>
-                    <Value value="e"/>
-                    <Value value="e"/>
-                    <Value value="s"/>
-                    <Value value="_"/>
-                    <Value value="n"/>
-                    <Value value="o"/>
-                    <Value value="r"/>
-                    <Value value="t"/>
-                    <Value value="h"/>
-                </Attribute>
-            </Float32>
-            <Float32 name="lon">
-                <Dim name="/lon"/>
-                <Attribute name="units" type="Char">
-                        <Value value="d"/>
-                        <Value value="e"/>
-                        <Value value="g"/>
-                        <Value value="r"/>
-                        <Value value="e"/>
-                        <Value value="e"/>
-                        <Value value="s"/>
-                        <Value value="_"/>
-                        <Value value="e"/>
-                        <Value value="a"/>
-                        <Value value="s"/>
-                        <Value value="t"/>
-                    </Attribute>
-                </Float32>
-                <Float64 name="time">
-                    <Dim name="/time"/>
-                    <Attribute name="units" type="Char">
-                            <Value value="s"/>
-                            <Value value="e"/>
-                            <Value value="c"/>
-                            <Value value="o"/>
-                            <Value value="n"/>
-                            <Value value="d"/>
-                            <Value value="s"/>
-                            <Value value=" "/>
-                            <Value value="s"/>
-                            <Value value="i"/>
-                            <Value value="n"/>
-                            <Value value="c"/>
-                            <Value value="e"/>
-                            <Value value=" "/>
-                            <Value value="2"/>
-                            <Value value="0"/>
-                            <Value value="0"/>
-                            <Value value="9"/>
-                            <Value value="-"/>
-                            <Value value="0"/>
-                            <Value value="1"/>
-                            <Value value="-"/>
-                            <Value value="0"/>
-                            <Value value="1"/>
-                        </Attribute>
-                    </Float64>
-                    <Float32 name="pr">
-                        <Dim name="/time"/>
-                        <Dim name="/lat"/>
-                        <Dim name="/lon"/>
-                        <Attribute name="standard_name" type="Char">
-                                <Value value="a"/>
-                                <Value value="i"/>
-                                <Value value="r"/>
-                                <Value value="_"/>
-                                <Value value="p"/>
-                                <Value value="r"/>
-                                <Value value="e"/>
-                                <Value value="s"/>
-                                <Value value="s"/>
-                                <Value value="u"/>
-                                <Value value="r"/>
-                                <Value value="e"/>
-                                <Value value="_"/>
-                                <Value value="a"/>
-                                <Value value="t"/>
-                                <Value value="_"/>
-                                <Value value="s"/>
-                                <Value value="e"/>
-                                <Value value="a"/>
-                                <Value value="_"/>
-                                <Value value="l"/>
-                                <Value value="e"/>
-                                <Value value="v"/>
-                                <Value value="e"/>
-                                <Value value="l"/>
-                            </Attribute>
-                            <Attribute name="units" type="Char">
-                                    <Value value="h"/>
-                                    <Value value="P"/>
-                                    <Value value="a"/>
-                                </Attribute>
-                            </Float32>
-                            <Attribute name="title" type="Char">
-                                    <Value value="e"/>
-                                    <Value value="x"/>
-                                    <Value value="a"/>
-                                    <Value value="m"/>
-                                    <Value value="p"/>
-                                    <Value value="l"/>
-                                    <Value value="e"/>
-                                    <Value value=" "/>
-                                    <Value value="f"/>
-                                    <Value value="o"/>
-                                    <Value value="r"/>
-                                    <Value value=" "/>
-                                    <Value value="w"/>
-                                    <Value value="o"/>
-                                    <Value value="r"/>
-                                    <Value value="k"/>
-                                    <Value value="s"/>
-                                    <Value value="h"/>
-                                    <Value value="o"/>
-                                    <Value value="p"/>
-                                </Attribute>
-                            </Dataset>
+    </Float32>
+    <Float32 name="lon">
+        <Dim name="/lon"/>
+        <Attribute name="units" type="Char">
+            <Value value="degrees_east"/>
+        </Attribute>
+    </Float32>
+    <Float64 name="time">
+        <Dim name="/time"/>
+        <Attribute name="units" type="Char">
+            <Value value="seconds since 2009-01-01"/>
+        </Attribute>
+    </Float64>
+    <Float32 name="pr">
+        <Dim name="/time"/>
+        <Dim name="/lat"/>
+        <Dim name="/lon"/>
+        <Attribute name="standard_name" type="Char">
+            <Value value="air_pressure_at_sea_level"/>
+        </Attribute>
+        <Attribute name="units" type="Char">
+            <Value value="hPa"/>
+        </Attribute>
+    </Float32>
+    <Float32 name="var">
+        <Dim name="/unlim"/>
+    </Float32>
+    <Attribute name="title" type="Char">
+        <Value value="example for workshop"/>
+    </Attribute>
+</Dataset>
 /lat[0] = 9969209968386869000000000000000000000.000000
 /lat[1] = 9969209968386869000000000000000000000.000000
 /lat[2] = 9969209968386869000000000000000000000.000000
@@ -147,4 +56,7 @@
 /lon[3] = 9969209968386869000000000000000000000.000000
 /time = <empty>
 /pr = <empty>
+/var[0] = 0.000000
+/var[1] = 1.000000
+/var[2] = 3.000000
 

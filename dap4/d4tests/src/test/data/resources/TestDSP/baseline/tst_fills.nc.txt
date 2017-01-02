@@ -8,10 +8,10 @@
     <Int16 name="v16"/>
     <Int32 name="uv32">
         <Attribute name="_FillValue" type="Int32">
-                <Value value="17"/>
-            </Attribute>
-        </Int32>
-    </Dataset>
+            <Value value="17"/>
+        </Attribute>
+    </Int32>
+</Dataset>
 /uv8 = 240
 /v16 = 32700
 /uv32 = 111000

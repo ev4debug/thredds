@@ -54,6 +54,7 @@ abstract public class DapUtil // Should only contain static methods
     static final public String DIGESTER = "CRC32";
     static final public String CHECKSUMATTRNAME = "_DAP4_Checksum_CRC32";
     static final public String LITTLEENDIANATTRNAME = "_DAP4_Little_Endian";
+    static final public String CEATTRNAME = "_dap4.ce";
 
     static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 

@@ -29,13 +29,14 @@ public class TestConstraints extends DapTestCommon
 
     static final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
-    static final String BASEEXTENSION = "txt";
+    static final String BASEEXTENSION = "raw.txt";
     static final String TESTEXTENSION = "dap";
 
     static final String DAP4TAG = "protocol=dap4";
 
     static protected final String SERVLETPATH = "d4ts";
     static protected final String RESOURCEPATH = "/src/test/data/resources";
+    static protected final String TESTINPUTPATH = "/testfiles";
     static protected final String BASELINEDIR = "/TestCDMClient/baseline";
 
     //////////////////////////////////////////////////
@@ -90,6 +91,7 @@ public class TestConstraints extends DapTestCommon
             url.append(server);
             url.append("/");
             url.append(servletpath);
+            url.append(TESTINPUTPATH);
             url.append("/");
             url.append(dataset);
             if(constraint != null) {
@@ -145,7 +147,7 @@ public class TestConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests.add(locate1(8));
+            chosentests.add(locate1(7));
             prop_visual = true;
         } else {
             for(TestCase tc : alltestcases) {
@@ -157,15 +159,15 @@ public class TestConstraints extends DapTestCommon
     void
     defineAllTestcases()
     {
-        //alltestcases.add(new TestCase("test_one_vararray.nc", null));
-        alltestcases.add(new TestCase(1, "test_one_vararray.nc", "t"));
-        alltestcases.add(new TestCase(2, "test_one_vararray.nc", "t[1]"));
-        // alltestcases.add(new TestCase(3,"test_enum_array.nc", null));
+        alltestcases.add(new TestCase(1, "test_one_vararray.nc", "t[1]"));
+        alltestcases.add(new TestCase(2, "test_anon_dim.syn", "vu32[0:3]"));
+        alltestcases.add(new TestCase(3, "test_one_vararray.nc", "t"));
         alltestcases.add(new TestCase(4, "test_enum_array.nc", "primary_cloud[1:2:4]"));
-        //alltestcases.add(new TestCase(5,"test_atomic_array.nc", null));
-        alltestcases.add(new TestCase(6, "test_atomic_array.nc", "vu8[1][0:2:2];vd[1];vs[1][0];vo[0][1]"));
-        //alltestcases.add(new TestCase(7,"test_struct_array.nc", null));
-        alltestcases.add(new TestCase(8, "test_struct_array.nc", "s[0:2:3][0:1]"));
+        alltestcases.add(new TestCase(5, "test_atomic_array.nc", "vu8[1][0:2:2];vd[1];vs[1][0];vo[0][1]"));
+        alltestcases.add(new TestCase(6, "test_struct_array.nc", "s[0:2:3][0:1]"));
+        alltestcases.add(new TestCase(7, "test_opaque_array.nc", "vo2[1:1][0,0]"));
+        alltestcases.add(new TestCase(8, "test_atomic_array.nc", "v16[1:2,2]"));
+        alltestcases.add(new TestCase(9, "test_atomic_array.nc", "v16[2,1:2]"));
     }
 
     //////////////////////////////////////////////////

@@ -8,10 +8,13 @@
     <Int16 name="v16"/>
     <UInt32 name="uv32">
         <Attribute name="_FillValue" type="UInt32">
-                <Value value="17"/>
-            </Attribute>
-        </UInt32>
-    </Dataset>
+            <Value value="17"/>
+        </Attribute>
+    </UInt32>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
+</Dataset>
 /uv8 = 240
 /v16 = 32700
 /uv32 = 111000

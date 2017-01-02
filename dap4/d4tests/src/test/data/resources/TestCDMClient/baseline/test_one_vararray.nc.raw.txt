@@ -3,7 +3,7 @@ netcdf test_one_vararray.nc.raw {
     d2 = 2;
   variables:
     int t(d2);
-      t:_DAP4_Checksum_CRC32 = "0x70a1b213";
+      t:_DAP4_Checksum_CRC32 = "0x42dfb1d0";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;
@@ -14,7 +14,7 @@ netcdf test_one_vararray.nc.raw {
     d2 = 2;
   variables:
     int t(d2);
-      t:_DAP4_Checksum_CRC32 = "0x70a1b213";
+      t:_DAP4_Checksum_CRC32 = "0x42dfb1d0";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

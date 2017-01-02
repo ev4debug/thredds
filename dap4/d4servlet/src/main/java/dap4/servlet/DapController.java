@@ -15,7 +15,6 @@ import dap4.core.dmr.ErrorResponse;
 import dap4.core.util.*;
 import dap4.dap4lib.*;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -172,8 +171,8 @@ abstract public class DapController extends HttpServlet
     }
 
     /**
-         * Initialize servlet/controller
-         */
+     * Initialize servlet/controller
+     */
     public void
     initialize()
     {
@@ -223,11 +222,11 @@ abstract public class DapController extends HttpServlet
         this.dapcxt.put(Dap4Util.DAP4ENDIANTAG, this.order);
         this.dapcxt.put(Dap4Util.DAP4CSUMTAG, this.checksummode);
         // Transfer all other queries
-        Map<String,String> queries = this.daprequest.getQueries();
-        for(Map.Entry<String,String> entry: queries.entrySet()) {
-           if(this.dapcxt.get(entry.getKey()) == null)  {
-               this.dapcxt.put(entry.getKey(),entry.getValue());
-           }
+        Map<String, String> queries = this.daprequest.getQueries();
+        for(Map.Entry<String, String> entry : queries.entrySet()) {
+            if(this.dapcxt.get(entry.getKey()) == null) {
+                this.dapcxt.put(entry.getKey(), entry.getValue());
+            }
         }
 
         if(url.endsWith(FAVICON)) {
@@ -315,7 +314,7 @@ abstract public class DapController extends HttpServlet
     /**
      * Process a DMR request.
      *
-     * @param cxt     The dap context
+     * @param cxt The dap context
      */
 
     protected void
@@ -337,6 +336,7 @@ abstract public class DapController extends HttpServlet
         CEConstraint ce = null;
         String sce = drq.queryLookup(DapProtocol.CONSTRAINTTAG);
         ce = CEConstraint.compile(sce, dmr);
+        addConstraint(dmr,sce);
 
         // Provide a PrintWriter for capturing the DMR.
         StringWriter sw = new StringWriter();
@@ -397,6 +397,7 @@ abstract public class DapController extends HttpServlet
         CEConstraint ce = null;
         String sce = drq.queryLookup(DapProtocol.CONSTRAINTTAG);
         ce = CEConstraint.compile(sce, dmr);
+        addConstraint(dmr,sce);
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
@@ -542,6 +543,19 @@ abstract public class DapController extends HttpServlet
             a = new DapAttribute(DapUtil.LITTLEENDIANATTRNAME, DapType.UINT8);
             Integer oz = (this.order == ByteOrder.BIG_ENDIAN ? 0 : 1);
             a.setValues(new Integer[]{oz});
+            dmr.addAttribute(a);
+        }
+    }
+
+    void
+    addConstraint(DapDataset dmr, String ce)
+            throws DapException
+    {
+        if(ce == null) return;
+        DapAttribute a = dmr.findAttribute(DapUtil.CEATTRNAME);
+        if(a == null) {
+            a = new DapAttribute(DapUtil.CEATTRNAME, DapType.STRING);
+            a.setValues(new String[]{ce});
             dmr.addAttribute(a);
         }
     }

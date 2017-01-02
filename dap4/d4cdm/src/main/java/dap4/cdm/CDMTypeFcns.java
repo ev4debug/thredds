@@ -1059,10 +1059,10 @@ abstract public class CDMTypeFcns
             case ENUM1:
             case ENUM2:
             case ENUM4:
-                if(!(o instanceof Long))
+                if(!(o instanceof Integer))
                     throw new ConversionException(o.toString());
-                long eval = (Long) o;
-                String econst = en.lookupEnumString((int) eval);
+                int eval = (Integer) o;
+                String econst = en.lookupEnumString(eval);
                 if(econst == null)
                     throw new ConversionException(o.toString());
                 return econst;

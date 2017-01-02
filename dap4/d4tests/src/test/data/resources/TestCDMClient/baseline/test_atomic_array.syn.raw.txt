@@ -10,29 +10,29 @@ netcdf test_atomic_array.syn.raw {
     d5 = 5;
   variables:
     ubyte vu8(d2, d3);
-      vu8:_DAP4_Checksum_CRC32 = "0xd091d293";
+      vu8:_DAP4_Checksum_CRC32 = "0xd79bd598";
 
     short v16(d4);
-      v16:_DAP4_Checksum_CRC32 = "0x80a1b223";
+      v16:_DAP4_Checksum_CRC32 = "0xa40ee271";
 
     uint vu32(d2, d3);
-      vu32:_DAP4_Checksum_CRC32 = "0x204172a3";
+      vu32:_DAP4_Checksum_CRC32 = "0xa06ca308";
 
     double vd(d2);
-      vd:_DAP4_Checksum_CRC32 = "0x5031f2d3";
+      vd:_DAP4_Checksum_CRC32 = "0x7ee0fb67";
 
     char vc(d2);
-      vc:_DAP4_Checksum_CRC32 = "0x70e15233";
+      vc:_DAP4_Checksum_CRC32 = "0x7cee5238";
 
     String vs(d2, d2);
-      vs:_DAP4_Checksum_CRC32 = "0xb0a102e3";
+      vs:_DAP4_Checksum_CRC32 = "0x9d474c4c";
 
     opaque vo(d1, d2);
-      vo:_DAP4_Checksum_CRC32 = "0x80b18233";
+      vo:_DAP4_Checksum_CRC32 = "0xd4809521";
 
     enum cloud_class_t primary_cloud(d5);
       primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0x90b142f3";
+      primary_cloud:_DAP4_Checksum_CRC32 = "0x94b74cf7";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;
@@ -50,29 +50,29 @@ netcdf test_atomic_array.syn.raw {
     d5 = 5;
   variables:
     ubyte vu8(d2, d3);
-      vu8:_DAP4_Checksum_CRC32 = "0xd091d293";
+      vu8:_DAP4_Checksum_CRC32 = "0xd79bd598";
 
     short v16(d4);
-      v16:_DAP4_Checksum_CRC32 = "0x80a1b223";
+      v16:_DAP4_Checksum_CRC32 = "0xa40ee271";
 
     uint vu32(d2, d3);
-      vu32:_DAP4_Checksum_CRC32 = "0x204172a3";
+      vu32:_DAP4_Checksum_CRC32 = "0xa06ca308";
 
     double vd(d2);
-      vd:_DAP4_Checksum_CRC32 = "0x5031f2d3";
+      vd:_DAP4_Checksum_CRC32 = "0x7ee0fb67";
 
     char vc(d2);
-      vc:_DAP4_Checksum_CRC32 = "0x70e15233";
+      vc:_DAP4_Checksum_CRC32 = "0x7cee5238";
 
     String vs(d2, d2);
-      vs:_DAP4_Checksum_CRC32 = "0xb0a102e3";
+      vs:_DAP4_Checksum_CRC32 = "0x9d474c4c";
 
     opaque vo(d1, d2);
-      vo:_DAP4_Checksum_CRC32 = "0x80b18233";
+      vo:_DAP4_Checksum_CRC32 = "0xd4809521";
 
     enum cloud_class_t primary_cloud(d5);
       primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0x90b142f3";
+      primary_cloud:_DAP4_Checksum_CRC32 = "0x94b74cf7";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

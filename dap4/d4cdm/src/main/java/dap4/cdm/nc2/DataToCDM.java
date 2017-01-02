@@ -9,7 +9,10 @@ import dap4.cdm.NodeMap;
 import dap4.core.data.DSP;
 import dap4.core.data.DataCursor;
 import dap4.core.dmr.*;
-import dap4.core.util.*;
+import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
+import dap4.core.util.Index;
+import dap4.core.util.Odometer;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
@@ -104,7 +107,7 @@ public class DataToCDM
             throws DapException
     {
         Array array = null;
-        DapVariable d4var = (DapVariable)data.getTemplate();
+        DapVariable d4var = (DapVariable) data.getTemplate();
         switch (d4var.getBaseType().getTypeSort()) {
         default: // atomic var
             array = createAtomicVar(data);
@@ -119,7 +122,7 @@ public class DataToCDM
         if(d4var.isTopLevel() && this.dsp.getChecksumMode().enabled(dsp.getChecksumMode())) {
             // transfer the checksum attribute
             int csum = d4var.getChecksum();
-            String scsum = String.format("0x%08x",csum);
+            String scsum = String.format("0x%08x", csum);
             Variable cdmvar = (Variable) nodemap.get(d4var);
             Attribute acsum = new Attribute(DapUtil.CHECKSUMATTRNAME, scsum);
             cdmvar.addAttribute(acsum);
@@ -158,23 +161,16 @@ public class DataToCDM
         DapStructure struct = (DapStructure) var.getBaseType();
         int nmembers = struct.getFields().size();
         List<DapDimension> dimset = var.getDimensions();
-        if(var.getRank() == 0) { // scalar
+        Odometer odom = Odometer.factory(DapUtil.dimsetToSlices(dimset));
+        while(odom.hasNext()) {
+            Index index = odom.next();
+            long offset = index.index();
+            DataCursor[] cursors = (DataCursor[]) data.read(index);
+            DataCursor ithelement = cursors[0];
             for(int f = 0; f < nmembers; f++) {
-                DataCursor dc = (DataCursor)data.readField(f);
+                DataCursor dc = (DataCursor) ithelement.readField(f);
                 Array afield = createVar(dc);
-                arraystruct.add(0, f, afield);
-            }
-        } else {
-            Odometer odom = Odometer.factory(DapUtil.dimsetToSlices(dimset));
-            while(odom.hasNext()) {
-                Index index = odom.next();
-                long offset = index.index();
-                DataCursor ithelement = (DataCursor)data.read(index);
-                for(int f = 0; f < nmembers; f++) {
-                    DataCursor dc = (DataCursor)ithelement.readField(f);
-                    Array afield = createVar(dc);
-                    arraystruct.add(offset, f, afield);
-                }
+                arraystruct.add(offset, f, afield);
             }
         }
         return arraystruct;
@@ -200,12 +196,18 @@ public class DataToCDM
         List<DapDimension> dimset = var.getDimensions();
         long dimsize = DapUtil.dimProduct(dimset);
         int nfields = template.getFields().size();
-        for(int r = 0; r < data.getRecordCount(); r++) {
-            DataCursor rec = data.readRecord(r);
-            for(int f = 0; f < nfields; f++) {
-                DataCursor dc = rec.readField(f);
-                Array afield = createVar(dc);
-                arrayseq.add(r, f, afield);
+        Odometer odom = Odometer.factory(DapUtil.dimsetToSlices(dimset));
+        while(odom.hasNext()) {
+            odom.next();
+            DataCursor seq = ((DataCursor[]) data.read(odom.indices()))[0];
+            long nrecords = seq.getRecordCount();
+            for(int r = 0; r < nrecords; r++) {
+                DataCursor rec = seq.readRecord(r);
+                for(int f = 0; f < nfields; f++) {
+                    DataCursor dc = rec.readField(f);
+                    Array afield = createVar(dc);
+                    arrayseq.add(r, f, afield);
+                }
             }
         }
         return arrayseq;

@@ -6,6 +6,7 @@ package dap4.dap4lib.serial;
 
 import dap4.core.dmr.DapAttribute;
 import dap4.core.dmr.DapDataset;
+import dap4.core.util.DapDump;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
@@ -32,6 +33,7 @@ abstract public class D4DSP extends AbstractDSP
 
     static public boolean DEBUG = false;
     static public boolean DUMPDMR = false;
+    static public boolean DUMPDAP = false;
 
     static protected final String DAPVERSION = "4.0";
     static protected final String DMRVERSION = "1.0";
@@ -72,9 +74,16 @@ abstract public class D4DSP extends AbstractDSP
         DapDataset dmr = parseDMR(document);
 
         if(DEBUG || DUMPDMR) {
-            System.err.println("+++++++++++++++++++++");
+            System.err.println("\n+++++++++++++++++++++");
             System.err.println(dmr);
+            System.err.println("+++++++++++++++++++++\n");
+        }
+        if(DEBUG || DUMPDAP) {
+            ByteBuffer data = ByteBuffer.wrap(serialdata);
             System.err.println("+++++++++++++++++++++");
+            System.err.println("\n---------------------");
+            DapDump.dumpbytes(data, false);
+            System.err.println("\n---------------------\n");
         }
         build(dmr, serialdata, order);
     }

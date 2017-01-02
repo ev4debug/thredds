@@ -167,7 +167,7 @@ public class Slice
         // sanity checks
         if(this.first > this.maxsize)
             throw new DapException("Slice: first index > max size");
-        if(this.stop > this.maxsize)
+        if(this.stop > (this.maxsize+1))
             throw new DapException("Slice: stop > max size");
         if(this.first < 0)
             throw new DapException("Slice: first index < 0");

@@ -81,9 +81,6 @@ public class D4DataCompiler
             throws DapException
     {
         assert (this.dataset != null && this.databuffer != null);
-        if(DEBUG) {
-            DapDump.dumpbytes(this.databuffer, false);
-        }
         // iterate over the variables represented in the databuffer
         for(DapVariable vv : this.dataset.getTopVariables()) {
             D4Cursor data = compileVar(vv, null);

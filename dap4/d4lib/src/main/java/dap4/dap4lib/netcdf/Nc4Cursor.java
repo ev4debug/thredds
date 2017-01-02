@@ -314,11 +314,11 @@ public class Nc4Cursor extends AbstractCursor
                 } catch (Error e) {
                     int x = 0;
                 }
-                ByteBuffer[] buf = new ByteBuffer[(int) edgecount];
-                for(int j = 0; j < edgecount; j++) {
-                    buf[j] = mem.p.getByteBuffer(ti.getSize() * i, ti.getSize());
+                partialresult = new ByteBuffer[(int)edgecount];
+                for(int ec=0;ec<edgecount;ec++) {
+                    byte[] buf = mem.p.getByteArray(ec*ti.getSize(), (int) ti.getSize());
+                    ((ByteBuffer[])partialresult)[ec] = ByteBuffer.wrap(buf);
                 }
-                partialresult = buf;
             } else
                 throw new DapException("Unexpected atomic type: " + basetype);
             int len = Array.getLength(partialresult);
@@ -545,7 +545,7 @@ public class Nc4Cursor extends AbstractCursor
             throws DapException
     {
         if(ret != 0) {
-            String msg = String.format("TestNetcdf: errno=%d; %s", ret, nc4.nc_strerror(ret));
+            String msg = String.format("Netcdf: errno=%d; %s", ret, nc4.nc_strerror(ret));
             throw new DapException(msg);
         }
     }

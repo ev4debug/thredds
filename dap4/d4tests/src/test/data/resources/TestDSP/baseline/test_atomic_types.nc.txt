@@ -30,22 +30,18 @@
     <Float64 name="vd"/>
     <Char name="vc"/>
     <String name="vs"/>
-    <Opaque name="vo">
-        <Attribute name="_edu.ucar.opaque.size" type="Int64">
-                <Value value="8"/>
-            </Attribute>
-        </Opaque>
-        <Enum name="primary_cloud" enum="/cloud_class_t">
-            <Attribute name="_FillValue" type="/cloud_class_t">
-                    <Value value="127"/>
-                </Attribute>
-            </Enum>
-            <Enum name="secondary_cloud" enum="/cloud_class_t">
-                <Attribute name="_FillValue" type="/cloud_class_t">
-                        <Value value="127"/>
-                    </Attribute>
-                </Enum>
-            </Dataset>
+    <Opaque name="vo" _edu.ucar.opaque.size="8"/>
+    <Enum name="primary_cloud" enum="/cloud_class_t">
+        <Attribute name="_FillValue" type="/cloud_class_t">
+            <Value value="127"/>
+        </Attribute>
+    </Enum>
+    <Enum name="secondary_cloud" enum="/cloud_class_t">
+        <Attribute name="_FillValue" type="/cloud_class_t">
+            <Value value="127"/>
+        </Attribute>
+    </Enum>
+</Dataset>
 /v8 = -128
 /vu8 = 255
 /v16 = -32768

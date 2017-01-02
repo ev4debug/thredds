@@ -42,7 +42,7 @@ import java.util.List;
 public class TestDSP extends DapTestCommon
 {
     static final boolean DEBUG = false;
-    static final boolean SHOWTESTCASES = false;
+    static final boolean SHOWTESTCASES = true;
 
     static final String BASEEXTENSION = "txt";
 
@@ -239,7 +239,7 @@ public class TestDSP extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("file:", "test_vlen5.nc");
+            chosentests = locate("file:", "test_atomic_array.nc");
             prop_visual = true;
             prop_baseline = true;
         } else {

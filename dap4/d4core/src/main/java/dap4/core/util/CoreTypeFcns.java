@@ -29,8 +29,8 @@ abstract public class CoreTypeFcns
         if(type.getTypeSort() == TypeSort.Enum && (value instanceof String)) {
             // See if the constant is an int vs enum const name
             try {
-                long lval = Long.parseLong(value.toString());
-                return lval;
+                int ival = Integer.parseInt(value.toString());
+                return ival;
             } catch (NumberFormatException nfe) {
                 // Assume it is an econst name; try to locate it
                 DapEnumConst dec = ((DapEnumeration)type).lookup(value.toString());

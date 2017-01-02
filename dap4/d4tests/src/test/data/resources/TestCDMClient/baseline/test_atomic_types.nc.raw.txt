@@ -4,51 +4,51 @@ netcdf test_atomic_types.nc.raw {
 
   variables:
     byte v8;
-      v8:_DAP4_Checksum_CRC32 = "0x30b162a3";
+      v8:_DAP4_Checksum_CRC32 = "0x3fba6cad";
 
     ubyte vu8;
-      vu8:_DAP4_Checksum_CRC32 = "0xf0010203";
+      vu8:_DAP4_Checksum_CRC32 = "0xff000000";
 
     short v16;
-      v16:_DAP4_Checksum_CRC32 = "0x705182b3";
+      v16:_DAP4_Checksum_CRC32 = "0xac6191df";
 
     ushort vu16;
-      vu16:_DAP4_Checksum_CRC32 = "0xf0f10203";
+      vu16:_DAP4_Checksum_CRC32 = "0xffff0000";
 
     int v32;
-      v32:_DAP4_Checksum_CRC32 = "0x10a142c3";
+      v32:_DAP4_Checksum_CRC32 = "0x12477cdf";
 
     uint vu32;
-      vu32:_DAP4_Checksum_CRC32 = "0xf0f1f2f3";
+      vu32:_DAP4_Checksum_CRC32 = "0xffffffff";
 
     long v64;
-      v64:_DAP4_Checksum_CRC32 = "0x707152c3";
+      v64:_DAP4_Checksum_CRC32 = "0xccfc5c3c";
 
     ulong vu64;
-      vu64:_DAP4_Checksum_CRC32 = "0x2041d213";
+      vu64:_DAP4_Checksum_CRC32 = "0x2144df1c";
 
     float vf;
-      vf:_DAP4_Checksum_CRC32 = "0x508122f3";
+      vf:_DAP4_Checksum_CRC32 = "0x8c2a1365";
 
     double vd;
-      vd:_DAP4_Checksum_CRC32 = "0x208192d3";
+      vd:_DAP4_Checksum_CRC32 = "0xf2bacb72";
 
     char vc;
-      vc:_DAP4_Checksum_CRC32 = "0xa0d1a213";
+      vc:_DAP4_Checksum_CRC32 = "0xa4deae1d";
 
     String vs;
-      vs:_DAP4_Checksum_CRC32 = "0xe0f192f3";
+      vs:_DAP4_Checksum_CRC32 = "0x3691a6d4";
 
     opaque vo;
-      vo:_DAP4_Checksum_CRC32 = "0x1081e283";
+      vo:_DAP4_Checksum_CRC32 = "0xd24ddadd";
 
     enum cloud_class_t primary_cloud;
       primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0x300182a3";
+      primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
     enum cloud_class_t secondary_cloud;
       secondary_cloud:_FillValue = "Missing";
-      secondary_cloud:_DAP4_Checksum_CRC32 = "0x10b18223";
+      secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;
@@ -60,51 +60,51 @@ netcdf test_atomic_types.nc.raw {
 
   variables:
     byte v8;
-      v8:_DAP4_Checksum_CRC32 = "0x30b162a3";
+      v8:_DAP4_Checksum_CRC32 = "0x3fba6cad";
 
     ubyte vu8;
-      vu8:_DAP4_Checksum_CRC32 = "0xf0010203";
+      vu8:_DAP4_Checksum_CRC32 = "0xff000000";
 
     short v16;
-      v16:_DAP4_Checksum_CRC32 = "0x705182b3";
+      v16:_DAP4_Checksum_CRC32 = "0xac6191df";
 
     ushort vu16;
-      vu16:_DAP4_Checksum_CRC32 = "0xf0f10203";
+      vu16:_DAP4_Checksum_CRC32 = "0xffff0000";
 
     int v32;
-      v32:_DAP4_Checksum_CRC32 = "0x10a142c3";
+      v32:_DAP4_Checksum_CRC32 = "0x12477cdf";
 
     uint vu32;
-      vu32:_DAP4_Checksum_CRC32 = "0xf0f1f2f3";
+      vu32:_DAP4_Checksum_CRC32 = "0xffffffff";
 
     long v64;
-      v64:_DAP4_Checksum_CRC32 = "0x707152c3";
+      v64:_DAP4_Checksum_CRC32 = "0xccfc5c3c";
 
     ulong vu64;
-      vu64:_DAP4_Checksum_CRC32 = "0x2041d213";
+      vu64:_DAP4_Checksum_CRC32 = "0x2144df1c";
 
     float vf;
-      vf:_DAP4_Checksum_CRC32 = "0x508122f3";
+      vf:_DAP4_Checksum_CRC32 = "0x8c2a1365";
 
     double vd;
-      vd:_DAP4_Checksum_CRC32 = "0x208192d3";
+      vd:_DAP4_Checksum_CRC32 = "0xf2bacb72";
 
     char vc;
-      vc:_DAP4_Checksum_CRC32 = "0xa0d1a213";
+      vc:_DAP4_Checksum_CRC32 = "0xa4deae1d";
 
     String vs;
-      vs:_DAP4_Checksum_CRC32 = "0xe0f192f3";
+      vs:_DAP4_Checksum_CRC32 = "0x3691a6d4";
 
     opaque vo;
-      vo:_DAP4_Checksum_CRC32 = "0x1081e283";
+      vo:_DAP4_Checksum_CRC32 = "0xd24ddadd";
 
     enum cloud_class_t primary_cloud;
       primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0x300182a3";
+      primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
     enum cloud_class_t secondary_cloud;
       secondary_cloud:_FillValue = "Missing";
-      secondary_cloud:_DAP4_Checksum_CRC32 = "0x10b18223";
+      secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

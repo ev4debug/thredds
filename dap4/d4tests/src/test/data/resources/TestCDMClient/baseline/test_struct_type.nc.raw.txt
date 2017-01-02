@@ -7,7 +7,7 @@ netcdf test_struct_type.nc.raw {
       int y;
         y:_CoordinateAxisType = "GeoY";
     } s;
-      s:_DAP4_Checksum_CRC32 = "0xf0f1e2a3";
+      s:_DAP4_Checksum_CRC32 = "0xcf8f9871";
 
 
   // global attributes:
@@ -23,7 +23,7 @@ netcdf test_struct_type.nc.raw {
       int y;
         y:_CoordinateAxisType = "GeoY";
     } s;
-      s:_DAP4_Checksum_CRC32 = "0xf0f1e2a3";
+      s:_DAP4_Checksum_CRC32 = "0xcf8f9871";
 
 
   // global attributes:

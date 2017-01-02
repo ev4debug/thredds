@@ -51,10 +51,13 @@
     <Enum name="primary_cloud" enum="/cloud_class_t">
         <Dim name="/d5"/>
         <Attribute name="_FillValue" type="String">
-                <Value value="Missing"/>
-            </Attribute>
-        </Enum>
-    </Dataset>
+            <Value value="Missing"/>
+        </Attribute>
+    </Enum>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
+</Dataset>
 /vu8[0,0] = 186
 /vu8[0,1] = 201
 /vu8[0,2] = 131

@@ -20,9 +20,12 @@
     </Enumeration>
     <Enum name="primary_cloud" enum="/cloud_class_t">
         <Attribute name="_FillValue" type="String">
-                <Value value="Missing"/>
-            </Attribute>
-        </Enum>
-    </Dataset>
+            <Value value="Missing"/>
+        </Attribute>
+    </Enum>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
+</Dataset>
 /primary_cloud = Stratus
 

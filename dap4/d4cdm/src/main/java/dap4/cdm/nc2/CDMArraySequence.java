@@ -11,8 +11,7 @@ import dap4.core.dmr.DapSequence;
 import dap4.core.dmr.DapStructure;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.DapVariable;
-import dap4.core.util.DapException;
-import dap4.core.util.DapUtil;
+import dap4.core.util.*;
 import ucar.ma2.*;
 import ucar.nc2.Group;
 
@@ -142,10 +141,11 @@ import java.util.List;
         // Currently do not allow non-scalar sequences
         if(this.template.getRank() != 0)
             throw new DapException("Non-scalar sequences unsupported through CDM interface");
-        assert data.getScheme() == DataCursor.Scheme.SEQUENCE;
+        assert data.getScheme() == DataCursor.Scheme.SEQARRAY;
         this.cdmroot = group;
         this.dsp = dsp;
-        this.seqdata = data;
+        // Since this is a scalar, pull out the single instance
+        this.seqdata = ((DataCursor[])data.read(dap4.core.util.Index.SCALAR))[0];
         this.recordcount = this.seqdata.getRecordCount();
         this.nmembers = ((DapStructure)this.basetype).getFields().size();
 

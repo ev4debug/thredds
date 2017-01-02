@@ -1,7 +1,7 @@
 netcdf test_anon_dim.syn.raw {
   variables:
     int vu32(6);
-      vu32:_DAP4_Checksum_CRC32 = "0xc0b1a203";
+      vu32:_DAP4_Checksum_CRC32 = "0x1aca2718";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;
@@ -10,7 +10,7 @@ netcdf test_anon_dim.syn.raw {
 netcdf test_anon_dim.syn.raw {
   variables:
     int vu32(6);
-      vu32:_DAP4_Checksum_CRC32 = "0xc0b1a203";
+      vu32:_DAP4_Checksum_CRC32 = "0x1aca2718";
 
   // global attributes:
   :_DAP4_Little_Endian = 1B;

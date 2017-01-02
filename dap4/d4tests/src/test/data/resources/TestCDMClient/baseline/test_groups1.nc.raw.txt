@@ -11,10 +11,10 @@ netcdf test_groups1.nc.raw {
         dim3 = 7;
       variables:
         int v1(dim1);
-          v1:_DAP4_Checksum_CRC32 = "0xc031d273";
+          v1:_DAP4_Checksum_CRC32 = "0x1d1d272c";
 
         float v2(dim2);
-          v2:_DAP4_Checksum_CRC32 = "0x5001d243";
+          v2:_DAP4_Checksum_CRC32 = "0x0fe72d43";
 
     }
 
@@ -23,10 +23,10 @@ netcdf test_groups1.nc.raw {
         dim3 = 7;
       variables:
         int v1(dim1);
-          v1:_DAP4_Checksum_CRC32 = "0x00412253";
+          v1:_DAP4_Checksum_CRC32 = "0xa9b4a0fb";
 
         float v3(dim3);
-          v3:_DAP4_Checksum_CRC32 = "0xf091e243";
+          v3:_DAP4_Checksum_CRC32 = "0x29f1e312";
 
     }
   }
@@ -47,10 +47,10 @@ netcdf test_groups1.nc.raw {
         dim3 = 7;
       variables:
         int v1(dim1);
-          v1:_DAP4_Checksum_CRC32 = "0xc031d273";
+          v1:_DAP4_Checksum_CRC32 = "0x1d1d272c";
 
         float v2(dim2);
-          v2:_DAP4_Checksum_CRC32 = "0x5001d243";
+          v2:_DAP4_Checksum_CRC32 = "0x0fe72d43";
 
     }
 
@@ -59,10 +59,10 @@ netcdf test_groups1.nc.raw {
         dim3 = 7;
       variables:
         int v1(dim1);
-          v1:_DAP4_Checksum_CRC32 = "0x00412253";
+          v1:_DAP4_Checksum_CRC32 = "0xa9b4a0fb";
 
         float v3(dim3);
-          v3:_DAP4_Checksum_CRC32 = "0xf091e243";
+          v3:_DAP4_Checksum_CRC32 = "0x29f1e312";
 
     }
   }

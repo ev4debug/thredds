@@ -1,0 +1,33 @@
+<Dataset
+         name="test_vlen11.nc"
+         dapVersion="4.0"
+         dmrVersion="1.0"
+         xmlns="http://xml.opendap.org/ns/DAP/4.0#"
+         xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
+    <Sequence name="v">
+        <Sequence name="v2_t">
+            <Int32 name="v1_t"/>
+        </Sequence>
+    </Sequence>
+</Dataset>
+/v = {
+    [
+        /v2_t.v2_t =         {
+            [
+                /v1_t.v1_t = 1
+            ]            [
+                /v1_t.v1_t = 3
+            ]            [
+                /v1_t.v1_t = 5
+            ]            [
+                /v1_t.v1_t = 7
+            ]        }
+    ]    [
+        /v2_t.v2_t =         {
+            [
+                /v1_t.v1_t = 100
+            ]            [
+                /v1_t.v1_t = 200
+            ]        }
+    ]}
+

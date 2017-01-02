@@ -1,0 +1,62 @@
+<Dataset
+         name="test_zerodim.nc"
+         dapVersion="4.0"
+         dmrVersion="1.0"
+         xmlns="http://xml.opendap.org/ns/DAP/4.0#"
+         xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
+    <Dimension name="lat" size="6"/>
+    <Dimension name="lon" size="4"/>
+    <Dimension name="time" size="0" unlimited="1"/>
+    <Dimension name="unlim" size="3" unlimited="1"/>
+    <Float32 name="lat">
+        <Dim name="/lat"/>
+        <Attribute name="units" type="Char">
+            <Value value="degrees_north"/>
+        </Attribute>
+    </Float32>
+    <Float32 name="lon">
+        <Dim name="/lon"/>
+        <Attribute name="units" type="Char">
+            <Value value="degrees_east"/>
+        </Attribute>
+    </Float32>
+    <Float64 name="time">
+        <Dim name="/time"/>
+        <Attribute name="units" type="Char">
+            <Value value="seconds since 2009-01-01"/>
+        </Attribute>
+    </Float64>
+    <Float32 name="pr">
+        <Dim name="/time"/>
+        <Dim name="/lat"/>
+        <Dim name="/lon"/>
+        <Attribute name="standard_name" type="Char">
+            <Value value="air_pressure_at_sea_level"/>
+        </Attribute>
+        <Attribute name="units" type="Char">
+            <Value value="hPa"/>
+        </Attribute>
+    </Float32>
+    <Float32 name="var">
+        <Dim name="/unlim"/>
+    </Float32>
+    <Attribute name="title" type="Char">
+        <Value value="example for workshop"/>
+    </Attribute>
+</Dataset>
+/lat[0] = 9969209968386869000000000000000000000.000000
+/lat[1] = 9969209968386869000000000000000000000.000000
+/lat[2] = 9969209968386869000000000000000000000.000000
+/lat[3] = 9969209968386869000000000000000000000.000000
+/lat[4] = 9969209968386869000000000000000000000.000000
+/lat[5] = 9969209968386869000000000000000000000.000000
+/lon[0] = 9969209968386869000000000000000000000.000000
+/lon[1] = 9969209968386869000000000000000000000.000000
+/lon[2] = 9969209968386869000000000000000000000.000000
+/lon[3] = 9969209968386869000000000000000000000.000000
+/time = <empty>
+/pr = <empty>
+/var[0] = 0.000000
+/var[1] = 1.000000
+/var[2] = 3.000000
+

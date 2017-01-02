@@ -1,0 +1,15 @@
+<Dataset
+         name="test_test.nc"
+         dapVersion="4.0"
+         dmrVersion="1.0"
+         xmlns="http://xml.opendap.org/ns/DAP/4.0#"
+         xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
+    <Enumeration name="enum_t" basetype="Int8">
+        <EnumConst name="c1" value="1"/>
+        <EnumConst name="c2" value="2"/>
+        <EnumConst name="c3" value="3"/>
+    </Enumeration>
+    <Enum name="v1" enum="/enum_t"/>
+</Dataset>
+/v1 = c1
+

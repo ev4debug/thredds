@@ -8,6 +8,9 @@
     <String name="vs">
         <Dim name="/d2"/>
     </String>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
 </Dataset>
 /vs[0] = "Καλημέα"
 /vs[1] = "abc"

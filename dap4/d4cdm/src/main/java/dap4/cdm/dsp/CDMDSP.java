@@ -39,7 +39,7 @@ public class CDMDSP extends AbstractDSP
     // Constants
 
     static protected final boolean DEBUG = false;
-    static protected final boolean DUMPCDL = true;
+    static protected final boolean DUMPCDL = false;
 
     static protected final Class NC4CLASS = ucar.nc2.jni.netcdf.Nc4Iosp.class;
 
