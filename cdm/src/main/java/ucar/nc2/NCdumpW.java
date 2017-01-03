@@ -213,6 +213,8 @@ public class NCdumpW {
     boolean strict = false;
     String varNames = null;
     useUnsigned = false;
+    String trueDataset = null;
+    String fakeDataset = null;
 
     if (command != null) {
       StringTokenizer stoke = new StringTokenizer(command);
@@ -234,12 +236,23 @@ public class NCdumpW {
           useUnsigned = true;
         if (toke.equalsIgnoreCase("-cdl") || toke.equalsIgnoreCase("-strict"))
           strict = true;
-        if (toke.equalsIgnoreCase("-v") && stoke.hasMoreTokens())
+        if(toke.equalsIgnoreCase("-v") && stoke.hasMoreTokens())
           varNames = stoke.nextToken();
+        if (toke.equalsIgnoreCase("-datasetname") && stoke.hasMoreTokens()) {
+          fakeDataset = stoke.nextToken();
+          if(fakeDataset.length() == 0) fakeDataset = null;
+          if(fakeDataset != null) {
+            trueDataset = nc.getLocation();
+            nc.setLocation(fakeDataset);
+          }
+        }
       }
     }
 
-    return print(nc, out, showValues, ncml, strict, varNames, ct);
+    boolean ok = print(nc, out, showValues, ncml, strict, varNames, ct);
+    if(trueDataset != null && fakeDataset != null)
+      nc.setLocation(trueDataset);
+    return ok;
   }
 
   /**

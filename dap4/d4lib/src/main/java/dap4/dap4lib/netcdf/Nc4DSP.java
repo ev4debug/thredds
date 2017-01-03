@@ -270,8 +270,12 @@ public class Nc4DSP extends AbstractDSP
             byte[] namep = new byte[NC_MAX_NAME + 1];
             SizeTByReference sizep = new SizeTByReference();
             try {
+                if(getJNI() == null) {
+                      throw new DapException("getJNI failed");
+                }
                 Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_type(tn.gid, tn.id, namep, sizep));
             } catch (DapException e) {
+                e.printStackTrace();
                 assert false; // should never happen
             }
             tn.setSize(sizep.intValue());

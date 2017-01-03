@@ -10,7 +10,7 @@ netcdf test_enum_array.nc.raw {
       primary_cloud:_DAP4_Checksum_CRC32 = "0xb58a627a";
 
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_enum_array.nc.raw {
@@ -25,7 +25,7 @@ netcdf test_enum_array.nc.raw {
       primary_cloud:_DAP4_Checksum_CRC32 = "0xb58a627a";
 
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 primary_cloud =

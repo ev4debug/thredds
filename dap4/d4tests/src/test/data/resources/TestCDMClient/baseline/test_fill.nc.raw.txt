@@ -11,7 +11,7 @@ netcdf test_fill.nc.raw {
       uv32:_DAP4_Checksum_CRC32 = "0x8437b331";
 
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_fill.nc.raw {
@@ -27,7 +27,7 @@ netcdf test_fill.nc.raw {
       uv32:_DAP4_Checksum_CRC32 = "0x8437b331";
 
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 uv8 =240

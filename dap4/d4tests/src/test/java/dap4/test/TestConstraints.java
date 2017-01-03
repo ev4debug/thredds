@@ -200,26 +200,10 @@ public class TestConstraints extends DapTestCommon
         }
 
         // Patch the ncfile to change dataset name
-        {
-            try {
-                XURI x = new XURI(url);
-                StringBuilder path = new StringBuilder(x.getPath());
-                int index = path.lastIndexOf("/");
-                if(index < 0) index = 0;
-                if(index > 0) path.delete(0, index + 1);
-                index = path.lastIndexOf(".");
-                if(index >= 0)
-                    path.delete(index, path.length());
-                path.append('.');
-                path.append(testcase.id);
-                ncfile.setLocation(path.toString());
-            } catch (URISyntaxException e) {
-                assert (false);
-            }
-        }
+        String datasetname = extractDatasetname(url,Integer.toString(testcase.id));
 
-        String metadata = (NCDUMP ? ncdumpmetadata(ncfile) : null);
-        String data = (NCDUMP ? ncdumpdata(ncfile) : null);
+        String metadata = (NCDUMP ? ncdumpmetadata(ncfile,datasetname) : null);
+        String data = (NCDUMP ? ncdumpdata(ncfile,datasetname) : null);
 
         if(prop_visual) {
             visual("DMR: " + url, metadata);
@@ -242,16 +226,20 @@ public class TestConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Dump methods
 
-    String ncdumpmetadata(NetcdfDataset ncfile)
+    String ncdumpmetadata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         String metadata = null;
         StringWriter sw = new StringWriter();
-
+        StringBuilder args = new StringBuilder("-strict -unsigned");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
         // Print the meta-databuffer using these args to NcdumpW
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-strict -unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;
@@ -267,16 +255,22 @@ public class TestConstraints extends DapTestCommon
         return sw.toString();
     }
 
-    String ncdumpdata(NetcdfDataset ncfile)
+    String ncdumpdata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         StringWriter sw = new StringWriter();
+
+        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
 
         // Dump the databuffer
         sw = new StringWriter();
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-strict -vall -unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;

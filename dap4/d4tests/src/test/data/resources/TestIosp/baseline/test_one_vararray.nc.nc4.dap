@@ -1,11 +1,11 @@
-netcdf test_one_vararray.nc {
+netcdf test_one_vararray {
   dimensions:
     d2 = 2;
   variables:
-    int t(d2=2);
+    int t(d2);
 
   // global attributes:
-  :_NCProperties = "version=1|netcdflibversion=4.4.2-development|hdf5libversion=1.8.16";
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 t =

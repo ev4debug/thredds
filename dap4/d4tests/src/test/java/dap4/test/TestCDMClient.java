@@ -38,8 +38,8 @@ public class TestCDMClient extends DapTestCommon
     static final String TESTCDMINPUT = "TestCDMClient/testinput";
     static final String TESTFILESINPUT = "testfiles";
 
-    static final String[] EXCLUDEDFILETESTS = new String[] {
-       "test_sequence_2.syn.raw"
+    static final String[] EXCLUDEDFILETESTS = new String[]{
+            "test_sequence_2.syn.raw"
     };
 
     //////////////////////////////////////////////////
@@ -189,8 +189,11 @@ public class TestCDMClient extends DapTestCommon
         TestFilter.filterfiles(dir, matches, "raw");
         for(String f : matches) {
             boolean excluded = false;
-            for(String x: EXCLUDEDFILETESTS) {
-                if(f.endsWith(x)) {excluded = true; break;}
+            for(String x : EXCLUDEDFILETESTS) {
+                if(f.endsWith(x)) {
+                    excluded = true;
+                    break;
+                }
             }
             if(!excluded)
                 add("file:/" + f);
@@ -239,19 +242,18 @@ public class TestCDMClient extends DapTestCommon
         System.out.println("Testcase: " + testcase.getURL());
         System.out.println("Baseline: " + testcase.getBaseline());
 
+        String datasetname = testcase.getDataset();
         NetcdfDataset ncfile;
         try {
             ncfile = openDataset(testcase.getURL());
-            String fake = testcase.getDataset();
-            ncfile.setLocation(fake);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("File open failed: "+testcase.getURL(),e);
+            throw new Exception("File open failed: " + testcase.getURL(), e);
         }
         assert ncfile != null;
 
-        String metadata = dumpmetadata(ncfile);
-        String data = dumpdata(ncfile);
+        String metadata = dumpmetadata(ncfile,datasetname);
+        String data = dumpdata(ncfile,datasetname);
         String testoutput = metadata + data;
 
         if(prop_visual)
@@ -269,13 +271,18 @@ public class TestCDMClient extends DapTestCommon
         }
     }
 
-    String dumpmetadata(NetcdfDataset ncfile)
+    String dumpmetadata(NetcdfDataset ncfile, String datasetname)
             throws Exception
     {
         StringWriter sw = new StringWriter();
+        StringBuilder args = new StringBuilder("-strict -unsigned");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
         // Print the meta-databuffer using these args to NcdumpW
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-strict -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
                 throw new Exception("NcdumpW failed");
         } catch (IOException ioe) {
             throw new Exception("NcdumpW failed", ioe);
@@ -284,14 +291,19 @@ public class TestCDMClient extends DapTestCommon
         return sw.toString();
     }
 
-    String dumpdata(NetcdfDataset ncfile)
+    String dumpdata(NetcdfDataset ncfile, String datasetname)
             throws Exception
     {
+        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
         StringWriter sw = new StringWriter();
         // Dump the databuffer
         sw = new StringWriter();
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-strict -vall -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
                 throw new Exception("NCdumpW failed");
         } catch (IOException ioe) {
             ioe.printStackTrace();

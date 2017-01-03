@@ -5,7 +5,7 @@ netcdf test_opaque_array.7 {
 
   // global attributes:
   :_dap4.ce = "vo2[1:1][0,0]";
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vo2 =  0xfedcba9876543210,

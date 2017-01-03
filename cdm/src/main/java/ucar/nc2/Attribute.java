@@ -56,6 +56,12 @@ import java.util.Map;
 
 public class Attribute extends CDMNode {
 
+  static final String SPECIALPREFIX = "_";
+  static final String[] SUPPRESS = new String[] {
+     "_NCProperties", "_DAP4_Little_Endian", "_edu.ucar"
+  } ;
+
+
   /**
    * Turn a list into a map
    *
@@ -252,6 +258,13 @@ public class Attribute extends CDMNode {
    * @param strict if true, create strict CDL, escaping names
    */
   protected void writeCDL(Formatter f, boolean strict) {
+    String nm = this.getShortName();
+    if(strict && nm.startsWith(SPECIALPREFIX)) {
+       /* Suppress  selected special attributes */
+      for(String s: SUPPRESS) {
+        if(nm.startsWith(s)) return; /* Suppress it */
+      }
+    }
     f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
     if (isString()) {
       f.format(" = ");

@@ -1,13 +1,13 @@
-netcdf test_struct_nested.nc {
+netcdf test_struct_nested {
   variables:
 
     Structure {
 
       Structure {
         int x;
-          :_CoordinateAxisType = "GeoX";
+          x:_CoordinateAxisType = "GeoX";
         int y;
-          :_CoordinateAxisType = "GeoY";
+          y:_CoordinateAxisType = "GeoY";
       } field1;
 
 
@@ -20,6 +20,6 @@ netcdf test_struct_nested.nc {
 
 
   // global attributes:
-  :_NCProperties = "version=1|netcdflibversion=4.4.2-development|hdf5libversion=1.8.16";
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

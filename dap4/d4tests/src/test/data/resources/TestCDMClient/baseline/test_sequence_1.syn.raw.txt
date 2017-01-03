@@ -9,7 +9,7 @@ netcdf test_sequence_1.syn.raw {
 
 
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_sequence_1.syn.raw {
@@ -23,7 +23,7 @@ netcdf test_sequence_1.syn.raw {
 
 
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =

@@ -31,7 +31,7 @@ netcdf test_groups1.nc.raw {
     }
   }
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_groups1.nc.raw {
@@ -67,7 +67,7 @@ netcdf test_groups1.nc.raw {
     }
   }
   // global attributes:
-  :_DAP4_Little_Endian = 1B;
+  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 g/h/v1 =
