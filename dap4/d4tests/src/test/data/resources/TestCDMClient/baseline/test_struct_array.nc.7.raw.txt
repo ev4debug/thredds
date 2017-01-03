@@ -1,4 +1,4 @@
-netcdf test_struct_array.nc {
+netcdf test_struct_array.7 {
   dimensions:
     dx = 4;
     dy = 3;
@@ -6,14 +6,15 @@ netcdf test_struct_array.nc {
 
     Structure {
       int x;
-        :_CoordinateAxisType = "GeoX";
+        x:_CoordinateAxisType = "GeoX";
       int y;
-        :_CoordinateAxisType = "GeoY";
-    } s(dx=4, dy=3);
+        y:_CoordinateAxisType = "GeoY";
+    } s(dx, dy);
+      s:_DAP4_Checksum_CRC32 = "0x2f0389ca";
 
 
   // global attributes:
-  :_NCProperties = "version=1|netcdflibversion=4.4.2-development|hdf5libversion=1.8.16";
+  :_DAP4_Little_Endian = 1B;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =

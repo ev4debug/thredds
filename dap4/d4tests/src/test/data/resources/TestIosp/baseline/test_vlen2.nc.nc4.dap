@@ -7,15 +7,16 @@ netcdf test_vlen2.nc {
       :_CoordinateAxisType = "GeoX";
 
   // global attributes:
+  :_NCProperties = "version=1|netcdflibversion=4.4.2-development|hdf5libversion=1.8.16";
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 x =
   {
 
-    {1, 3, 5, 7},
-    {100, 200},
-    {-1, -2},
-    {1, 3, 5, 7},
-    {100, 200},
+    {1, 3, 5, 7}, 
+    {100, 200}, 
+    {-1, -2}, 
+    {1, 3, 5, 7}, 
+    {100, 200}, 
     {-1, -2}  }
 }

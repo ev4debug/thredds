@@ -1,0 +1,13 @@
+netcdf test_one_vararray.2 {
+  variables:
+    int t(1);
+      t:_DAP4_Checksum_CRC32 = "0xb6a88010";
+
+  // global attributes:
+  :_dap4.ce = "t";
+  :_DAP4_Little_Endian = 1B;
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+t =
+  {37}
+}

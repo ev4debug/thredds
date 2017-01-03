@@ -7,6 +7,7 @@ netcdf test_enum.nc {
       :_FillValue = "Missing";
 
   // global attributes:
+  :_NCProperties = "version=1|netcdflibversion=4.4.2-development|hdf5libversion=1.8.16";
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 primary_cloud =2

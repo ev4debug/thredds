@@ -27,6 +27,7 @@ netcdf test_atomic_array.nc {
       :_FillValue = "Missing";
 
   // global attributes:
+  :_NCProperties = "version=1|netcdflibversion=4.4.2-development|hdf5libversion=1.8.16";
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vu8 =
@@ -45,8 +46,8 @@ vd =
   {17.9, 1024.8}
 vc =  "@&"
 vs =
-  {  "hello	world", "
-", "Καλημέα", "abc"
+  {  "hello	world",   "
+",  "Καλημέα",   "abc"
   }
 vo =  0x0123456789abcdef,
   0xabcdef0000000000;
