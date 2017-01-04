@@ -141,10 +141,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (jnaPath == null) {
         setLibraryAndPath(null, null);
       }
-
       try {
-        // jna_path may still be null (the user didn't specify a "jna.library.path"), but try to load anyway;
-        // the necessary libs may be on the system PATH.
+        // jna_path may still be null, but try to load anyway;
+        // the necessary libs may be on the system PATH or on LD_LIBRARY_PATH
         nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
         // Make the library synchronized
         nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
