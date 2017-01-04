@@ -272,7 +272,7 @@ public class Nc4DSP extends AbstractDSP
             try {
                 Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_type(tn.gid, tn.id, namep, sizep));
             } catch (DapException e) {
-                System.err.printf("gid=%d tid=%g%n",tn.gid, tn.id);
+                System.err.printf("gid=%d tid=%d%n",tn.gid, tn.id);
                 System.err.flush();
                 e.printStackTrace();
                 assert false; // should never happen
