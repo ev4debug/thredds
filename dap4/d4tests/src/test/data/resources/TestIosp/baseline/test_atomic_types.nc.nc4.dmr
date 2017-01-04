@@ -36,6 +36,5 @@ netcdf test_atomic_types {
       secondary_cloud:_FillValue = "Missing";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

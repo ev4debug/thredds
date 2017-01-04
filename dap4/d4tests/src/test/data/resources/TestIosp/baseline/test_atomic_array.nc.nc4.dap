@@ -27,7 +27,6 @@ netcdf test_atomic_array {
       primary_cloud:_FillValue = "Missing";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vu8 =

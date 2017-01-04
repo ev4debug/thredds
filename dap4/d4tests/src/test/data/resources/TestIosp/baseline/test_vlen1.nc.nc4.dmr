@@ -4,6 +4,5 @@ netcdf test_vlen1 {
       x:_CoordinateAxisType = "GeoX";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

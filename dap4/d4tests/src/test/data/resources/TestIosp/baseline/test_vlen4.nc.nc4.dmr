@@ -7,6 +7,5 @@ netcdf test_vlen4 {
 
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

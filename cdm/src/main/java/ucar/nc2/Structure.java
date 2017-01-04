@@ -615,12 +615,13 @@ public class Structure extends Variable {
     buf.format(";%s%n", extraInfo());
 
     for (Attribute att : getAttributes()) {
+      if(Attribute.suppress(att,strict)) continue;
       buf.format("%s  ", indent);
-      if (strict) buf.format( NetcdfFile.makeValidCDLName(getShortName()));
+      if(strict) buf.format(NetcdfFile.makeValidCDLName(getShortName()));
       buf.format(":");
-      att.writeCDL(buf,  strict);
+      att.writeCDL(buf, strict);
       buf.format(";");
-      if (!strict && (att.getDataType() != DataType.STRING))
+      if(!strict && (att.getDataType() != DataType.STRING))
         buf.format(" // %s", att.getDataType());
       buf.format("%n");
     }

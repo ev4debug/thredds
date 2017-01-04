@@ -7,7 +7,6 @@ netcdf test_enum {
       primary_cloud:_FillValue = "Missing";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 primary_cloud =2

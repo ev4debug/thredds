@@ -20,7 +20,6 @@ netcdf test_struct_nested {
 
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 x =    field1 =        x =1

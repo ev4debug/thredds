@@ -1039,6 +1039,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     indent.incr();
     for (Attribute att : getAttributes()) {
+      if(Attribute.suppress(att,strict)) continue;
       buf.format("%s", indent);
       if (strict) buf.format(NetcdfFile.makeValidCDLName(getShortName()));
       buf.format(":");

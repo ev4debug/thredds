@@ -102,14 +102,13 @@ public class TestGrid1 extends TestSources
 
         String metadata = null;
         String data = null;
-        String usethisname = UnitTestCommon.extractDatasetname(url,null);
 
-        metadata = ncdumpmetadata(ncfile,usethisname);
+        metadata = ncdumpmetadata(ncfile,null);
 
         if(prop_visual)
             visual(getTitle() + ".dds", metadata);
         if(true) {
-            data = ncdumpdata(ncfile,usethisname);
+            data = ncdumpdata(ncfile,null);
             if(prop_visual)
                 visual(getTitle() + ".dods", data);
 

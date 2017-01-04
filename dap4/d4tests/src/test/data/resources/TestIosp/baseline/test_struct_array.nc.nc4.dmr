@@ -13,6 +13,5 @@ netcdf test_struct_array {
 
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
