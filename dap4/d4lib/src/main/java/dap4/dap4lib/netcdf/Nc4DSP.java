@@ -21,6 +21,7 @@ import dap4.core.dmr.DapType;
 import dap4.core.dmr.DapVariable;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
 import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.XURI;
@@ -271,6 +272,8 @@ public class Nc4DSP extends AbstractDSP
             SizeTByReference sizep = new SizeTByReference();
             try {
                 Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_type(tn.gid, tn.id, namep, sizep));
+                System.err.printf("gid=%d tid=%d name=%s%n",tn.gid, tn.id,makeString(namep));
+                System.err.flush();
             } catch (DapException e) {
                 System.err.printf("gid=%d tid=%d%n",tn.gid, tn.id);
                 System.err.flush();
@@ -415,6 +418,18 @@ public class Nc4DSP extends AbstractDSP
     {
         return this.filepath;
     }
+
+    //////////////////////////////////////////////////
+    // Utilities
+
+    static public String makeString(byte[] b)
+    {
+        // null terminates
+        int count;
+        for(count = 0; (count < b.length && b[count] != 0); count++) ;
+        return new String(b, 0, count, DapUtil.UTF8);
+    }
+
 
 
 }

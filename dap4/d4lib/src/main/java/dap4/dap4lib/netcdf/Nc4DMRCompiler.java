@@ -169,7 +169,7 @@ public class Nc4DMRCompiler
         int ret;
         byte[] namep = new byte[NC_MAX_NAME + 1];
         errcheck(ret = nc4.nc_inq_grpname(gid, namep));
-        DapGroup g = factory.newGroup(makeString(namep));
+        DapGroup g = factory.newGroup(Nc4DSP.makeString(namep));
         GroupNotes gi = (GroupNotes)Nc4Notes.factory(NoteSort.GROUP,parent, gid, this.dsp);
         gi.set(g);
         this.dsp.note(gi);
@@ -186,7 +186,7 @@ public class Nc4DMRCompiler
         byte[] namep = new byte[NC_MAX_NAME + 1];
         SizeTByReference lenp = new SizeTByReference();
         errcheck(ret = nc4.nc_inq_dim(gid, did, namep, lenp));
-        String name = makeString(namep);
+        String name = Nc4DSP.makeString(namep);
         int len = lenp.intValue();
         boolean isunlimited = contains(udims, did);
         DapDimension dim = factory.newDimension(name, lenp.longValue());
@@ -211,7 +211,7 @@ public class Nc4DMRCompiler
         IntByReference classp = new IntByReference();
         SizeTByReference nfieldsp = new SizeTByReference();
         errcheck(ret = nc4.nc_inq_user_type(gid, tid, namep, lenp, basetypep, nfieldsp, classp));
-        String name = makeString(namep);
+        String name = Nc4DSP.makeString(namep);
         int basetype = basetypep.getValue();
         long len = lenp.longValue();
         long nfields = nfieldsp.longValue();
@@ -269,7 +269,7 @@ public class Nc4DMRCompiler
         for(int i = 0; i < nconsts; i++) {
             // Get info about the ith const
             errcheck(ret = nc4.nc_inq_enum_member(ti.gid, ti.id, i, namep, valuep));
-            String ecname = makeString(namep);
+            String ecname = Nc4DSP.makeString(namep);
             long ecval = (long) valuep.getValue();
             DapEnumConst dec = factory.newEnumConst(ecname, ecval);
             de.addEnumConst(dec);
@@ -315,7 +315,7 @@ public class Nc4DMRCompiler
         if(baset == null)
             throw new DapException("Undefined field base type: " + fieldtype);
         int[] dimsizes = getFieldDimsizes(ti.gid, ti.id, fid, ndimsp.getValue());
-        VarNotes fieldnotes = makeField(ti, fid, makeString(namep), baset, offsetp.intValue(), dimsizes);
+        VarNotes fieldnotes = makeField(ti, fid, Nc4DSP.makeString(namep), baset, offsetp.intValue(), dimsizes);
         assert baset.getSize() > 0;
     }
 
@@ -355,7 +355,7 @@ public class Nc4DMRCompiler
         IntByReference xtypep = new IntByReference();
         IntByReference nattsp = new IntByReference();
         errcheck(ret = nc4.nc_inq_var(gid, vid, namep, xtypep, ndimsp, NC_NULL, nattsp));
-        String name = makeString(namep);
+        String name = Nc4DSP.makeString(namep);
         TypeNotes xtype = (TypeNotes) this.dsp.find(xtypep.getValue(), NoteSort.TYPE);
         if(DEBUG) {
             System.err.printf("NC4: inqvar: name=%s gid=%d vid=%d xtype=%d ndims=%d natts=%d%n",
@@ -614,7 +614,7 @@ public class Nc4DMRCompiler
         String[] names = new String[n];
         for(int i = 0; i < n; i++) {
             errcheck(ret = nc4.nc_inq_attname(gid, vid, i, namep));
-            names[i] = makeString(namep);
+            names[i] = Nc4DSP.makeString(namep);
         }
         return names;
     }
@@ -770,16 +770,6 @@ public class Nc4DMRCompiler
         }
     }
 
-    String makeString(byte[] b)
-    {
-        // null terminates
-        int count;
-        for(count = 0; (count < b.length && b[count] != 0); count++) {
-            ;
-        }
-        return new String(b, 0, count, DapUtil.UTF8);
-    }
-
     protected void
     errcheck(int ret)
             throws DapException
@@ -857,6 +847,6 @@ public class Nc4DMRCompiler
         errcheck(ret = nc4.nc_inq_grpname_len(t.gid, lenp));
         byte[] namep = new byte[lenp.intValue() + 1];
         errcheck(ret = nc4.nc_inq_grpname_full(t.gid, lenp, namep));
-        return makeString(namep);
+        return Nc4DSP.makeString(namep);
     }
 }
