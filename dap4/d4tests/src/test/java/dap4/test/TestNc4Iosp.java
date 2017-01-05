@@ -113,8 +113,8 @@ public class TestNc4Iosp extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
-            chosentests = locate("test_one_var.nc");
+        if(true) {
+            chosentests = locate("test_atomic_types.nc");
             prop_visual = true;
             prop_debug = true;
             //chosentests.add(new Nc4IospTest("test_test.nc"));

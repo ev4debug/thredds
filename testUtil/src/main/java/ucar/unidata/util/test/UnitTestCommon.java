@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 abstract public class UnitTestCommon
 {
@@ -119,6 +121,50 @@ abstract public class UnitTestCommon
                 }
             } else
                 f.delete();
+        }
+    }
+
+    //////////////////////////////////////////////////
+    // Static classes
+
+    /**
+     * Provide an interface that allows for arbitrary modification
+     * of text before is is passed to compare().
+     */
+    static public interface Modifier
+    {
+        public String modify(String text);
+    }
+
+    /**
+     * Instance of Modifier specialized to delete lines matching
+     * a given Java regular expression
+     * of text before is is passed to compare().
+     * A Line is defined by text.split("[\n]").
+     */
+    static public class ModDelete implements Modifier
+    {
+        protected Pattern pattern = null;
+
+        public ModDelete(String regexp)
+        {
+            this.pattern = Pattern.compile(regexp);
+
+        }
+
+        public String modify(String text)
+        {
+            String[] lines = text.split("[\n]");
+            StringBuilder result = new StringBuilder();
+            for(int i=0;i<lines.length;i++) {
+                String line = lines[i];
+                Matcher m = this.pattern.matcher(line);
+                if(m.matches()) {
+                    result.append(line);
+                    result.append("\n");
+                }
+            }
+            return result.toString();
         }
     }
 
@@ -256,6 +302,21 @@ abstract public class UnitTestCommon
         String result = compare(tag, baseline, testresult);
         if(result == null) {
             System.err.println("Files are Identical");
+            return true;
+        } else {
+            System.err.println(result);
+            return false;
+        }
+    }
+
+    static public boolean
+    similar(String tag, String baseline, String testresult, Modifier mbaseline, Modifier mtest)
+    {
+        String baselinemod = mbaseline.modify(baseline);
+        String testresultmod = mtest.modify(testresult);
+        String result = compare(tag, baselinemod, testresultmod);
+        if(result == null) {
+            System.err.println("Files are Similar");
             return true;
         } else {
             System.err.println(result);

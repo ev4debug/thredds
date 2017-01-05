@@ -357,24 +357,30 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     * If the target class is not present, then insert at front of the registry
     *
     * @param iospClass Class that implements IOServiceProvider.
-    * @param targetClass Class to override
+    * @param targets ... Class(es) to override
     * @throws IllegalAccessException if class is not accessible.
     * @throws InstantiationException if class doesnt have a no-arg constructor.
     * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
     */
-   static public void registerIOProviderPreferred(Class iospClass, Class targetClass)
+   static public void registerIOProviderPreferred(Class iospClass, Class... targets)
            throws IllegalAccessException, InstantiationException {
      if(iospRegistered(iospClass))
        return; // never register twice; use must remove
-     IOServiceProvider target = null;
      int pos = -1;
      for(int i=0; i<registeredProviders.size();i++) {
-       target =  registeredProviders.get(i);
-       if (target.getClass() == targetClass) {pos = i; break;}
+       IOServiceProvider candidate = null;
+       candidate = registeredProviders.get(i);
+       for(Class target : targets) {
+         if(candidate == null) continue;
+         if(candidate.getClass() == target) {
+           if(pos < i)
+            pos = i;
+         }
+       }
      }
      if(pos < 0) pos = 0;
      IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
-     registeredProviders.add(pos, spi);  // insert before target
+     registeredProviders.add(pos, spi);  // insert before all target
    }
 
   /**

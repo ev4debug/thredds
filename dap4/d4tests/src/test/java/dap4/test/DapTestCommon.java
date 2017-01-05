@@ -30,13 +30,11 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 @ContextConfiguration
 @WebAppConfiguration("file:src/test/data")
@@ -385,10 +383,12 @@ abstract public class DapTestCommon extends UnitTestCommon
         DapController.TESTING = true;
         DapCache.dspregistry.register(FileDSP.class, DSPRegistry.FIRST);
         DapCache.dspregistry.register(SynDSP.class, DSPRegistry.FIRST);
-        // Never use HDF5
+        // Never use HDF5 or Nc4Iosp
         try {
             NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
-            NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class, ucar.nc2.iosp.hdf5.H5iosp.class);
+            NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
+                    ucar.nc2.iosp.hdf5.H5iosp.class
+                    );
         } catch (Exception e) {
             DapLog.warn("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
         }
@@ -415,7 +415,7 @@ abstract public class DapTestCommon extends UnitTestCommon
         }
         assert respath != null;
         String realdir = canonjoin(dap4testroot, respath);
-        rb.requestAttr("RESOURCEDIR",realdir);
+        rb.requestAttr("RESOURCEDIR", realdir);
         MvcResult result = mockMvc.perform(rb).andReturn();
         return result;
     }

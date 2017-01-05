@@ -270,16 +270,12 @@ public class Nc4DSP extends AbstractDSP
             int ret = 0;
             byte[] namep = new byte[NC_MAX_NAME + 1];
             SizeTByReference sizep = new SizeTByReference();
-            IntByReference formatp = new IntByReference();
             try {
-                Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_format(tn.gid, formatp));
-                System.err.printf("fileformat=%d%n",formatp.getValue());
-                System.err.flush();
-                Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_type(tn.gid, tn.id, namep, sizep));
+                Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_type(0, i, namep, sizep));
                 System.err.printf("gid=%d tid=%d name=%s%n",tn.gid, tn.id,makeString(namep));
                 System.err.flush();
             } catch (DapException e) {
-                System.err.printf("gid=%d tid=%d%n",tn.gid, tn.id);
+                System.err.printf("tid=%d%n",i);
                 System.err.flush();
                 e.printStackTrace();
                 assert false; // should never happen
