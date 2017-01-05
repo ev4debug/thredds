@@ -23,7 +23,7 @@ netcdf test_atomic_array {
 
     opaque vo(d1, d2);
 
-    enum primary_cloud primary_cloud(d5);
+    enum cloud_class_t primary_cloud(d5);
       primary_cloud:_FillValue = "Missing";
 
   // global attributes:
