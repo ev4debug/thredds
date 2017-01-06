@@ -19,7 +19,6 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level
  */
-@Category(NeedsD4TS.class)
 public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;

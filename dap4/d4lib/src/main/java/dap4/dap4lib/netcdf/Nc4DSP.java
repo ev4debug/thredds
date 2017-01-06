@@ -264,23 +264,27 @@ public class Nc4DSP extends AbstractDSP
         n = Nc4Notes.factory(NoteSort.TYPE, 0, NC_STRING, this);
         n.set(DapType.STRING);
         this.note(n);
+
         for(int i = NC_BYTE; i <= NC_MAX_ATOMIC_TYPE; i++) {
             Nc4Notes.TypeNotes tn = (Nc4Notes.TypeNotes) find(i, NoteSort.TYPE);
             assert tn != null;
             int ret = 0;
             byte[] namep = new byte[NC_MAX_NAME + 1];
-            SizeTByReference sizep = new SizeTByReference();
-            try {
-                Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_type(0, i, namep, sizep));
-                System.err.printf("gid=%d tid=%d name=%s%n",tn.gid, tn.id,makeString(namep));
-                System.err.flush();
-            } catch (DapException e) {
-                System.err.printf("tid=%d%n",i);
-                System.err.flush();
-                e.printStackTrace();
-                assert false; // should never happen
+            if(i == NC_STRING) {
+                // There is a bug in some versions of netcdf that does not
+                // handle NC_STRING correctly when the gid is invalid.
+                // Handle specially ; this is a temporary hack
+                tn.setSize(Pointer.SIZE);
+            } else {
+                SizeTByReference sizep = new SizeTByReference();
+                try {
+                    Nc4Cursor.errcheck(getJNI(), ret = nc4.nc_inq_type(0, i, namep, sizep));
+                } catch (DapException e) {
+                    e.printStackTrace();
+                    assert false; // should never happen
+                }
+                tn.setSize(sizep.intValue());
             }
-            tn.setSize(sizep.intValue());
         }
     }
 
@@ -426,10 +430,11 @@ public class Nc4DSP extends AbstractDSP
     {
         // null terminates
         int count;
-        for(count = 0; (count < b.length && b[count] != 0); count++) ;
+        for(count = 0; (count < b.length && b[count] != 0); count++) {
+            ;
+        }
         return new String(b, 0, count, DapUtil.UTF8);
     }
-
 
 
 }

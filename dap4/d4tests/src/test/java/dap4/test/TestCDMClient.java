@@ -168,8 +168,8 @@ public class TestCDMClient extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
-            chosentests = locate("file:", "test_struct_nested.hdf5.raw");
+        if(true) {
+            chosentests = locate("file:", "test_atomic_types.nc");
             prop_visual = true;
             prop_baseline = false;
         } else {
