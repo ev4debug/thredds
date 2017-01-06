@@ -4,13 +4,11 @@ import dap4.dap4lib.XURI;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
-<<<<<<< HEAD
 import ucar.unidata.util.test.category.NeedsD4TS;
 import ucar.unidata.util.test.category.NeedsExternalResource;
-=======
->>>>>>> 5.0.0
 
 import java.io.IOException;
 import java.io.StringWriter;
