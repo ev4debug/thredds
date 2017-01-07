@@ -9,6 +9,7 @@ import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.dap4lib.DapCodes;
+import dap4.dap4lib.DapLog;
 import dap4.servlet.DSPFactory;
 import dap4.servlet.DapCache;
 import dap4.servlet.DapController;
@@ -16,8 +17,8 @@ import dap4.servlet.DapRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.ServletContextAware;
 import thredds.core.TdsRequestedDataset;
+import ucar.nc2.NetcdfFile;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -70,6 +71,25 @@ public class Dap4Controller extends DapController
             throws IOException
     {
         super.handleRequest(req, res);
+    }
+
+    /**
+     * Initialize servlet/controller
+     */
+    @Override
+    public void
+    initialize()
+    {
+        super.initialize();
+        try {
+            // Always prefer Nc4Iosp over HDF5
+            NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
+            NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
+                    ucar.nc2.iosp.hdf5.H5iosp.class
+            );
+        } catch (Exception e) {
+            DapLog.warn("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
+        }
     }
 
     //////////////////////////////////////////////////

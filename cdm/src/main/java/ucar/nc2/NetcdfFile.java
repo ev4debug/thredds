@@ -352,35 +352,33 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   /**
     * Register an IOServiceProvider. A new instance will be created when one of its files is opened.
-    * This differs from the above inthat it specifically locates the target iosp and inserts
+    * This differs from the above in that it specifically locates the target iosp and inserts
     * the new one in front of it in order to override the target.
+    * If the iospclass is already registered, remove it and reinsert.
     * If the target class is not present, then insert at front of the registry
     *
     * @param iospClass Class that implements IOServiceProvider.
-    * @param targets ... Class(es) to override
+    * @param target Class to override
     * @throws IllegalAccessException if class is not accessible.
     * @throws InstantiationException if class doesnt have a no-arg constructor.
     * @throws ClassCastException     if class doesnt implement IOServiceProvider interface.
     */
-   static public void registerIOProviderPreferred(Class iospClass, Class... targets)
-           throws IllegalAccessException, InstantiationException {
-     if(iospRegistered(iospClass))
-       return; // never register twice; use must remove
+   static public void registerIOProviderPreferred(Class iospClass, Class target)
+           throws IllegalAccessException, InstantiationException
+   {
+     iospDeRegister(iospClass); // forcibly de-register
      int pos = -1;
-     for(int i=0; i<registeredProviders.size();i++) {
-       IOServiceProvider candidate = null;
-       candidate = registeredProviders.get(i);
-       for(Class target : targets) {
-         if(candidate == null) continue;
-         if(candidate.getClass() == target) {
-           if(pos < i)
-            pos = i;
-         }
+     for(int i = 0; i < registeredProviders.size(); i++) {
+       IOServiceProvider candidate = registeredProviders.get(i);
+       if(candidate.getClass() == target) {
+         if(pos < i)
+           pos = i;
+         break; // this is where is must be placed
        }
      }
      if(pos < 0) pos = 0;
      IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
-     registeredProviders.add(pos, spi);  // insert before all target
+     registeredProviders.add(pos, spi);  // insert before target
    }
 
   /**

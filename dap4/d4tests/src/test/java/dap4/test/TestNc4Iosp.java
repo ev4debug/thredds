@@ -19,8 +19,6 @@ public class TestNc4Iosp extends DapTestCommon
 
     static protected final boolean NCDUMP = true;
 
-    static protected final boolean HDF5 = true; // false => NC4Iosp
-
     static protected final Mode mode = Mode.BOTH;
 
     //////////////////////////////////////////////////
@@ -91,10 +89,8 @@ public class TestNc4Iosp extends DapTestCommon
     @Before
     public void setup() throws Exception
     {
-        if(!HDF5) {
-            CDMDSP.loadNc4Iosp();  // Load Nc4Iosp
-        }
         this.root = getResourceRoot();
+        testSetup();
         Nc4IospTest.setRoots(canonjoin(getResourceRoot(), TESTINPUTDIR),
                 canonjoin(getResourceRoot(), BASELINEDIR));
         defineAllTestcases();
@@ -113,8 +109,8 @@ public class TestNc4Iosp extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
-            chosentests = locate("test_atomic_types.nc");
+        if(false) {
+            chosentests = locate("test_struct_array.nc");
             prop_visual = true;
             prop_debug = true;
             //chosentests.add(new Nc4IospTest("test_test.nc"));
@@ -264,12 +260,13 @@ public class TestNc4Iosp extends DapTestCommon
             sw.close();
         } catch (IOException e) {
         }
-        ;
+
         if(!ok) {
             System.err.println("NcdumpW failed");
             System.exit(1);
         }
-        return shortenFileName(sw.toString(), ncfile.getLocation());
+        //return shortenFileName(sw.toString(), ncfile.getLocation());
+        return sw.toString();
     }
 
     String ncdumpdata(NetcdfDataset ncfile, String datasetname)
@@ -301,7 +298,8 @@ public class TestNc4Iosp extends DapTestCommon
             System.err.println("NcdumpW failed");
             System.exit(1);
         }
-        return shortenFileName(sw.toString(), ncfile.getLocation());
+        //return shortenFileName(sw.toString(), ncfile.getLocation());
+        return sw.toString();
     }
 
 

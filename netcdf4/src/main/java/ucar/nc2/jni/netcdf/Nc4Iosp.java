@@ -48,6 +48,7 @@ import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
+import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
@@ -1085,7 +1086,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return true;
   }
 
+  private String nc_inq_var_name(int grpid, int varno) throws IOException
+  {
+    byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
+    IntByReference xtypep = new IntByReference();
+    IntByReference ndimsp = new IntByReference();
+    IntByReference nattsp = new IntByReference();
 
+    int ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, Pointer.NULL, nattsp);
+    if(ret != 0)
+      throw new IOException("nc_inq_var faild: code="+ret);
+    String vname = makeString(name);
+    return vname;
+  }
   //////////////////////////////////////////////////////////////////////////
 
   static private class Vinfo {
@@ -1682,7 +1695,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_var_uint(grpid, varid, valiu);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.INT, shape, valiu);
+        return Array.factory(DataType.UINT, shape, valiu);
 
       case Nc4prototypes.NC_STRING:
         String[] valss = new String[len];
@@ -1749,8 +1762,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     /*
     This does not seem right since the user type does not
     normally appear in the CDM representation.
+    dmh: observation is correct, var name should be used instead of
+         usertype.name, at least for now and to be consistent with H5Iosp.
+         This is not easy, however, because we have to re-read the variable's name.
+         and ideally this would be in the Vinfo, but we have no easy way to get that either.
     */
-    StructureMembers sm = createStructureMembers(userType);
+    String vname = nc_inq_var_name(grpid, varid);
+    StructureMembers sm = createStructureMembers(userType,vname);
     ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bb, 0);
 
     // find and convert String and vlen fields, put on asbb heap
@@ -1762,8 +1780,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return asbb;
   }
 
-  private StructureMembers createStructureMembers(UserType userType) {
-    StructureMembers sm = new StructureMembers(userType.name);
+  private StructureMembers createStructureMembers(UserType userType, String varname) {
+    // Incorrect: StructureMembers sm = new StructureMembers(userType.name);
+    StructureMembers sm = new StructureMembers(varname);
     for (Field fld : userType.flds) {
       StructureMembers.Member m = sm.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
       m.setDataParam(fld.offset);
@@ -1772,7 +1791,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       if (fld.ctype.dt == DataType.STRUCTURE) {
         UserType nested_utype = userTypes.get(fld.fldtypeid);
-        StructureMembers nested_sm = createStructureMembers(nested_utype);
+        StringBuilder partfqn = new StringBuilder();
+        partfqn.append(EscapeStrings.backslashEscapeCDMString(varname,"."));
+        partfqn.append(".");
+        partfqn.append(EscapeStrings.backslashEscapeCDMString(fld.name,"."));
+        StructureMembers nested_sm = createStructureMembers(nested_utype,partfqn.toString());
         m.setStructureMembers(nested_sm);
       }
     }

@@ -136,6 +136,7 @@ public class TestCDMClient extends DapTestCommon
     public void setup() throws Exception
     {
         DapCache.flush();
+        testSetup();
         this.resourceroot = getResourceRoot();
         this.resourceroot = DapUtil.absolutize(this.resourceroot); // handle problem of windows paths
         TestCase.setRoot(resourceroot);

@@ -131,6 +131,7 @@ public class TestConstraints extends DapTestCommon
         String root = getDAP4Root();
         if(root == null)
             throw new Exception("dap4 root cannot be located");
+        testSetup();
         TestCase.setRoots(
                 SERVLETPATH,
                 canonjoin(getResourceRoot(), BASELINEDIR),

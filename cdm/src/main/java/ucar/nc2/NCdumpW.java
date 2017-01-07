@@ -605,7 +605,7 @@ public class NCdumpW {
     if(last < 0)
         out.printf("00");
     else
-        for (int i = 0; i <= last; i++) {
+        for (int i = bb.position(); i <= last; i++) {
           out.printf("%02x", bb.get(i));
         }
   }

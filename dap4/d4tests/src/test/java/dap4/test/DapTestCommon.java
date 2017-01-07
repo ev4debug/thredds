@@ -383,8 +383,8 @@ abstract public class DapTestCommon extends UnitTestCommon
         DapController.TESTING = true;
         DapCache.dspregistry.register(FileDSP.class, DSPRegistry.FIRST);
         DapCache.dspregistry.register(SynDSP.class, DSPRegistry.FIRST);
-        // Never use HDF5 or Nc4Iosp
         try {
+            // Always prefer Nc4Iosp over HDF5
             NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
             NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
                     ucar.nc2.iosp.hdf5.H5iosp.class
