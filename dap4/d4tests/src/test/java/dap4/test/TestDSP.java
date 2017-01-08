@@ -350,6 +350,7 @@ public class TestDSP extends DapTestCommon
         PrintWriter pw = new PrintWriter(sw);
         // Print the meta-databuffer using these args to NcdumpW
         DMRPrinter p = new DMRPrinter(dsp.getDMR(), pw);
+        p.printSpecial(false);
         p.print();
         pw.close();
         sw.close();

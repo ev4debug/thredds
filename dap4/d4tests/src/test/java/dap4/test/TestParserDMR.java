@@ -84,7 +84,7 @@ public class TestParserDMR extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_anon_dim.syn");
+            chosentests = locate("test_atomic_array.nc");
             prop_visual = true;
             assert chosentests.size() > 0 : "Not tests chosen";
         } else {
@@ -230,7 +230,8 @@ public class TestParserDMR extends DapTestCommon
         // Dump the parsed DMR for comparison purposes
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        DMRPrinter dapprinter = new DMRPrinter(dmr,pw);
+        DMRPrinter dapprinter = new DMRPrinter(dmr, pw);
+        dapprinter.printSpecial(false); // because jenkins and travis may be using different version
         dapprinter.print();
         pw.close();
         sw.close();

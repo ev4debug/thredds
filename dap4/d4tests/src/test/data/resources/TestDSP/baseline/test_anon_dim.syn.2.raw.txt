@@ -11,9 +11,6 @@
     <Attribute name="_dap4.ce" type="String">
         <Value value="/vu32[0:3]"/>
     </Attribute>
-    <Attribute name="_DAP4_Little_Endian" type="UInt8">
-        <Value value="1"/>
-    </Attribute>
 </Dataset>
 /vu32[0] = -1169720286
 /vu32[1] = -920699049

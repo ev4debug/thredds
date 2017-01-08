@@ -25,9 +25,6 @@
             <Value value="Missing"/>
         </Attribute>
     </Enum>
-    <Attribute name="_DAP4_Little_Endian" type="UInt8">
-        <Value value="1"/>
-    </Attribute>
 </Dataset>
 /primary_cloud[0] = Clear
 /primary_cloud[1] = Stratus

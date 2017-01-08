@@ -57,6 +57,7 @@ public class DMRPrinter
     protected CEConstraint ce = null;
     protected ResponseFormat format = null;
     protected boolean printreserved = false; // true => print reserved xmlattributes
+    protected boolean printspecial = true; // true => print special attributes
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -98,6 +99,12 @@ public class DMRPrinter
         this.printreserved = tf;
         return this;
     }
+
+    public DMRPrinter printSpecial(boolean tf)
+        {
+            this.printspecial = tf;
+            return this;
+        }
 
     //////////////////////////////////////////////////
     // External API
@@ -424,7 +431,7 @@ public class DMRPrinter
     {
     }
 
-    static boolean suppress(String name)
+    static boolean isSuppressed(String name)
     {
         return isReserved(name);
     }
@@ -463,6 +470,8 @@ public class DMRPrinter
     printAttribute(DapAttribute attr)
             throws IOException
     {
+        if(!this.printspecial && isSpecial(attr))
+            return;
         printer.marginPrint("<Attribute");
         printXMLAttribute("name", attr.getShortName(), NILFLAGS);
         DapType type = attr.getBaseType();
@@ -584,7 +593,6 @@ public class DMRPrinter
     {
         return var.getDimensions().size() > 0;
     }
-
 
 } // class DapPrint
     

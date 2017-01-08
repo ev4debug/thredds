@@ -156,12 +156,48 @@ abstract public class UnitTestCommon
         {
             String[] lines = text.split("[\n]");
             StringBuilder result = new StringBuilder();
-            for(int i=0;i<lines.length;i++) {
+            for(int i = 0; i < lines.length; i++) {
                 String line = lines[i];
                 Matcher m = this.pattern.matcher(line);
                 if(m.matches()) {
                     result.append(line);
                     result.append("\n");
+                }
+            }
+            return result.toString();
+        }
+    }
+
+    /**
+     * Instance of Modifier specialized to delete named attributes.
+     */
+    static public class ModSuppress implements Modifier
+    {
+        protected List<Pattern> patterns = new ArrayList<>();
+
+        public ModSuppress()
+        {
+        }
+
+        public void
+        suppress(String attributename)
+        {
+            String re = String.format("<Attribute[ ]+name=\"%s\".*</Attribute>[^\n]\n",
+                    attributename);
+            Pattern pattern = Pattern.compile(re);
+            patterns.add(pattern);
+        }
+
+        public String modify(String text)
+        {
+            StringBuilder result = new StringBuilder(text);
+            for(Pattern p : patterns) {
+                for(; ; ) {
+                    Matcher m = p.matcher(result.toString());
+                    if(!m.matches()) break;
+                    int pos0 = m.start();
+                    int pos1 = m.end();
+                    result.delete(pos0, pos1);
                 }
             }
             return result.toString();
