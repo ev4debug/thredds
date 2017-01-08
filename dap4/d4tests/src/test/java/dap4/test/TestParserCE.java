@@ -100,6 +100,7 @@ public class TestParserCE extends DapTestCommon
     {
         if(false) {
             chosentests = locate(9);
+            assert chosentests.size() > 0 : "Not tests chosen";
         } else {
             for(TestSet tc : alltestsets) {
                 chosentests.add(tc);

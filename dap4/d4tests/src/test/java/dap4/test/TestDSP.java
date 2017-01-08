@@ -241,7 +241,7 @@ public class TestDSP extends DapTestCommon
         if(false) {
             chosentests = locate("file:", "test_atomic_array.nc");
             prop_visual = true;
-            prop_baseline = true;
+            prop_baseline = false;
         } else {
             for(TestCase tc : alltestcases) {
                 if(DEBUG)
