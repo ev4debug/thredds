@@ -83,7 +83,7 @@ public class TestParserDMR extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(true) {
+        if(false) {
             chosentests = locate("test_vlen1.nc");
         } else {
             for(TestCase tc : alltestcases) {

@@ -98,7 +98,7 @@ public class TestParserCE extends DapTestCommon
     protected void
     chooseTestcases()
     {
-        if(true) {
+        if(false) {
             chosentests = locate(9);
         } else {
             for(TestSet tc : alltestsets) {
