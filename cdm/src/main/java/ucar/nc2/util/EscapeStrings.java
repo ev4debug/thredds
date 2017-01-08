@@ -548,11 +548,12 @@ public class EscapeStrings {
     static public String backslashEscapeCDMString(String s, String toescape)
     {
       if(toescape == null || toescape.length() == 0) return s;
+      if(s == null || s.length() == 0) return s;
       StringBuilder buf = new StringBuilder();
       for(int i=0;i<s.length();i++) {
         int c = s.charAt(i);
         if(toescape.indexOf(c) >= 0) {
-          buf.insert('\\', i);
+          buf.append('\\');
         }
         buf.append((char)c);
       }
