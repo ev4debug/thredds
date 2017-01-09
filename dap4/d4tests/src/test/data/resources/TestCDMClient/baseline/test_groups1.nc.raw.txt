@@ -31,7 +31,6 @@ netcdf test_groups1.nc.raw {
     }
   }
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_groups1.nc.raw {
@@ -67,7 +66,6 @@ netcdf test_groups1.nc.raw {
     }
   }
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 g/h/v1 =

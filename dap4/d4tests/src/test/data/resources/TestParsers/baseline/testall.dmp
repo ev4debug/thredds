@@ -47,8 +47,6 @@
             <Dim name="/lat"/>
             <Dim name="/lon"/>
             <Dim name="/g1/d2"/>
-            <Map name="/lat"/>
-            <Map name="/lon"/>
         </Float32>
         <Enum name="evar" enum="/e1"/>
     </Group>

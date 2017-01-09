@@ -4,7 +4,6 @@ netcdf test_opaque.nc.raw {
       vo1:_DAP4_Checksum_CRC32 = "0xd24ddadd";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_opaque.nc.raw {
@@ -13,7 +12,6 @@ netcdf test_opaque.nc.raw {
       vo1:_DAP4_Checksum_CRC32 = "0xd24ddadd";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vo1 =  0x0123456789abcdef;

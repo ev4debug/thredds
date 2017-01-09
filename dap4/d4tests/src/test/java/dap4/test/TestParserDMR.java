@@ -84,7 +84,7 @@ public class TestParserDMR extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_atomic_array.nc");
+            chosentests = locate("test_struct_array.nc");
             prop_visual = true;
             assert chosentests.size() > 0 : "Not tests chosen";
         } else {
@@ -231,8 +231,7 @@ public class TestParserDMR extends DapTestCommon
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         DMRPrinter dapprinter = new DMRPrinter(dmr, pw);
-        dapprinter.printSpecial(false); // because jenkins and travis may be using different version
-        dapprinter.print();
+        dapprinter.testprint();
         pw.close();
         sw.close();
         String testresult = sw.toString();

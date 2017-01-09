@@ -51,7 +51,6 @@ netcdf test_atomic_types.nc.raw {
       secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_atomic_types.nc.raw {
@@ -107,7 +106,6 @@ netcdf test_atomic_types.nc.raw {
       secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 v8 =-128

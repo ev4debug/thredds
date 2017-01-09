@@ -5,7 +5,6 @@ netcdf test_atomic_array.9 {
 
   // global attributes:
   :_dap4.ce = "vu8[1][0:2:2];vd[1];vs[1][0];vo[0][1]";
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 v16 =

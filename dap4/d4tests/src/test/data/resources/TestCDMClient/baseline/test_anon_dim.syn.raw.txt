@@ -4,7 +4,6 @@ netcdf test_anon_dim.syn.raw {
       vu32:_DAP4_Checksum_CRC32 = "0x1aca2718";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_anon_dim.syn.raw {
@@ -13,7 +12,6 @@ netcdf test_anon_dim.syn.raw {
       vu32:_DAP4_Checksum_CRC32 = "0x1aca2718";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vu32 =

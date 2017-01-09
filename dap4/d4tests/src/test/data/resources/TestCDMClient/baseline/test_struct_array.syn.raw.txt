@@ -20,7 +20,6 @@ netcdf test_struct_array.syn.raw {
 
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_struct_array.syn.raw {
@@ -45,7 +44,6 @@ netcdf test_struct_array.syn.raw {
 
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 z =

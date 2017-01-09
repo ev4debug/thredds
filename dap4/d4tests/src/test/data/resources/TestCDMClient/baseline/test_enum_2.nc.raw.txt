@@ -11,7 +11,6 @@ netcdf test_enum_2.nc.raw {
 
   }
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_enum_2.nc.raw {
@@ -27,7 +26,6 @@ netcdf test_enum_2.nc.raw {
 
   }
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 h/primary_cloud =2

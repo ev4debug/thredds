@@ -6,7 +6,6 @@ netcdf test_utf8.nc.raw {
       vs:_DAP4_Checksum_CRC32 = "0xfce3cd28";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_utf8.nc.raw {
@@ -17,7 +16,6 @@ netcdf test_utf8.nc.raw {
       vs:_DAP4_Checksum_CRC32 = "0xfce3cd28";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vs =  "Καλημέα",   "Καλημέα"

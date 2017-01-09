@@ -6,7 +6,6 @@ netcdf test_one_vararray.nc.raw {
       t:_DAP4_Checksum_CRC32 = "0x42dfb1d0";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
 netcdf test_one_vararray.nc.raw {
@@ -17,7 +16,6 @@ netcdf test_one_vararray.nc.raw {
       t:_DAP4_Checksum_CRC32 = "0x42dfb1d0";
 
   // global attributes:
-  :;
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 t =

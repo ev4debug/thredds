@@ -7,10 +7,10 @@ package dap4.dap4lib;
 import dap4.core.ce.CEConstraint;
 import dap4.core.dmr.*;
 import dap4.core.util.*;
-import dap4.dap4lib.netcdf.Nc4DSP;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -56,8 +56,7 @@ public class DMRPrinter
     protected DapDataset dmr = null;
     protected CEConstraint ce = null;
     protected ResponseFormat format = null;
-    protected boolean printreserved = false; // true => print reserved xmlattributes
-    protected boolean printspecial = true; // true => print special attributes
+    protected boolean testing = false;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -94,18 +93,6 @@ public class DMRPrinter
         this.flush();
     }
 
-    public DMRPrinter printReserved(boolean tf)
-    {
-        this.printreserved = tf;
-        return this;
-    }
-
-    public DMRPrinter printSpecial(boolean tf)
-        {
-            this.printspecial = tf;
-            return this;
-        }
-
     //////////////////////////////////////////////////
     // External API
 
@@ -127,6 +114,22 @@ public class DMRPrinter
         this.printer.setIndent(0);
         printNode(dmr); // start printing at the root
         printer.eol();
+    }
+
+
+    /**
+     * Same as print() except certain items of
+     * information are suppressed.
+     *
+     * @throws IOException
+     */
+
+    public void
+    testprint()
+            throws IOException
+    {
+        this.testing = true;
+        print();
     }
 
     //////////////////////////////////////////////////
@@ -209,7 +212,7 @@ public class DMRPrinter
             printer.marginPrint("<" + dmrname);
             printXMLAttributes(node, ce, NILFLAGS);
             if(dim.isUnlimited())
-                printXMLAttribute("unlimited","1",NILFLAGS);
+                printXMLAttribute("unlimited", "1", NILFLAGS);
             if(hasMetadata(node)) {
                 printer.println(">");
                 printMetadata(node);
@@ -351,7 +354,8 @@ public class DMRPrinter
         default:
             break; // node either has no attributes or name only
         } //switch
-        printReserved(node);
+        if(!this.testing)
+            printReserved(node);
         if((flags & PERLINE) != 0) {
             printer.outdent(2);
         }
@@ -360,7 +364,7 @@ public class DMRPrinter
     /**
      * PrintXMLAttributes helper function
      */
-    void
+    protected void
     printXMLAttribute(String name, String value, int flags)
             throws DapException
     {
@@ -383,7 +387,7 @@ public class DMRPrinter
         printer.print("\"");
     }
 
-    void
+    protected void
     printReserved(DapNode node)
             throws DapException
     {
@@ -395,7 +399,7 @@ public class DMRPrinter
         }
     }
 
-    void
+    protected void
     printMetadata(DapNode node)
             throws IOException
     {
@@ -421,12 +425,12 @@ public class DMRPrinter
         }
     }
 
-    void
+    protected void
     printContainerAttribute(DapAttribute attr)
     {
     }
 
-    void
+    protected void
     printOtherXML(DapAttribute attr)
     {
     }
@@ -470,7 +474,7 @@ public class DMRPrinter
     printAttribute(DapAttribute attr)
             throws IOException
     {
-        if(!this.printspecial && isSpecial(attr))
+        if(this.testing && isSpecial(attr))
             return;
         printer.marginPrint("<Attribute");
         printXMLAttribute("name", attr.getShortName(), NILFLAGS);
@@ -544,6 +548,8 @@ public class DMRPrinter
     printMaps(DapVariable parent)
             throws IOException
     {
+        if(this.testing)
+            return;
         List<DapMap> maps = parent.getMaps();
         if(maps.size() == 0) return;
         for(DapMap map : maps) {

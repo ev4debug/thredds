@@ -317,7 +317,7 @@ abstract public class AbstractDSP implements DSP
     {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        DMRPrinter printer = new DMRPrinter(dmr, pw).printReserved(true);
+        DMRPrinter printer = new DMRPrinter(dmr, pw);
         try {
             printer.print();
             pw.close();
