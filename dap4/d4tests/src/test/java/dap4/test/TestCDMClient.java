@@ -185,7 +185,6 @@ public class TestCDMClient extends DapTestCommon
     {
         List<String> matches = new ArrayList<>();
         String dir = TestCase.getRoot() + "/" + TESTCDMINPUT;
-        printDir(dir);
         TestFilter.filterfiles(dir, matches, "raw");
         for(String f : matches) {
             boolean excluded = false;
