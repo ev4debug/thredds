@@ -205,9 +205,11 @@ public class TestCDMClient extends DapTestCommon
         try {
             URL u = new URL(url);
             File f = new File(u.getPath());
-            if(!f.canRead()) {
+            System.err.println("File="+f.getAbsolutePath());
+            if(!f.exists())
+                System.err.println("Non existent file test case: " + url);
+            if(!f.canRead())
                 System.err.println("Unreadable file test case: " + url);
-            }
         } catch (MalformedURLException e) {
             System.err.println("Malformed file test case: " + url);
         }
