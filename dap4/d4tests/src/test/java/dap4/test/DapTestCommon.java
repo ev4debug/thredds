@@ -420,5 +420,25 @@ abstract public class DapTestCommon extends UnitTestCommon
         return result;
     }
 
+
+    static void
+    printDir(String path)
+    {
+        File testdirf = new File(path);
+        assert (testdirf.canRead());
+        File[] filelist = testdirf.listFiles();
+        System.err.println("\n*******************");
+        System.err.printf("Contents of %s:%n",path);
+        for(int i = 0; i < filelist.length; i++) {
+            File file = filelist[i];
+            String fname = DapUtil.canonicalpath(file.getAbsolutePath());
+            System.err.printf("\t%s%s%n",
+                    fname,
+                    (file.isDirectory() ? "/" : ""));
+        }
+        System.err.println("*******************");
+        System.err.flush();
+    }
+
 }
 
