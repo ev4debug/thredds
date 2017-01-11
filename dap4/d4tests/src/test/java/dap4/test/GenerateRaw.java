@@ -1,17 +1,14 @@
 package dap4.test;
 
 import dap4.core.ce.parser.CEParserImpl;
-import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapDump;
 import dap4.core.util.Escape;
 import dap4.dap4lib.ChunkInputStream;
 import dap4.dap4lib.DSPPrinter;
 import dap4.dap4lib.FileDSP;
 import dap4.dap4lib.RequestMode;
-import dap4.servlet.DapCache;
 import dap4.servlet.DapController;
 import dap4.servlet.Generator;
-import dap4.servlet.SynDSP;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,32 +31,34 @@ import java.util.List;
 
 
 /**
-This program is actually a feeder to provide
-testdata for use by the netcdf-c library.
-It operates by capturing the on-wire data
-that would be produced by a request to thredds
-to fufill a request for a dataset. This is
-referred to as <i>raw</i> data. 
-
-In operation, and for each test dataset,
-two files are placed in
-.../dap4/d4tests/src/test/data/resources/rawtestfiles.
-One has the extension <i>.dap</i> is the complete captured
-on-the-wire data. The other as the extension <i>.dmr</i>
-and is just the dmr for that dataset.
-
-This program is setup as a Junit Test.
-It is a modified version of TestServletConstraints.
-As a rule, this program should only be invoked when new
-test cases are available (see GenerateRaw#defineAlltestcases).
-No harm will occur if it is accidentally run.
-
-On the netcdf-c side, there is a program -- dap4_test/maketests.sh --
-that extracts files from the rawtestfiles directory and from the
-testfiles directory. It stores the dmr files in dmrtestfiles,
-the dap files in daptestfiles, and the cdl (if available) in
-cdltestfiles.
-*/
+ * This program is actually a feeder to provide
+ * testdata for use by the netcdf-c library.
+ * It operates by capturing the on-wire data
+ * that would be produced by a request to thredds
+ * to fufill a request for a dataset. This is
+ * referred to as <i>raw</i> data.
+ * <p>
+ * In operation, and for each test dataset,
+ * a .dmr file is placed in
+ * .../dap4/d4tests/src/test/data/resources/dmrtestfiles
+ * and a .dap file is placed in
+ * .../dap4/d4tests/src/test/data/resources/daptestfiles
+ * The <i>.dap</i> file is the complete captured
+ * on-the-wire data. The other, with the extension <i>.dmr</i>,
+ * is just the dmr for that dataset.
+ * <p>
+ * This program is setup as a Junit Test.
+ * It is a modified version of TestServletConstraints.
+ * As a rule, this program should only be invoked when new
+ * test cases are available (see GenerateRaw#defineAlltestcases).
+ * No harm will occur if it is accidentally run.
+ * <p>
+ * On the netcdf-c side, there is a program -- dap4_test/maketests.sh --
+ * that extracts files from the {dmr,dap}testfiles directories and from the
+ * testfiles directory (for .cdl files). It stores the dmr files in dmrtestfiles,
+ * the dap files in daptestfiles, and the cdl (if available) in
+ * cdltestfiles.
+ */
 
 @Category({NotJenkins.class, NotTravis.class}) // must call explicitly in intellij
 public class GenerateRaw extends DapTestCommon
@@ -75,15 +74,18 @@ public class GenerateRaw extends DapTestCommon
 
     static public boolean USED4TS = false;
 
+    static public boolean USEDAPDMR = true;
+
     //////////////////////////////////////////////////
     // Constants
 
     //    static protected final String RESOURCEPATH = "/src/test/data/resources"; // wrt getTestInputFilesDir
+    static protected final String RAWDIR = "/rawtestfiles";
     static protected final String DAPDIR = "/daptestfiles";
     static protected final String DMRDIR = "/dmrtestfiles";
 
     // constants for Fake Request
-    static protected final String FAKEURLPREFIX = (USED4TS?"/d4ts":"/dap4");
+    static protected final String FAKEURLPREFIX = (USED4TS ? "/d4ts" : "/dap4");
 
     static protected final String RESOURCEPATH = "/src/test/data/resources"; // wrt getTestInputFilesDir
 
@@ -171,7 +173,7 @@ public class GenerateRaw extends DapTestCommon
 
         public String makeurl()
         {
-            String url =  canonjoin(
+            String url = canonjoin(
                     FAKEURLPREFIX,
                     this.prefix,
                     this.dataset)
@@ -205,8 +207,8 @@ public class GenerateRaw extends DapTestCommon
             throws Exception
     {
         StandaloneMockMvcBuilder mvcbuilder = USED4TS
-            ? MockMvcBuilders.standaloneSetup(new D4TSController())
-            : MockMvcBuilders.standaloneSetup(new Dap4Controller());
+                ? MockMvcBuilders.standaloneSetup(new D4TSController())
+                : MockMvcBuilders.standaloneSetup(new Dap4Controller());
         mvcbuilder.setValidator(new TestServlet.NullValidator());
         this.mockMvc = mvcbuilder.build();
         testSetup();
@@ -215,12 +217,19 @@ public class GenerateRaw extends DapTestCommon
         TestCase.setRoots(getResourceRoot());
         defineAlltestcases();
         choosetests();
-        String dapdir = canonjoin(TestCase.resourcepath(), DAPDIR);
-        String dmrdir = canonjoin(TestCase.resourcepath(), DMRDIR);
-        File dapfile = new File(dapdir);
-        if(!dapfile.exists()) dapfile.mkdirs();
-        File dmrfile = new File(dmrdir);
-        if(!dmrfile.exists()) dmrfile.mkdirs();
+        if(USEDAPDMR) {
+            String dapdir = canonjoin(TestCase.resourcepath(), DAPDIR);
+            String dmrdir = canonjoin(TestCase.resourcepath(), DMRDIR);
+            File dapfile = new File(dapdir);
+            if(!dapfile.exists()) dapfile.mkdirs();
+            File dmrfile = new File(dmrdir);
+            if(!dmrfile.exists()) dmrfile.mkdirs();
+        } else {
+            String rawdir = canonjoin(TestCase.resourcepath(), RAWDIR);
+            File rawfile = new File(rawdir);
+            if(!rawfile.exists()) rawfile.mkdirs();
+        }
+
     }
 
     //////////////////////////////////////////////////
@@ -266,21 +275,29 @@ public class GenerateRaw extends DapTestCommon
             int x = 0;
         }
         String inputpath = tc.inputpath();
-
-        String dappath = tc.generatepath(DAPDIR) + ".dap";
-        String dmrpath = tc.generatepath(DMRDIR) + ".dmr";
+        String dappath;
+        String dmrpath;
+        if(USEDAPDMR) {
+            dappath = tc.generatepath(DAPDIR) + ".dap";
+            dmrpath = tc.generatepath(DMRDIR) + ".dmr";
+        } else {
+            dappath = tc.generatepath(RAWDIR) + ".dap";
+            dmrpath = tc.generatepath(RAWDIR) + ".dmr";
+        }
 
         String url = tc.makeurl();
 
         String ce = tc.makequery();
 
         System.err.println("Input: " + inputpath);
-        System.err.println("Generated: " + dappath);
+        System.err.println("Generated (DMR):" + dmrpath);
+        System.err.println("Generated (DAP):" + dappath);
         System.err.println("URL: " + url);
         if(ce != null)
             System.err.println("CE: " + ce);
 
-        if(CEPARSEDEBUG) CEParserImpl.setGlobalDebugLevel(1);
+        if(CEPARSEDEBUG)
+            CEParserImpl.setGlobalDebugLevel(1);
 
         String little = tc.bigendian ? "0" : "1";
         String nocsum = tc.nochecksum ? "1" : "0";

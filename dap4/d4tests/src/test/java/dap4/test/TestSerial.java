@@ -19,16 +19,15 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level; access .ser files on server.
  */
-@Category(NeedsD4TS.class)
 public class TestSerial extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
 
+    static protected final String TESTINPUTDIR = "/testfiles";
+
     static protected final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
     static protected final String EXTENSION = (NCDUMP ? "ncdump" : "dmp");
-
-    static protected final String SERIALEXTENSION = "ser";
 
     static protected final String DAP4TAG = "#dap4";
 
@@ -77,10 +76,13 @@ public class TestSerial extends DapTestCommon
             StringBuilder url = new StringBuilder();
             url.append("http://");
             url.append(this.server);
-            url.append("/d4ts/");
+            url.append("/d4ts");
+            url.append("/");
+            url.append(TESTINPUTDIR);
+            url.append("/");
             url.append(this.dataset);
             url.append(".");
-            url.append(SERIALEXTENSION);
+            url.append("nc");
             url.append(DAP4TAG);
             if(ce != null && ce.length() > 0) {
                 url.append("?");
@@ -209,7 +211,7 @@ public class TestSerial extends DapTestCommon
 
             String testoutput = (NCDUMP ? data : metadata + data);
 
-            String baselinefile = String.format("%s.ser.%s",
+            String baselinefile = String.format("%s.nc.%s",
                     testcase.baselinepath,
                     EXTENSION);
             if(prop_baseline)
