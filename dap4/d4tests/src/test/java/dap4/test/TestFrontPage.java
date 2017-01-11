@@ -22,7 +22,7 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 
 public class TestFrontPage extends DapTestCommon
 {
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
 
     //////////////////////////////////////////////////
     // Constants
@@ -86,7 +86,7 @@ public class TestFrontPage extends DapTestCommon
         // Convert the raw output to a string
         String html = new String(byteresult, UTF8);
 
-        if(prop_visual)
+        if(DEBUG || prop_visual)
             visual("Front Page", html);
 
         if(prop_baseline) {

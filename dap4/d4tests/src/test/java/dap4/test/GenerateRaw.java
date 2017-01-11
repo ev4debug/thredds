@@ -63,6 +63,7 @@ import java.util.List;
 @Category({NotJenkins.class, NotTravis.class}) // must call explicitly in intellij
 public class GenerateRaw extends DapTestCommon
 {
+    static public boolean GENERATE = false;
     static public boolean DEBUG = false;
     static public boolean DEBUGDATA = false;
     static public boolean PARSEDEBUG = false;
@@ -238,11 +239,10 @@ public class GenerateRaw extends DapTestCommon
     protected void
     choosetests()
     {
-        if(false) {
+        if(true) {
             chosentests = locate("test_opaque");
             //chosentests = locate(5);
             prop_visual = true;
-            prop_debug = false;
             DapController.DUMPDMR = true;
         } else {
             for(TestCase input : alltestcases) {
@@ -323,18 +323,20 @@ public class GenerateRaw extends DapTestCommon
         MockHttpServletResponse res = result.getResponse();
         byte[] byteresult = res.getContentAsByteArray();
 
-        if(prop_debug || DEBUG) {
+        if(prop_debug || DEBUGDATA) {
             DapDump.dumpbytestream(byteresult, ByteOrder.nativeOrder(), "GenerateRaw");
         }
 
         // Dump the dap serialization into a file
-        writefile(dappath, byteresult);
+        if(GENERATE)
+            writefile(dappath, byteresult);
 
         // Dump the dmr into a file  by extracting from the dap serialization
         ByteArrayInputStream bytestream = new ByteArrayInputStream(byteresult);
         ChunkInputStream reader = new ChunkInputStream(bytestream, RequestMode.DAP, ByteOrder.nativeOrder());
         String sdmr = reader.readDMR(); // Read the DMR
-        writefile(dmrpath, sdmr);
+        if(GENERATE)
+            writefile(dmrpath, sdmr);
 
         if(prop_visual) {
             visual(tc.dataset + ".dmr", sdmr);
