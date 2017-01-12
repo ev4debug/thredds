@@ -10,6 +10,7 @@ import dap4.servlet.DapRequest;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ import java.util.List;
 public class FrontPage
 {
 
-    static final boolean DUMPFILELIST = false;
+    static final boolean DUMPFILELIST = true;
 
     //////////////////////////////////////////////////
     // Constants
@@ -147,11 +148,18 @@ public class FrontPage
                     continue;
                 }
                 matches.add(candidate);
-                if(DUMPFILELIST) {
-                    System.err.printf("file: %s/%s%n",rootinfo.prefix,name);
-                }
             }
             if(matches.size() > 0) {
+                // Sort the set of files
+                matches.sort(new Comparator<File>() {
+                    public int compare(File f1, File f2) {
+                         return f1.getName().compareTo(f2.getName());
+                    }});
+                if(DUMPFILELIST) {
+                    for(File x : matches) {
+                        System.err.printf("file: %s/%s%n", rootinfo.prefix, x.getName());
+                    }
+                }
                 FileSource clone = new FileSource(src.ext, src.tag);
                 clone.files = matches;
                 activesources.add(clone);

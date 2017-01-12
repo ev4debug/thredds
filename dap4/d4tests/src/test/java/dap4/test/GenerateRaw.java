@@ -239,7 +239,7 @@ public class GenerateRaw extends DapTestCommon
     protected void
     choosetests()
     {
-        if(true) {
+        if(false) {
             chosentests = locate("test_opaque");
             //chosentests = locate(5);
             prop_visual = true;
