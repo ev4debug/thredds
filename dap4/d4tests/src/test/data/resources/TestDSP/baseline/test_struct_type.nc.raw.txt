@@ -7,8 +7,6 @@
     <Structure name="s">
         <Int32 name="x"/>
         <Int32 name="y"/>
-        <Map name="/s.x"/>
-        <Map name="/s.y"/>
     </Structure>
 </Dataset>
 /s = {

@@ -185,7 +185,6 @@ public class TestCDMClient extends DapTestCommon
     {
         List<String> matches = new ArrayList<>();
         String dir = TestCase.getRoot() + "/" + TESTCDMINPUT;
-        printDir(dir);
         TestFilter.filterfiles(dir, matches, "raw");
         for(String f : matches) {
             boolean excluded = false;
@@ -205,11 +204,12 @@ public class TestCDMClient extends DapTestCommon
     {
         try {
             URL u = new URL(url);
+            System.err.println("file test case: " + u.getPath());
             File f = new File(u.getPath());
             if(!f.exists())
-                System.err.println("Non existent file test case: " + url);
+                System.err.println("Non existent file test case: " + f.getAbsolutePath());
             else if(!f.canRead())
-                System.err.println("Unreadable file test case: " + url);
+                System.err.println("Unreadable file test case: " + f.getAbsolutePath());
         } catch (MalformedURLException e) {
             System.err.println("Malformed file test case: " + url);
         }
