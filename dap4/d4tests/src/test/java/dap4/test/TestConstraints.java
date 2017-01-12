@@ -90,7 +90,7 @@ public class TestConstraints extends DapTestCommon
             url.append(server);
             url.append("/");
             url.append(servletpath);
-            url.append(TESTINPUTPATH);
+            //url.append(TESTINPUTPATH);
             url.append("/");
             url.append(dataset);
             if(constraint != null) {
