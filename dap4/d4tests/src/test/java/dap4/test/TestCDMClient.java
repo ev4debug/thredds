@@ -183,6 +183,7 @@ public class TestCDMClient extends DapTestCommon
     void
     defineAllTestcases()
     {
+        System.err.printf("pwd=%s%n",System.getProperty("user.dir"));
         List<String> matches = new ArrayList<>();
         String dir = TestCase.getRoot() + "/" + TESTCDMINPUT;
         TestFilter.filterfiles(dir, matches, "raw");
@@ -239,8 +240,8 @@ public class TestCDMClient extends DapTestCommon
     doOneTest(TestCase testcase)
             throws Exception
     {
-        System.out.println("Testcase: " + testcase.getURL());
-        System.out.println("Baseline: " + testcase.getBaseline());
+        System.err.println("Testcase: " + testcase.getURL());
+        System.err.println("Baseline: " + testcase.getBaseline());
 
         String datasetname = testcase.getDataset();
         NetcdfDataset ncfile;
@@ -266,7 +267,7 @@ public class TestCDMClient extends DapTestCommon
         else if(prop_diff) { //compare with baseline
             // Read the baseline file(s)
             String baselinecontent = readfile(baselinefile);
-            System.out.println("Comparison: vs " + baselinefile);
+            System.err.println("Comparison: vs " + baselinefile);
             Assert.assertTrue("*** FAIL", same(getTitle(), baselinecontent, testoutput));
         }
     }
