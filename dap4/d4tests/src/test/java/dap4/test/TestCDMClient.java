@@ -186,6 +186,7 @@ public class TestCDMClient extends DapTestCommon
         System.err.printf("pwd=%s%n",System.getProperty("user.dir"));
         List<String> matches = new ArrayList<>();
         String dir = TestCase.getRoot() + "/" + TESTCDMINPUT;
+	printDir(dir);
         TestFilter.filterfiles(dir, matches, "raw");
         for(String f : matches) {
             boolean excluded = false;
