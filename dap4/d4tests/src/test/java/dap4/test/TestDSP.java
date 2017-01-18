@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.category.NeedsD4TS;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -38,7 +37,6 @@ import java.util.List;
  * D4DSP: tested because superclass of FileDSP, HttpDSP, and SynDSP
  * ThreddsDSP: not directly tested anywhere yet
  */
-@Category(NeedsD4TS.class)
 public class TestDSP extends DapTestCommon
 {
     static final boolean DEBUG = false;

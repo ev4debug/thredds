@@ -8,7 +8,6 @@ import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NeedsD4TS;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
