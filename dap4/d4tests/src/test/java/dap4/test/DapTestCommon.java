@@ -431,7 +431,7 @@ abstract public class DapTestCommon extends UnitTestCommon
         System.err.printf("Contents of %s:%n",path);
         for(int i = 0; i < filelist.length; i++) {
             File file = filelist[i];
-            String fname = DapUtil.canonicalpath(file.getAbsolutePath());
+            String fname = file.getName();
             System.err.printf("\t%s%s%n",
                     fname,
                     (file.isDirectory() ? "/" : ""));
