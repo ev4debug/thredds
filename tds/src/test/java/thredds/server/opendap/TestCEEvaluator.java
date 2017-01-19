@@ -154,7 +154,6 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                     if(ncfile == null) throw new FileNotFoundException(path);
                     if(DEBUG)
                         visual("cdm file",ncdumpmetadata(ncfile,UnitTestCommon.extractDatasetname(path,null)));
-
                     ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
                     dds = ds.getDDS();
                     // force the name
