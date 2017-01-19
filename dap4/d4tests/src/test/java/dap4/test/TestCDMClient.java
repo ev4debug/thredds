@@ -138,7 +138,9 @@ public class TestCDMClient extends DapTestCommon
         DapCache.flush();
         testSetup();
         this.resourceroot = getResourceRoot();
+        System.err.println("resourceroot.1: "+this.resourceroot);
         this.resourceroot = DapUtil.absolutize(this.resourceroot); // handle problem of windows paths
+        System.err.println("resourceroot.2: "+this.resourceroot);
         TestCase.setRoot(resourceroot);
         defineAllTestcases();
         chooseTestcases();
@@ -186,7 +188,6 @@ public class TestCDMClient extends DapTestCommon
         System.err.printf("pwd=%s%n",System.getProperty("user.dir"));
         List<String> matches = new ArrayList<>();
         String dir = TestCase.getRoot() + "/" + TESTCDMINPUT;
-	printDir(dir);
         TestFilter.filterfiles(dir, matches, "raw");
         for(String f : matches) {
             boolean excluded = false;

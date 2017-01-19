@@ -45,6 +45,10 @@ abstract public class UnitTestCommon
 
     static {
         // Compute the root path
+        // First, see if jenkins WORKSPACE is defined
+        String workspace = System.getenv("WORKSPACE");
+        if(workspace != null)
+            System.err.println("WORKSPACE="+workspace);
         threddsroot = locateThreddsRoot();
         assert threddsroot != null : "Cannot locate /thredds parent dir";
         threddsServer = TestDir.remoteTestServer;
