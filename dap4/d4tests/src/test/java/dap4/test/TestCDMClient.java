@@ -141,6 +141,9 @@ public class TestCDMClient extends DapTestCommon
         System.err.println("resourceroot.1: "+this.resourceroot);
         this.resourceroot = DapUtil.absolutize(this.resourceroot); // handle problem of windows paths
         System.err.println("resourceroot.2: "+this.resourceroot);
+        String workspace = System.getenv("WORKSPACE");
+        System.err.println("WORKSPACE="+(workspace == null ? "null" : workspace));
+        System.err.flush();
         TestCase.setRoot(resourceroot);
         defineAllTestcases();
         chooseTestcases();
@@ -197,8 +200,10 @@ public class TestCDMClient extends DapTestCommon
                     break;
                 }
             }
-            if(!excluded)
+            if(!excluded) {
+                System.err.println("testcase.file="+f); System.err.flush();
                 add("file:/" + f);
+            }
         }
     }
 
