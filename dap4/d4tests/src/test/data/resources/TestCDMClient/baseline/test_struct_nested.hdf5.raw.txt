@@ -1,29 +1,4 @@
-netcdf test_struct_nested.hdf5.raw {
-  variables:
-
-    Structure {
-
-      Structure {
-        int x;
-          x:_CoordinateAxisType = "GeoX";
-        int y;
-          y:_CoordinateAxisType = "GeoY";
-      } field1;
-
-
-      Structure {
-        int x;
-        int y;
-      } field2;
-
-    } x;
-      x:_DAP4_Checksum_CRC32 = "0xdfa7461b";
-
-
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_struct_nested.hdf5.raw {
+netcdf test_struct_nested.hdf5 {
   variables:
 
     Structure {

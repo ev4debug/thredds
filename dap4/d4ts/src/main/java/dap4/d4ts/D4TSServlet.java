@@ -104,7 +104,7 @@ public class D4TSServlet extends DapController
     doFavicon(String icopath, DapContext cxt)
             throws IOException
     {
-        DapRequest drq = this.daprequest;
+        DapRequest drq = (DapRequest)cxt.get(DapRequest.class);
         String favfile = getResourcePath(drq, icopath);
         if(favfile != null) {
             try (FileInputStream fav = new FileInputStream(favfile);) {
@@ -117,11 +117,9 @@ public class D4TSServlet extends DapController
 
     @Override
     protected void
-    doCapabilities(DapContext cxt)
+    doCapabilities(DapRequest drq, DapContext cxt)
             throws IOException
     {
-        DapRequest drq = this.daprequest;
-
         addCommonHeaders(drq);
 
         // Generate the front page

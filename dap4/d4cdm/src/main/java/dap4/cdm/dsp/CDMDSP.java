@@ -666,6 +666,7 @@ public class CDMDSP extends AbstractDSP
         // not the field
         DapVariable field = dmrfactory.newVariable(cdmvar.getShortName(), daptype);
         seq.addField(field);
+        field.setParent(seq);
         recordSeq(cdmvar, seq);
         return seq;
     }

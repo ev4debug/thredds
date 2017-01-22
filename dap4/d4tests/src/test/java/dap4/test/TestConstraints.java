@@ -28,7 +28,7 @@ public class TestConstraints extends DapTestCommon
     static final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
     static final String BASEEXTENSION = "raw.txt";
-    static final String TESTEXTENSION = "dap";
+    static final String TESTEXTENSION = ".raw";
 
     static final String DAP4TAG = "protocol=dap4";
 
@@ -149,6 +149,7 @@ public class TestConstraints extends DapTestCommon
             chosentests.add(locate1(7));
             prop_visual = true;
         } else {
+            prop_baseline = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }

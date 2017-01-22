@@ -112,10 +112,9 @@ public class Dap4Controller extends DapController
 
     @Override
     protected void
-    doCapabilities(DapContext cxt)
+    doCapabilities(DapRequest drq, DapContext cxt)
             throws IOException
     {
-        DapRequest drq = this.daprequest;
         addCommonHeaders(drq);
         OutputStream out = drq.getOutputStream();
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, DapUtil.UTF8));

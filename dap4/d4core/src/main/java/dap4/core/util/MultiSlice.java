@@ -102,6 +102,39 @@ public class MultiSlice extends Slice
         return buf.toString();
     }
 
+    /**
+     * Convert this multislice to a string
+     * suitable for use in a constraint
+     *
+     * @return constraint usable string
+     * @throws DapException
+     */
+    @Override
+    public String toConstraintString()
+            throws DapException
+    {
+        assert this.first != UNDEFINED && this.stride != UNDEFINED && this.stop != UNDEFINED;
+        StringBuilder buf = new StringBuilder();
+        buf.append("[");
+        boolean first = true;
+        for(Slice sub: this.subslices) {
+            if(!first) buf.append(",");
+            first = false;
+            if((sub.stop - sub.first) == 0) {
+                buf.append("0");
+            } else if(sub.stride == 1) {
+                if((sub.stop - sub.first) == 1)
+                    buf.append(sub.first);
+                else
+                    buf.append(String.format("%d:%d", sub.first, sub.stop - 1));
+            } else
+                buf.append(String.format("%d:%d:%d", sub.first, sub.stride, sub.stop - 1));
+        }
+        buf.append("]");
+        return buf.toString();
+    }
+
+
     @Override
     public Slice
     finish()

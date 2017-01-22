@@ -8,7 +8,7 @@ netcdf test_enum_array.4 {
       primary_cloud:_DAP4_Checksum_CRC32 = "0x04e840eb";
 
   // global attributes:
-  :_dap4.ce = "primary_cloud[1:2:4]";
+  :_dap4.ce = "/primary_cloud[1:2:4]";
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 primary_cloud =

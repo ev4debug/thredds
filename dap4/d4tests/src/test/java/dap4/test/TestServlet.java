@@ -35,9 +35,9 @@ import java.util.List;
 /**
  * TestServlet has multiple purposes.
  * 1. It tests the d4tsservlet.
- * 2. It (optionally) stores the serialized databuffer
+ * 2. It (optionally) stores the serialized raw databuffer
  * for datasets into files., These files are then used to
- * test client side deserialization.
+ * test client side deserialization (see TestCDMClient).
  */
 
 public class TestServlet extends DapTestCommon
@@ -167,6 +167,8 @@ public class TestServlet extends DapTestCommon
             prop_generate = false;
             prop_baseline = false;
         } else {
+            prop_baseline = false;
+            prop_generate = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }

@@ -4,7 +4,7 @@ netcdf test_one_vararray.1 {
       t:_DAP4_Checksum_CRC32 = "0xb6a88010";
 
   // global attributes:
-  :_dap4.ce = "t[1]";
+  :_dap4.ce = "/t[1]";
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 t =

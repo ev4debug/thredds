@@ -11,7 +11,7 @@ netcdf test_struct_array.6 {
 
 
   // global attributes:
-  :_dap4.ce = "s[0:2:3][0:1]";
+  :_dap4.ce = "/s[0:2:3][0:1]";
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =

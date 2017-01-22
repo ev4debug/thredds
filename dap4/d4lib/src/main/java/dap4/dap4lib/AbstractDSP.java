@@ -134,10 +134,8 @@ abstract public class AbstractDSP implements DSP
         this.context = context;
         // Extract some things from the context
         Object o = this.context.get(Dap4Util.DAP4ENDIANTAG);
-        if(o != null) {
-
-        }
-        setOrder((ByteOrder) o);
+        if(o != null)
+            setOrder((ByteOrder) o);
         o = this.context.get(Dap4Util.DAP4CSUMTAG);
         if(o != null)
             setChecksumMode(ChecksumMode.modeFor(o.toString()));

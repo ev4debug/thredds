@@ -9,10 +9,7 @@ import dap4.core.data.Constraint;
 import dap4.core.data.DataCursor;
 import dap4.core.dmr.*;
 import dap4.core.dmr.parser.ParseException;
-import dap4.core.util.DapException;
-import dap4.core.util.DapSort;
-import dap4.core.util.Index;
-import dap4.core.util.Slice;
+import dap4.core.util.*;
 
 import java.util.*;
 
@@ -435,6 +432,8 @@ public class CEConstraint implements Constraint
     //////////////////////////////////////////////////
     // Accessors
 
+    public boolean isUniversal() {return false;}
+
     public DapDataset
     getDMR()
     {
@@ -584,7 +583,8 @@ public class CEConstraint implements Constraint
         if(slices == null)
             dimset = new ArrayList<DapDimension>();
         else
-            assert dimset.size() == slices.size();
+            assert (dimset.size() == 0 && DapUtil.isScalarSlices(slices))
+                    || (dimset.size() == slices.size());
         for(int i = 0; i < dimset.size(); i++) {
             Slice slice = slices.get(i);
             DapDimension dim = dimset.get(i);

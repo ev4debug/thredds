@@ -1,39 +1,4 @@
-netcdf test_groups1.nc.raw {
-  dimensions:
-    dim1 = 5;
-
-  group: g {
-    dimensions:
-      dim2 = 3;
-
-    group: h {
-      dimensions:
-        dim3 = 7;
-      variables:
-        int v1(dim1);
-          v1:_DAP4_Checksum_CRC32 = "0x1d1d272c";
-
-        float v2(dim2);
-          v2:_DAP4_Checksum_CRC32 = "0x0fe72d43";
-
-    }
-
-    group: i {
-      dimensions:
-        dim3 = 7;
-      variables:
-        int v1(dim1);
-          v1:_DAP4_Checksum_CRC32 = "0xa9b4a0fb";
-
-        float v3(dim3);
-          v3:_DAP4_Checksum_CRC32 = "0x29f1e312";
-
-    }
-  }
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_groups1.nc.raw {
+netcdf test_groups1 {
   dimensions:
     dim1 = 5;
 

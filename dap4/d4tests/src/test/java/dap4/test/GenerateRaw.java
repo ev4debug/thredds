@@ -190,6 +190,12 @@ public class GenerateRaw extends DapTestCommon
             return this.ce;
         }
 
+        public boolean matches(String name)
+        {
+            String thisname = this.dataset + this.suffix;
+            return thisname.equals(name);
+        }
+
     }
 
     //////////////////////////////////////////////////
@@ -240,11 +246,12 @@ public class GenerateRaw extends DapTestCommon
     choosetests()
     {
         if(false) {
-            chosentests = locate("test_opaque");
+            chosentests = locate("test_vlen1.nc");
             //chosentests = locate(5);
             prop_visual = true;
             DapController.DUMPDMR = true;
         } else {
+            prop_generate = true;
             for(TestCase input : alltestcases) {
                 chosentests.add(input);
             }
@@ -271,9 +278,6 @@ public class GenerateRaw extends DapTestCommon
     doOne(TestCase tc)
             throws Exception
     {
-        if(tc.id == 5) {
-            int x = 0;
-        }
         String inputpath = tc.inputpath();
         String dappath;
         String dmrpath;
@@ -328,14 +332,14 @@ public class GenerateRaw extends DapTestCommon
         }
 
         // Dump the dap serialization into a file
-        if(GENERATE)
+        if(prop_generate || GENERATE)
             writefile(dappath, byteresult);
 
         // Dump the dmr into a file  by extracting from the dap serialization
         ByteArrayInputStream bytestream = new ByteArrayInputStream(byteresult);
         ChunkInputStream reader = new ChunkInputStream(bytestream, RequestMode.DAP, ByteOrder.nativeOrder());
         String sdmr = reader.readDMR(); // Read the DMR
-        if(GENERATE)
+        if(prop_generate || GENERATE)
             writefile(dmrpath, sdmr);
 
         if(prop_visual) {
@@ -439,7 +443,7 @@ public class GenerateRaw extends DapTestCommon
             }
         } else if(tag instanceof String) {
             for(TestCase ct : this.alltestcases) {
-                if(ct.dataset.equals((String) tag)) {
+                if(ct.matches((String) tag)) {
                     results.add(ct);
                     break;
                 }

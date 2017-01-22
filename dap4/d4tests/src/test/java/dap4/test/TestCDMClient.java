@@ -1,5 +1,6 @@
 package dap4.test;
 
+import com.sun.org.apache.xpath.internal.axes.ReverseAxesWalker;
 import dap4.core.util.DapUtil;
 import dap4.servlet.DapCache;
 import org.junit.Assert;
@@ -27,7 +28,8 @@ public class TestCDMClient extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static final String BASEEXTENSION = "txt";
+    static final String BASEEXTENSION = ".txt";
+    static final String INPUTEXTENSION = ".raw";
 
     static final String DAP4TAG = "#protocol=dap4";
 
@@ -61,6 +63,7 @@ public class TestCDMClient extends DapTestCommon
 
         private String title;
         private String dataset;
+        private String ext;
         private boolean checksumming;
         private String testpath;
         private String baselinepath;
@@ -73,7 +76,12 @@ public class TestCDMClient extends DapTestCommon
 
         TestCase(String url, boolean csum)
         {
-            this.title = dataset;
+            try {
+                URL u = new URL(url);
+                this.title = u.getPath();
+            } catch (MalformedURLException e) {
+                this.title = "unknown";
+            }
             this.checksumming = csum;
             this.url = url;
             try {
@@ -83,7 +91,9 @@ public class TestCDMClient extends DapTestCommon
                 assert i > 0;
                 this.dataset = this.testpath.substring(i + 1, this.testpath.length());
                 // strip off any raw extension
-                this.baselinepath = root + "/" + BASELINEDIR + "/" + this.dataset + "." + BASEEXTENSION;
+                if(this.dataset.endsWith(INPUTEXTENSION))
+                    this.dataset = this.dataset.substring(0,this.dataset.length() - INPUTEXTENSION.length());
+                this.baselinepath = root + "/" + BASELINEDIR + "/" + this.dataset + INPUTEXTENSION + BASEEXTENSION;
             } catch (MalformedURLException e) {
                 throw new IllegalArgumentException(url);
             }
@@ -138,11 +148,11 @@ public class TestCDMClient extends DapTestCommon
         DapCache.flush();
         testSetup();
         this.resourceroot = getResourceRoot();
-        System.err.println("resourceroot.1: "+this.resourceroot);
+        System.err.println("resourceroot.1: " + this.resourceroot);
         this.resourceroot = DapUtil.absolutize(this.resourceroot); // handle problem of windows paths
-        System.err.println("resourceroot.2: "+this.resourceroot);
+        System.err.println("resourceroot.2: " + this.resourceroot);
         String workspace = System.getenv("WORKSPACE");
-        System.err.println("WORKSPACE="+(workspace == null ? "null" : workspace));
+        System.err.println("WORKSPACE=" + (workspace == null ? "null" : workspace));
         System.err.flush();
         TestCase.setRoot(resourceroot);
         defineAllTestcases();
@@ -175,10 +185,11 @@ public class TestCDMClient extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("file:", "test_atomic_types.nc");
+            chosentests = locate("file:", "test_atomic_array.nc.5.raw");
             prop_visual = true;
             prop_baseline = false;
         } else {
+            prop_baseline = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }
@@ -188,7 +199,7 @@ public class TestCDMClient extends DapTestCommon
     void
     defineAllTestcases()
     {
-        System.err.printf("pwd=%s%n",System.getProperty("user.dir"));
+        System.err.printf("pwd=%s%n", System.getProperty("user.dir"));
         List<String> matches = new ArrayList<>();
         String dir = TestCase.getRoot() + "/" + TESTCDMINPUT;
         TestFilter.filterfiles(dir, matches, "raw");
@@ -201,29 +212,31 @@ public class TestCDMClient extends DapTestCommon
                 }
             }
             if(!excluded) {
-                System.err.println("testcase.file="+f); System.err.flush();
-                add("file:/" + f);
+                System.err.println("testcase.file=" + f);
+                System.err.flush();
+                add(f);
             }
         }
     }
 
     protected void
-    add(String url)
+    add(String path)
     {
+        File f = new File(path);
+        if(!f.exists())
+            System.err.println("Non existent file test case: " + path);
+        else if(!f.canRead())
+            System.err.println("Unreadable file test case: " + path);
+        String ext = path.substring(path.lastIndexOf('.'), path.length());
+        String url = "file://"+path;
         try {
             URL u = new URL(url);
-            System.err.println("file test case: " + u.getPath());
-            File f = new File(u.getPath());
-            if(!f.exists())
-                System.err.println("Non existent file test case: " + f.getAbsolutePath());
-            else if(!f.canRead())
-                System.err.println("Unreadable file test case: " + f.getAbsolutePath());
+            System.err.printf("Testcase: add: %s  path=%s%n",u.toString(),u.getPath());
         } catch (MalformedURLException e) {
             System.err.println("Malformed file test case: " + url);
         }
-        String ext = url.substring(url.lastIndexOf('.'), url.length());
         TestCase tc = new TestCase(url);
-        for(TestCase t : this.alltestcases) {
+        for(TestCase t: this.alltestcases) {
             assert !t.getURL().equals(tc.getURL()) : "Duplicate TestCases: " + t;
         }
         this.alltestcases.add(tc);
@@ -250,7 +263,6 @@ public class TestCDMClient extends DapTestCommon
         System.err.println("Testcase: " + testcase.getURL());
         System.err.println("Baseline: " + testcase.getBaseline());
 
-        String datasetname = testcase.getDataset();
         NetcdfDataset ncfile;
         try {
             ncfile = openDataset(testcase.getURL());
@@ -260,22 +272,21 @@ public class TestCDMClient extends DapTestCommon
         }
         assert ncfile != null;
 
-        String metadata = dumpmetadata(ncfile, datasetname);
+        String datasetname = testcase.getDataset();
         String data = dumpdata(ncfile, datasetname);
-        String testoutput = metadata + data;
 
-        if(prop_visual)
-            visual(testcase.getTitle() + ".dap", testoutput);
-
+        if(prop_visual) {
+            visual(testcase.getTitle() + ".dap", data);
+        }
         String baselinefile = testcase.getBaseline();
 
         if(prop_baseline)
-            writefile(baselinefile, testoutput);
+            writefile(baselinefile, data);
         else if(prop_diff) { //compare with baseline
             // Read the baseline file(s)
             String baselinecontent = readfile(baselinefile);
             System.err.println("Comparison: vs " + baselinefile);
-            Assert.assertTrue("*** FAIL", same(getTitle(), baselinecontent, testoutput));
+            Assert.assertTrue("*** FAIL", same(getTitle(), baselinecontent, data));
         }
     }
 

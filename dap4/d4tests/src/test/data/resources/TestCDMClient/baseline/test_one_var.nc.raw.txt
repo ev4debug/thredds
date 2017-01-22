@@ -1,12 +1,4 @@
-netcdf test_one_var.nc.raw {
-  variables:
-    int t;
-      t:_DAP4_Checksum_CRC32 = "0xc9e1efe6";
-
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_one_var.nc.raw {
+netcdf test_one_var {
   variables:
     int t;
       t:_DAP4_Checksum_CRC32 = "0xc9e1efe6";

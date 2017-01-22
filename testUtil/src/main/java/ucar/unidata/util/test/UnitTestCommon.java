@@ -44,7 +44,7 @@ abstract public class UnitTestCommon
     static protected String threddsServer = null;
 
     static {
-        // Compute the root path
+        // Compute the root pathg
         threddsroot = locateThreddsRoot();
         assert threddsroot != null : "Cannot locate /thredds parent dir";
         threddsServer = TestDir.remoteTestServer;
@@ -67,7 +67,16 @@ abstract public class UnitTestCommon
         // Walk up the user.dir path looking for a node that has
         // all the directories in SUBROOTS.
 
-        String path = System.getProperty("user.dir");
+        // It appears that under Jenkins, the Java property "user.dir" is
+        // set incorrectly for our purposes. In this case, we want
+        // to use the WORKSPACE environment variable set by Jenkins.
+        String workspace = System.getenv("WORKSPACE");
+        System.err.println("WORKSPACE=" + (workspace == null ? "null" : workspace));
+        System.err.flush();
+
+        String userdir = System.getProperty("user.dir");
+
+        String path = (workspace != null ? workspace : userdir); // Pick one
 
         // clean up the path
         path = path.replace('\\', '/'); // only use forward slash

@@ -40,6 +40,9 @@ public class Universal extends CEConstraint
     //////////////////////////////////////////////////
     // API
 
+    @Override
+    public boolean isUniversal() {return true;}
+
     /**
      * Finish creating this Constraint; for Universal,
      * this does nothing; the important stuff is in build().

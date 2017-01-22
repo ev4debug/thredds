@@ -29,8 +29,11 @@ import java.util.List;
 
 
 /**
- * TestServlet test server side
- * constraint processing.
+ * TestServletConstraints has multiple purposes.
+  * 1. It tests the d4tsservlet ability to serve up constrained data.
+  * 2. It (optionally) stores the serialized raw databuffer
+  * for datasets into files., These files are then used to
+  * test client side deserialization (see TestCDMClient).
  */
 
 
@@ -187,12 +190,20 @@ public class TestServletConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate(6);
+            if(false) {
+                chosentests = locate(8);
+            } else {
+                List<TestCase> choose1 = locate(8);
+                chosentests = locate(5);
+                chosentests.addAll(choose1);
+            }
             prop_visual = true;
             prop_debug = false;
             prop_generate = false;
-            prop_baseline = false;
+            prop_baseline = true;
         } else {
+            prop_baseline = false;
+            prop_generate = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }

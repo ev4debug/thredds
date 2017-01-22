@@ -1,19 +1,4 @@
-netcdf test_struct_type.nc.raw {
-  variables:
-
-    Structure {
-      int x;
-        x:_CoordinateAxisType = "GeoX";
-      int y;
-        y:_CoordinateAxisType = "GeoY";
-    } s;
-      s:_DAP4_Checksum_CRC32 = "0xcf8f9871";
-
-
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_struct_type.nc.raw {
+netcdf test_struct_type {
   variables:
 
     Structure {
