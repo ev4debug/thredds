@@ -38,7 +38,7 @@ import java.util.List;
 public class TestDSP extends DapTestCommon
 {
     static final boolean DEBUG = false;
-    static final boolean SHOWTESTCASES = true;
+    static final boolean SHOWTESTCASES = false;
 
     static final String BASEEXTENSION = "txt";
 
@@ -239,6 +239,7 @@ public class TestDSP extends DapTestCommon
             prop_visual = true;
             prop_baseline = false;
         } else {
+            prop_baseline = false;
             for(TestCase tc : alltestcases) {
                 if(DEBUG)
                     System.err.printf("Test case: %s%n", tc.dataset);
@@ -253,8 +254,10 @@ public class TestDSP extends DapTestCommon
         List<String> matches = new ArrayList<>();
         String dir = TestCase.root + "/" + TESTCDMINPUT;
         TestFilter.filterfiles(dir, matches, "raw");
-        dir = TestCase.root + "/" + TESTFILESINPUT;
-        TestFilter.filterfiles(dir, matches, "nc", "syn");
+        if(false) {
+            dir = TestCase.root + "/" + TESTFILESINPUT;
+            TestFilter.filterfiles(dir, matches, "nc", "syn");
+        }
         for(String f : matches) {
             boolean excluded = false;
             for(String x: EXCLUDEDFILETESTS) {

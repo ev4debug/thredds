@@ -9,7 +9,7 @@
         <Dim name="/d2"/>
     </Int32>
     <Attribute name="_dap4.ce" type="String">
-        <Value value="/t[1]"/>
+        <Value value="/t[0:1]"/>
     </Attribute>
 </Dataset>
 /t[0] = 17
