@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_struct_type.nc"
          dapVersion="4.0"
@@ -9,6 +10,8 @@
         <Int32 name="y"/>
     </Structure>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /s = {
     /s.x = 1
     /s.y = -2

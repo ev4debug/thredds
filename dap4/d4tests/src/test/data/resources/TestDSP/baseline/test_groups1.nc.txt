@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_groups1.nc"
          dapVersion="4.0"
@@ -27,6 +28,8 @@
         </Group>
     </Group>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /g/h/v1[0] = -876354855
 /g/h/v1[1] = -1761252264
 /g/h/v1[2] = 1723477387

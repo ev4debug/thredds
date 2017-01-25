@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_struct_nested.hdf5"
          dapVersion="4.0"
@@ -15,6 +16,8 @@
         </Structure>
     </Structure>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /x = {
     /x.field1 =     {
         /x.field1.x = 1

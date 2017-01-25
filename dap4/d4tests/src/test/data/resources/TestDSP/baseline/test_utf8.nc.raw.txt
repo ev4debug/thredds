@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_utf8.nc"
          dapVersion="4.0"
@@ -9,6 +10,8 @@
         <Dim name="/d2"/>
     </String>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /vs[0] = "Καλημέα"
 /vs[1] = "abc"
 

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_sequence_2.syn"
          dapVersion="4.0"
@@ -11,6 +12,8 @@
         <Dim size="2"/>
     </Sequence>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /s[0] = {
     [
         /s.i1 = -920699049

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_opaque_array.nc"
          dapVersion="4.0"
@@ -10,6 +11,8 @@
         <Dim name="/d2"/>
     </Opaque>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /vo2[0,0] = 0x0123456789ABCDEF
 /vo2[0,1] = 0xABCDEF0000000000
 /vo2[1,0] = 0xFEDCBA9876543210

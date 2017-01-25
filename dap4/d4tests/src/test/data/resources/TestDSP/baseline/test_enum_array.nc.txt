@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_enum_array.nc"
          dapVersion="4.0"
@@ -26,6 +27,8 @@
         </Attribute>
     </Enum>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /primary_cloud[0] = Clear
 /primary_cloud[1] = Stratus
 /primary_cloud[2] = Clear

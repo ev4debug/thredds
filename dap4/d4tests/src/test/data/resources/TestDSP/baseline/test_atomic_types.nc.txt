@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <Dataset
          name="test_atomic_types.nc"
          dapVersion="4.0"
@@ -42,6 +43,8 @@
         </Attribute>
     </Enum>
 </Dataset>
+=======
+>>>>>>> Stashed changes
 /v8 = -128
 /vu8 = 255
 /v16 = -32768
