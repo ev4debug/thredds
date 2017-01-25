@@ -1,4 +1,4 @@
-netcdf test_struct_array.6 {
+netcdf test_struct_array.nc.6 {
   variables:
 
     Structure {

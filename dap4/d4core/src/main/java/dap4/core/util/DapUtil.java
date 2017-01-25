@@ -817,7 +817,7 @@ abstract public class DapUtil // Should only contain static methods
     static public boolean
     isScalarSlices(List<Slice> slices)
     {
-        if(slices == null || slices.size() > 1) return false;
+        if(slices == null || slices.size() != 1) return false;
         Slice s = slices.get(0);
         return (s.getFirst() == 0 && s.getStop() == 1);
     }

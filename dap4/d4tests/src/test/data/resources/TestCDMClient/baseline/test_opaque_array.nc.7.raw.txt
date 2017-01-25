@@ -1,10 +1,10 @@
-netcdf test_opaque_array.7 {
+netcdf test_opaque_array.nc.7 {
   variables:
     opaque vo2(1, 2);
-      vo2:_DAP4_Checksum_CRC32 = "0x3f3fa5d4";
+      vo2:_DAP4_Checksum_CRC32 = "0xcca386bf";
 
   // global attributes:
-  :_dap4.ce = "/vo2[1][0,0]";
+  :_dap4.ce = "/vo2[1][0:1]";
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vo2 =  0xfedcba9876543210,

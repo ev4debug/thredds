@@ -34,6 +34,9 @@ public class ChunkWriter extends OutputStream
 
     static public final byte[] CRLF8 = DapUtil.extract(DapUtil.UTF8.encode(DapUtil.CRLF));
 
+    static public final String XMLDOCUMENTHEADER
+              = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+
     //////////////////////////////////////////////////
     // Type declarations
 
@@ -147,6 +150,9 @@ public class ChunkWriter extends OutputStream
 
         dsr = dsr.substring(0, len) + DapUtil.CRLF;
 
+        // Add <?xml...?> prefix
+        dsr = XMLDOCUMENTHEADER + "\n" + dsr;
+
         // Convert the dsr to UTF-8 and then to byte[]
         byte[] dsr8 = DapUtil.extract(DapUtil.UTF8.encode(dsr));
         sendDXR(dsr8);
@@ -184,6 +190,9 @@ public class ChunkWriter extends OutputStream
             throw new DapException("Attempt to write empty DMR");
 
         dmr = dmr.substring(0, len) + DapUtil.CRLF;
+
+        // Prepend the <?xml...?> prefix
+        dmr = XMLDOCUMENTHEADER + "\n" + dmr;
 
         // Convert the dmr to UTF-8 and then to byte[]
         this.dmr8 = DapUtil.extract(DapUtil.UTF8.encode(dmr));

@@ -1,4 +1,4 @@
-netcdf test_one_vararray.1 {
+netcdf test_one_vararray.nc.1 {
   variables:
     int t(1);
       t:_DAP4_Checksum_CRC32 = "0xb6a88010";

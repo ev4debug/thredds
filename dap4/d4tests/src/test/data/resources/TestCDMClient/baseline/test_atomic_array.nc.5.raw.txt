@@ -1,4 +1,4 @@
-netcdf test_atomic_array.5 {
+netcdf test_atomic_array.nc.5 {
   variables:
     ubyte vu8(1, 2);
       vu8:_DAP4_Checksum_CRC32 = "0x1a9eb5b3";

@@ -99,7 +99,7 @@ public class TestParserCE extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate(9);
+            chosentests = locate(7);
             assert chosentests.size() > 0 : "Not tests chosen";
         } else {
             for(TestSet tc : alltestsets) {
@@ -137,7 +137,7 @@ public class TestParserCE extends DapTestCommon
         alltestsets.add(new TestSet(6, CE1_DMR, "/s[0:3][0:2].x;/s[0:3][0:2].y", "/s[0:3][0:2]"));
         alltestsets.add(new TestSet(7, CE1_DMR, "/seq|i1<0", "/seq|i1<0"));
         alltestsets.add(new TestSet(8, CE1_DMR, "/seq|0<i1<10", "/seq|i1>0,i1<10"));
-        alltestsets.add(new TestSet(9, CE2_DMR, "vo[1:1][0,0]", "/vo[1][0]"));
+        alltestsets.add(new TestSet(9, CE2_DMR, "vo[1:1][0,0]", "/vo[1][0,0]"));
     }
 
     //////////////////////////////////////////////////

@@ -1,4 +1,4 @@
-netcdf test_anon_dim.2 {
+netcdf test_anon_dim.syn.2 {
   variables:
     int vu32(4);
       vu32:_DAP4_Checksum_CRC32 = "0x417bc794";
