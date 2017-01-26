@@ -571,9 +571,6 @@ abstract public class UnitTestCommon
             int index = path.lastIndexOf("/");
             if(index < 0) index = 0;
             if(index > 0) path.delete(0, index + 1);
-            index = path.lastIndexOf(".");
-            if(index >= 0)
-                path.delete(index, path.length());
             if(suffix != null) {
                 path.append('.');
                 path.append(suffix);

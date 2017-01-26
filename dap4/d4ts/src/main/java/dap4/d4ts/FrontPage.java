@@ -23,7 +23,7 @@ import java.util.List;
 public class FrontPage
 {
 
-    static final boolean DUMPFILELIST = true;
+    static final boolean DUMPFILELIST = false;
 
     //////////////////////////////////////////////////
     // Constants
@@ -203,7 +203,6 @@ public class FrontPage
                                 urlpath,
                                 urlpath,
                                 urlpath,
-                                urlpath,
                                 urlpath
                         );
                         html.append(line);
@@ -296,11 +295,10 @@ public class FrontPage
     static final String HTML_FORMAT =
             "<tr>%n"
                     + "<td halign='right'><b>%s:</b></td>%n"
-                    + "<td halign='center'><a href='%s.dmr.txt'> DMR (TEXT) </a></div></td>%n"
                     + "<td halign='center'><a href='%s.dmr.xml'> DMR (XML) </a></div></td>%n"
                     + "<td halign='center'><a href='%s.dap'> DAP </a></div></td>%n"
                     + "<td halign='center'><a href='%s.dap.txt'> DAP (TEXT) </a></div></td>%n"
-                    + "<td halign='center'><a href='%s.dsr'> DSR </a></div></td>%n"
+                    + "<td halign='center'><a href='%s.dsr.xml'> DSR (XML) </a></div></td>%n"
                     + "</tr>%n";
 }
 

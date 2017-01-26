@@ -29,8 +29,7 @@ public class TestFrontPage extends DapTestCommon
 
     static protected final String RESOURCEPATH = "/src/test/data/resources"; // wrt getTestInputFilesDir
     static protected final String TESTINPUTDIR = "/testfiles";
-    static protected final String BASELINEDIR = "/TestServlet/baseline";
-    static protected final String GENERATEDIR = "/TestCDMClient/testinput";
+    static protected final String BASELINEDIR = "/TestFrontPage/baseline";
 /*
     static protected String DATADIR = "src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources/";

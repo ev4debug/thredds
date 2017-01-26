@@ -35,7 +35,7 @@ public class TestConstraints extends DapTestCommon
     static protected final String SERVLETPATH = "d4ts";
     static protected final String RESOURCEPATH = "/src/test/data/resources";
     static protected final String TESTINPUTPATH = "/testfiles";
-    static protected final String BASELINEDIR = "/TestCDMClient/baseline";
+    static protected final String BASELINEDIR = "/TestConstraints/baseline";
 
     //////////////////////////////////////////////////
     // Type Declarations
@@ -149,7 +149,7 @@ public class TestConstraints extends DapTestCommon
             chosentests.add(locate1(7));
             prop_visual = true;
         } else {
-            prop_baseline = false;
+            prop_baseline = true;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }

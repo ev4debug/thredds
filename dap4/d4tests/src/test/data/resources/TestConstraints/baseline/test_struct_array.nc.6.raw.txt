@@ -3,16 +3,16 @@ netcdf test_struct_array.nc.6 {
 
     Structure {
       int x;
-        x:_CoordinateAxisType = "GeoX";
+        String x:_CoordinateAxisType = "GeoX";
       int y;
-        y:_CoordinateAxisType = "GeoY";
+        String y:_CoordinateAxisType = "GeoY";
     } s(2, 2);
       s:_DAP4_Checksum_CRC32 = "0x324d0ea6";
 
 
   // global attributes:
-  :_dap4.ce = "/s[0:2:3][0:1]";
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  String :_dap4.ce = "/s[0:2:3][0:1]";
+  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =
   {

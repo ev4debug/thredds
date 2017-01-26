@@ -271,6 +271,7 @@ public class Attribute extends CDMNode
    *
    * @param f      write into this
    * @param strict if true, create strict CDL, escaping names
+   *               and providing the basetype explicitly
    */
   protected void writeCDL(Formatter f, boolean strict) {
     f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
