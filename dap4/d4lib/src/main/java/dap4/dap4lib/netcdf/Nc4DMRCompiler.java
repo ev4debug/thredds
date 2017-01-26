@@ -295,6 +295,9 @@ public class Nc4DMRCompiler
         errcheck(ret = nc4.nc_inq_compound(ti.gid, ti.id, namep, sizep, nfieldsp));
         ti.setSize(sizep.longValue());
         assert len == sizep.longValue();
+        assert name.equals(Nc4DSP.makeString(namep));
+        // Add the netcdf4 name as an xml attribute.
+        ds.addXMLAttribute(UCARTAGORIGTYPE,name);
     }
 
     protected void

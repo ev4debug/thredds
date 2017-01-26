@@ -51,6 +51,7 @@ abstract public class AbstractDSP implements DSP
     static public final String UCARTAGVLEN = "_edu.ucar.isvlen";
     static public final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
     static public final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
+    static public final String UCARTAGUNLIMITED = "_edu.ucar.isunlimited";
 
 
     protected DapContext context = null;

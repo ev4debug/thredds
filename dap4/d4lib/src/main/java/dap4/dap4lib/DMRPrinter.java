@@ -212,7 +212,7 @@ public class DMRPrinter
             printer.marginPrint("<" + dmrname);
             printXMLAttributes(node, ce, NILFLAGS);
             if(dim.isUnlimited())
-                printXMLAttribute("unlimited", "1", NILFLAGS);
+                printXMLAttribute(AbstractDSP.UCARTAGUNLIMITED, "1", NILFLAGS);
             if(hasMetadata(node)) {
                 printer.println(">");
                 printMetadata(node);

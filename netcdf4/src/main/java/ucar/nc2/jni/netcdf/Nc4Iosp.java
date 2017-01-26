@@ -87,6 +87,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public final String TRANSLATE_NC4 = "nc4";
 
   // Define reserved attributes   (see Nc4DSP)
+  //static public final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
   static public final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
   // Not yet implemented
   static public final String UCARTAGVLEN = "_edu.ucar.isvlen";
