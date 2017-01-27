@@ -6,12 +6,12 @@ netcdf test_enum_2 {
   group: h {
     variables:
       enum cloud_class_t primary_cloud;
-        primary_cloud:_FillValue = "Missing";
-        primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
+        String primary_cloud:_FillValue = "Missing";
+        String primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
   }
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 h/primary_cloud =2
 }

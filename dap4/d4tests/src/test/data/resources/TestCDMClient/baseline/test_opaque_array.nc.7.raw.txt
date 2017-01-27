@@ -1,0 +1,13 @@
+netcdf test_opaque_array.nc.7 {
+  variables:
+    opaque vo2(1, 2);
+      String vo2:_DAP4_Checksum_CRC32 = "0xcca386bf";
+
+  // global attributes:
+  String :_dap4.ce = "/vo2[1][0:1]";
+  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+vo2 =  0xfedcba9876543210,
+  0xfedcba9876543210;
+
+}

@@ -1,4 +1,4 @@
-netcdf test_one_vararray {
+netcdf test_one_vararray.nc.3 {
   dimensions:
     d2 = 2;
   variables:
@@ -6,6 +6,7 @@ netcdf test_one_vararray {
       String t:_DAP4_Checksum_CRC32 = "0x42dfb1d0";
 
   // global attributes:
+  String :_dap4.ce = "/t[0:1]";
   String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 t =

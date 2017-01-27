@@ -183,7 +183,7 @@ public class TestCDMClient extends DapTestCommon
             prop_visual = true;
             prop_baseline = false;
         } else {
-            prop_baseline = true;
+            prop_baseline = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }

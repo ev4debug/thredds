@@ -149,7 +149,7 @@ public class TestConstraints extends DapTestCommon
             chosentests.add(locate1(7));
             prop_visual = true;
         } else {
-            prop_baseline = true;
+            prop_baseline = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }
