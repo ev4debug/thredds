@@ -55,8 +55,9 @@ public enum DataType {
   DOUBLE("double", 8, double.class, false),
 
   // object types
-  SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
   STRING("String", 4, String.class, false),     // 32-bit index
+
+  SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
   STRUCTURE("Structure", 1, StructureData.class, false), // size meaningless
 
   ENUM1("enum1", 1, byte.class, false), // byte

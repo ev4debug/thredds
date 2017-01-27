@@ -6,14 +6,14 @@ netcdf test_struct_array {
 
     Structure {
       int x;
-        x:_CoordinateAxisType = "GeoX";
+        string x:_CoordinateAxisType = "GeoX";
       int y;
-        y:_CoordinateAxisType = "GeoY";
+        string y:_CoordinateAxisType = "GeoY";
     } s(dx, dy);
 
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =
   {

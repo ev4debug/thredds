@@ -115,6 +115,7 @@ public class TestNc4Iosp extends DapTestCommon
             prop_debug = true;
             //chosentests.add(new Nc4IospTest("test_test.nc"));
         } else {
+            prop_baseline = false;
             for(Nc4IospTest tc : alltestcases) {
                 chosentests.add(tc);
             }

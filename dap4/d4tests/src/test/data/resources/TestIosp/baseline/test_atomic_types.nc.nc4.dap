@@ -30,13 +30,13 @@ netcdf test_atomic_types {
     opaque vo;
 
     enum cloud_class_t primary_cloud;
-      primary_cloud:_FillValue = "Missing";
+      string primary_cloud:_FillValue = "Missing";
 
     enum cloud_class_t secondary_cloud;
-      secondary_cloud:_FillValue = "Missing";
+      string secondary_cloud:_FillValue = "Missing";
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 v8 =-128
 vu8 =255

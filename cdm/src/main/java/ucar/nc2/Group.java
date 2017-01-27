@@ -433,8 +433,9 @@ public class Group extends CDMNode implements AttributeContainer {
           out.format("%s", indent);
           if(strict && att.getDataType() == DataType.STRING) {
             // Force type explicitly for string.
-            out.format("%s ", NetcdfFile.makeValidCDLName(att.getDataType().toString()));
+            out.format("string "); // note lower case
           }
+          // TODO: fix the case where the type is an enum to use the actual enum typedef
           out.format(":");
           att.writeCDL(out, strict);
           out.format(";");

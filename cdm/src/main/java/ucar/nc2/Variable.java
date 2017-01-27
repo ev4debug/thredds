@@ -1043,8 +1043,9 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
       buf.format("%s", indent);
       if(strict && att.getDataType() == DataType.STRING) {
         // Force type explicitly for string.
-        buf.format("%s ", NetcdfFile.makeValidCDLName(att.getDataType().toString()));
+        buf.format("string "); //note lower case
       }
+      // TODO: fix the case where the type is an enum to use the actual enum typedef
       if (strict) // Add the enclosing variable name
         buf.format(NetcdfFile.makeValidCDLName(getShortName()));
       buf.format(":");

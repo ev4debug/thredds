@@ -7,5 +7,5 @@ netcdf test_vlen3 {
 
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

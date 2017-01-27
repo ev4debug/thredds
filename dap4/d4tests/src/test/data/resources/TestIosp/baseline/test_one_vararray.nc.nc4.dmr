@@ -5,5 +5,5 @@ netcdf test_one_vararray {
     int t(d2);
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

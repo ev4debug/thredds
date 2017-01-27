@@ -4,8 +4,8 @@ netcdf test_enum {
 
   variables:
     enum cloud_class_t primary_cloud;
-      primary_cloud:_FillValue = "Missing";
+      string primary_cloud:_FillValue = "Missing";
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }
