@@ -162,10 +162,10 @@ public class TestByteRange extends UnitTestCommon
                     + "\n"
                     + "    int grid_number(nav, ngrids);\n"
                     + "      string grid_number:long_name = \"GRIB-1 catalogued grid numbers\";\n"
-                    + "      string grid_number:_FillValue = -9999;\n"
+                    + "      grid_number:_FillValue = -9999;\n"
                     + "\n"
                     + "    char x_dim(nav, nav_len);\n"
-                    + "      x_dim:long_name = \"x dimension name\";\n"
+                    + "      string x_dim:long_name = \"x dimension name\";\n"
                     + "\n"
                     + "    char y_dim(nav, nav_len);\n"
                     + "      string y_dim:long_name = \"y dimension name\";\n"
@@ -205,7 +205,7 @@ public class TestByteRange extends UnitTestCommon
                     + "    float Z_sfc(record, y, x);\n"
                     + "      string Z_sfc:long_name = \"Geopotential height, gpm\";\n"
                     + "      string Z_sfc:units = \"gp m\";\n"
-                    + "      string Z_sfc:_FillValue = -9999.0f;\n"
+                    + "      Z_sfc:_FillValue = -9999.0f;\n"
                     + "      string Z_sfc:navigation = \"nav\";\n"
                     + "\n"
                     + "  // global attributes:\n"
@@ -213,7 +213,7 @@ public class TestByteRange extends UnitTestCommon
                     + "  string :history = \"2003-09-25 16:09:26 - created by gribtocdl 1.4 - 12.12.2002\";\n"
                     + "  string :title = \"CMC_reg_HGT_SFC_0_ps60km_2003092500_P000.grib\";\n"
                     + "  string :Conventions = \"NUWG\";\n"
-                    + "  string :version = 0.0;\n"
+                    + "  :version = 0.0;\n"
                     + "}\n";
 
 }
