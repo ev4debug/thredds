@@ -977,7 +977,7 @@ public class H5header {
       if (dtype == DataType.CHAR)
         return new Attribute(matt.name, ""); // empty char considered to be a 0 length string
       else
-        return new Attribute(matt.name, dtype);
+        return new Attribute(matt.name, dtype, null);
     }
 
     //if (matt.name.equals("DIMENSION_LIST"))
@@ -986,7 +986,6 @@ public class H5header {
     Array attData;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
-
     } catch (InvalidRangeException e) {
       log.warn("failed to read Attribute " + matt.name + " HDF5 file=" + raf.getLocation());
       return null;
@@ -1000,7 +999,7 @@ public class H5header {
         while (nested.hasNext())
           dataList.add(nested.next());
       }
-      result = new Attribute(matt.name, dataList, matt.mdt.unsigned);
+      result = new Attribute(matt.name, null, null, dataList, matt.mdt.unsigned);
 
     } else {
       result = new Attribute(matt.name, attData);
@@ -1462,7 +1461,7 @@ public class H5header {
         List<Integer> chunksize = new ArrayList<>();
         for (int i = 0; i < vinfo.storageSize.length - 1; i++)  // skip last one - its the element size
           chunksize.add(vinfo.storageSize[i]);
-        v.addAttribute(new Attribute(CDM.CHUNK_SIZES, chunksize, true));
+        v.addAttribute(new Attribute(CDM.CHUNK_SIZES, DataType.INT, null,chunksize, true));
       }
     }
 

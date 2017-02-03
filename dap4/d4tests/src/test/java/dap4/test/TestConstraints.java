@@ -5,6 +5,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -21,6 +23,8 @@ import java.util.List;
 public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
+
+    static final public boolean DEBUGSERVER = true;
 
     //////////////////////////////////////////////////
     // Constants
@@ -131,6 +135,8 @@ public class TestConstraints extends DapTestCommon
         if(root == null)
             throw new Exception("dap4 root cannot be located");
         testSetup();
+        if(DEBUGSERVER)
+            HTTPMethod.TESTEXECUTOR = new MockExecutor(getResourceRoot());
         TestCase.setRoots(
                 SERVLETPATH,
                 canonjoin(getResourceRoot(), BASELINEDIR),
@@ -145,8 +151,8 @@ public class TestConstraints extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
-            chosentests.add(locate1(7));
+        if(true) {
+            chosentests.add(locate1(4));
             prop_visual = true;
         } else {
             prop_baseline = false;

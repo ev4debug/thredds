@@ -282,13 +282,13 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
         switch (attr.getSort()) {
         case ATTRIBUTE:
             SaxEvent atype = pull(description, "type");
-            SaxEvent value = pull(description, "value");
             String typename = (atype == null ? "Int32" : atype.value);
             if("Byte".equalsIgnoreCase(typename)) typename = "UInt8";
-            DapType basetype = DapType.reify(typename);
+            DapType basetype = (DapType)root.lookup(typename,DapSort.ENUMERATION,DapSort.ATOMICTYPE);
             if(basetype != attr.getBaseType())
                 throw new ParseException("Attribute: DATA DMR: Attempt to change attribute type: " + typename);
             attr.clearValues();
+            SaxEvent value = pull(description, "value");
             if(value != null)
                 attr.setValues(new Object[]{value.value});
             break;
@@ -306,21 +306,13 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
             throws DapException
     {
         SaxEvent name = pull(attrs, "name");
-        SaxEvent atype = pull(attrs, "type");
-        SaxEvent isenum = pull(attrs, "enum");
-        if(false) { // if enable, then allow <Attribute type="..." value="..."/>
-            SaxEvent value = pull(attrs, "value");
-        }
         if(isempty(name))
             throw new ParseException("Attribute: Empty attribute name");
-        String typename;
-        if(isenum != null) {
-            typename = isenum.value;
-        } else {
-            typename = (atype == null ? "Int32" : atype.value);
-        }
+        String attrname = name.value;
+        SaxEvent atype = pull(attrs, "type");
+        String typename = (atype == null ? "Int32" : atype.value);
         if("Byte".equalsIgnoreCase(typename)) typename = "UInt8";
-        DapType basetype = DapType.reify(typename);
+        DapType basetype = (DapType)root.lookup(typename,DapSort.ENUMERATION,DapSort.ATOMICTYPE);
         if(basetype == null || !islegalattributetype(basetype))
             throw new ParseException("Attribute: Invalid attribute type: " + typename);
         List<String> hreflist = convertNamespaceList(nslist);
@@ -510,8 +502,7 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
             } else {
                 String typename = basetype.value;
                 if("Byte".equalsIgnoreCase(typename)) typename = "UInt8";
-                basedaptype = DapType.reify(typename);
-                basedaptype.toString();
+                basedaptype = (DapType)this.root.lookup(typename,DapSort.ATOMICTYPE);
                 if(basedaptype == null || !islegalenumtype(basedaptype))
                     throw new ParseException("Enumdef: Invalid Enum Declaration Type name: " + basetype.value);
             }
@@ -669,7 +660,8 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
                 throw new ParseException("Atomicvariable: Empty dimension reference name");
             String typename = open.name;
             if("Byte".equals(typename)) typename = "UInt8"; // special case
-            DapType basetype = DapType.reify(typename);
+            DapType basetype = (DapType)this.root.lookup(typename,
+                    DapSort.ENUMERATION, DapSort.ATOMICTYPE);
             if(basetype == null)
                 throw new ParseException("AtomicVariable: Illegal type: " + open.name);
             DapVariable var = null;

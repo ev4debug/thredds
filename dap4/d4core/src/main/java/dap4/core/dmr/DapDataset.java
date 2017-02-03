@@ -193,6 +193,8 @@ public class DapDataset extends DapGroup
         return this.visiblenodes;
     }
 
+    public List<DapVariable> getTopVariables() { return this.topvariables;}
+
     public void addNode(DapNode newnode)
     {
         if(nodelist == null)
@@ -217,39 +219,6 @@ public class DapDataset extends DapGroup
     public DapIterator getIterator(EnumSet<DapSort> sortset)
     {
         return new DapIterator(visiblenodes, sortset);
-    }
-
-
-    // Node subset accessors
-
-    public List<DapVariable>
-    getTopVariables()
-    {
-        return this.topvariables;
-    }
-
-    public List<DapVariable>
-    getAllVariables()
-    {
-        return this.allvariables;
-    }
-
-    public List<DapGroup>
-    getAllGroups()
-    {
-        return this.groups;
-    }
-
-    public List<DapEnumeration>
-    getAllEnums()
-    {
-        return this.enums;
-    }
-
-    public List<DapDimension>
-    getAllDimensions()
-    {
-        return this.dimensions;
     }
 
     //////////////////////////////////////////////////
@@ -282,9 +251,18 @@ public class DapDataset extends DapGroup
         if("".equals(fqn) || "/".equals(fqn)) {
             return this;
         }
-        if(fqn.charAt(0) != '/')
-            return null;
-        fqn = fqn.substring(1); // remove leading /
+        if(fqn.charAt(0) == '/')
+            fqn = fqn.substring(1); // remove leading /
+        //Check first for an atomic type
+        TypeSort ts = TypeSort.getTypeSort(fqn);
+        if(ts != null && ts.isAtomic()) {
+            // see if we are looking for an atomic type
+            for(DapSort ds: sortset) {
+                if(ds == DapSort.ATOMICTYPE)
+                    return DapType.lookup(ts);
+            }
+        }
+
         // Do not use split to be able to look for escaped '/'
         // Warning: elements of path are unescaped
         List<String> path = DapUtil.backslashSplit(fqn, '/');

@@ -40,6 +40,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.message.BasicHttpResponse;
 
+import java.lang.reflect.Constructor;
 import java.util.Set;
 
 /**
@@ -49,6 +50,11 @@ import java.util.Set;
 
 public class HTTPFactory
 {
+    // In order to test client side code that mocks
+    // HTTPMethod, provide a static global
+    // than can be set by a test program.
+
+    static public java.lang.Class MOCKMETHODCLASS = null;
 
     //////////////////////////////////////////////////////////////////////////
     // Static factory methods for creating HTTPSession instances
@@ -71,7 +77,7 @@ public class HTTPFactory
     @Deprecated
     static public HTTPSession newSession(AuthScope scope) throws HTTPException
     {
-	HttpHost hh = new HttpHost(scope.getHost(),scope.getPort(),null);
+        HttpHost hh = new HttpHost(scope.getHost(), scope.getPort(), null);
         return new HTTPSession(hh);
     }
 
@@ -80,78 +86,107 @@ public class HTTPFactory
 
     static public HTTPMethod Get(HTTPSession session, String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Get, session, legalurl);
+        return makemethod(HTTPSession.Methods.Get, session, legalurl);
     }
 
     static public HTTPMethod Head(HTTPSession session, String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Head, session, legalurl);
+        return makemethod(HTTPSession.Methods.Head, session, legalurl);
     }
 
     static public HTTPMethod Put(HTTPSession session, String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Put, session, legalurl);
+        return makemethod(HTTPSession.Methods.Put, session, legalurl);
     }
 
     static public HTTPMethod Post(HTTPSession session, String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Post, session, legalurl);
+        return makemethod(HTTPSession.Methods.Post, session, legalurl);
     }
 
     static public HTTPMethod Options(HTTPSession session, String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Options, session, legalurl);
+        return makemethod(HTTPSession.Methods.Options, session, legalurl);
     }
 
     static public HTTPMethod Get(HTTPSession session) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Get, session);
+        return makemethod(HTTPSession.Methods.Get, session, null);
     }
 
     static public HTTPMethod Head(HTTPSession session) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Head, session);
+        return makemethod(HTTPSession.Methods.Head, session, null);
     }
 
     static public HTTPMethod Put(HTTPSession session) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Put, session);
+        return makemethod(HTTPSession.Methods.Put, session, null);
     }
 
     static public HTTPMethod Post(HTTPSession session) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Post, session);
+        return makemethod(HTTPSession.Methods.Post, session, null);
     }
 
     static public HTTPMethod Options(HTTPSession session) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Options, session);
+        return makemethod(HTTPSession.Methods.Options, session, null);
     }
 
     static public HTTPMethod Get(String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Get, legalurl);
+        return makemethod(HTTPSession.Methods.Get, null, legalurl);
     }
 
     static public HTTPMethod Head(String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Head, legalurl);
+        return makemethod(HTTPSession.Methods.Head, null, legalurl);
     }
 
     static public HTTPMethod Put(String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Put, legalurl);
+        return makemethod(HTTPSession.Methods.Put, null, legalurl);
     }
 
     static public HTTPMethod Post(String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Post, legalurl);
+        return makemethod(HTTPSession.Methods.Post, null, legalurl);
     }
 
     static public HTTPMethod Options(String legalurl) throws HTTPException
     {
-        return new HTTPMethod(HTTPSession.Methods.Options, legalurl);
+        return makemethod(HTTPSession.Methods.Options, null, legalurl);
     }
+
+    /**
+     * Common method creation code so we can isolate mocking
+     *
+     * @param session
+     * @return
+     * @throws HTTPException
+     */
+    static protected HTTPMethod makemethod(HTTPSession.Methods m, HTTPSession session, String url)
+            throws HTTPException
+    {
+        java.lang.Class methodcl = HTTPMethod.class;
+        if(MOCKMETHODCLASS != null)
+            methodcl = MOCKMETHODCLASS;
+        Constructor<HTTPMethod> cons = null;
+        try {
+            cons = methodcl.getConstructor(HTTPSession.Methods.class, HTTPSession.class, String.class);
+        } catch (Exception e) {
+            throw new HTTPException("HTTPFactory: no proper HTTPMethod constructor available", e);
+        }
+        HTTPMethod meth = null;
+        try {
+            meth = cons.newInstance(m, session, url);
+        } catch (Exception e) {
+            throw new HTTPException("HTTPFactory: HTTPMethod constructor failed", e);
+        }
+        return meth;
+    }
+
 
     static public Set<String> getAllowedMethods()
     {

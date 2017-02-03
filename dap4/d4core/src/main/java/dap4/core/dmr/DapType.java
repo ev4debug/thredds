@@ -24,6 +24,9 @@ public class DapType extends DapNode implements DapDecl
 {
     /**
      * Define instances of DapType for every TypeSort.
+     * Watch out: the static lists must be immutable
+     * because they might be shared by the server and client
+     * during testing
      */
 
     static public final DapType CHAR;
@@ -45,7 +48,7 @@ public class DapType extends DapNode implements DapDecl
     static public final DapType STRUCTURE;
     static public final DapType SEQUENCE;
 
-    static protected DapDataset pseudoroot = new DapDataset("");
+    static final protected DapDataset pseudoroot = new DapDataset("");
 
     /**
      * Define a map from the Atomic Type Sort to the
@@ -54,14 +57,7 @@ public class DapType extends DapNode implements DapDecl
 
     static final Map<TypeSort, DapType> typemap;
 
-    /**
-     * Define a list of defined DapEnums
-     */
-    static List<DapEnumeration> enumlist;
-
     static {
-
-        enumlist = new ArrayList<DapEnumeration>();
         typemap = new HashMap<TypeSort, DapType>();
 
         CHAR = new DapType(TypeSort.Char);
@@ -116,33 +112,6 @@ public class DapType extends DapNode implements DapDecl
         return typemap.get(atomic);
     }
 
-    static public DapType reify(String typename)
-    {
-        // See if this is an enum type
-        for(DapEnumeration de : enumlist) {
-            if(typename.equals(de.getFQN()))
-                return de;
-        }
-        // Assume it is a non-enum atomic type
-        return typemap.get(TypeSort.getTypeSort(typename));
-    }
-
-    static public Map<TypeSort, DapType> getTypeMap()
-    {
-        return typemap;
-    }
-
-    static public List<DapEnumeration> getEnumList()
-    {
-        return enumlist;
-    }
-
-    static void addEnum(DapEnumeration dapenum)
-    {
-        if(!enumlist.contains(dapenum))
-            enumlist.add(dapenum);
-    }
-
     //////////////////////////////////////////////////
     // Instance variables
 
@@ -162,9 +131,7 @@ public class DapType extends DapNode implements DapDecl
         super(name);
         if(sort == DapSort.ENUMERATION) {
             setTypeSort(TypeSort.Enum); // enum is (currently)
-            // the only user-extendible
-            // atomic type
-            addEnum((DapEnumeration) this);
+            // the only user-extendible atomic type
         } else
             setTypeSort(typesort);
     }

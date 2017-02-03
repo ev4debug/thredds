@@ -297,7 +297,7 @@ public class HTTPSession implements Closeable
         public HttpResponse response = null;
     }
         */
-    static /*package*/ enum Methods
+    static public enum Methods
     {
         Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
         private final String name;
@@ -1256,7 +1256,7 @@ public class HTTPSession implements Closeable
     }
 
     /*package scope*/
-    Map<Prop, Object> mergedSettings()
+    public Map<Prop, Object> mergedSettings()
     {
         Map<Prop, Object> merged;
         synchronized (this) {// keep coverity happy

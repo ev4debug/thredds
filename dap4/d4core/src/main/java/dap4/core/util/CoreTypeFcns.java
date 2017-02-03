@@ -26,27 +26,24 @@ abstract public class CoreTypeFcns
     attributeConvert(DapType type, Object value)
     {
         if(value == null) return value;
-        if(type.getTypeSort() == TypeSort.Enum && (value instanceof String)) {
-            // See if the constant is an int vs enum const name
-            try {
-                int ival = Integer.parseInt(value.toString());
-                return ival;
-            } catch (NumberFormatException nfe) {
-                // Assume it is an econst name; try to locate it
-                DapEnumConst dec = ((DapEnumeration)type).lookup(value.toString());
-                if(dec == null)
-                    return value;
-                return dec.getValue();
-            }
-        } else if(value instanceof String) {
-            try {
-                BigInteger bi = new BigInteger((String) value);
-                return bi.longValue();
-            } catch (NumberFormatException nfe) {
-                return value;
+        if(type.isEnumType()) {
+            if(value instanceof String) {
+                // See if the constant is an int vs enum const name
+                try {
+                    int ival = Integer.parseInt(value.toString());
+                    return ival;
+                } catch (NumberFormatException nfe) {
+                    // Assume it is an econst name; try to locate it
+                    DapEnumConst dec = ((DapEnumeration) type).lookup(value.toString());
+                    if(dec == null)
+                        return value;
+                    return dec.getValue();
+                }
+            } else if(value instanceof Long) {
+              return (Long) value;
             }
         } else if(value instanceof Long) {
-                    return (Long) value;
+            return (Long) value;
         } else if(value instanceof Float) {
             return (Float) value;
         } else if(value instanceof Double) {

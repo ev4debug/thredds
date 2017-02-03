@@ -316,7 +316,8 @@ public class DMRToCDM
                 Object ocdm = CDMTypeFcns.attributeConvert(cdmtype,en,o);
                 cdmvalues.add(ocdm);
             }
-            cdmattr = new Attribute(dapattr.getShortName(), cdmvalues);
+            cdmattr = new Attribute(dapattr.getShortName(),
+                    cdmtype, en, cdmvalues, false);
             break;
         case ATTRIBUTESET:
             String setname = dapattr.getShortName();

@@ -36,6 +36,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
+import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
@@ -323,6 +324,7 @@ public class Attribute extends CDMNode
 
   private String svalue; // optimization for common case of single String valued attribute
   private DataType dataType;
+  private EnumTypedef enumtype = null;
   private int nelems; // can be 0 or greater
   private Array values;
   // private boolean isUnsigned;
@@ -337,6 +339,7 @@ public class Attribute extends CDMNode
     super(name);
     if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
     this.dataType = from.dataType;
+    this.enumtype = from.enumtype;
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
@@ -351,7 +354,9 @@ public class Attribute extends CDMNode
    */
   public Attribute(String name, String val) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
+    this.dataType = DataType.STRING;
+    if (name == null)
+      throw new IllegalArgumentException("Trying to set name to null on " + this);
     setStringValue(val);
     setImmutable();
   }
@@ -368,11 +373,13 @@ public class Attribute extends CDMNode
 
   public Attribute(String name, Number val, boolean isUnsigned) {
     super(name);
-    if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
-
+    if (name == null)
+      throw new IllegalArgumentException("Trying to set name to null on " + this);
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass(), isUnsigned);
+    this.dataType = dt;
+
     Array vala = Array.factory(dt, shape);
     Index ima = vala.getIndex();
     vala.setObject(ima.set0(0), val);
@@ -387,7 +394,7 @@ public class Attribute extends CDMNode
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
-    this(name);
+    this(name,values.getDataType(),null);
     setValues(values);
     setImmutable();
   }
@@ -399,68 +406,116 @@ public class Attribute extends CDMNode
    * @param dataType type of Attribute.
    */
   public Attribute(String name, DataType dataType) {
-    this(name);
-    this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
+    this(name,dataType,null);
+  }
+
+  /**
+   *     * Construct an empty attribute with no values
+
+   * @param name
+   * @param dataType
+   * @param en
+     */
+  public Attribute(String name, DataType dataType, EnumTypedef en) {
+    this(name,dataType,en,false);
     this.nelems = 0;
-    setImmutable();
   }
 
   public Attribute(String name, List values) {
-    this(name, values, false);
+    this(name, null, null, values, false);
   }
 
   /**
    * Construct attribute with list of String or Number values.
-   *
-   * @param name   name of attribute
-   * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
-   */
-  public Attribute(String name, List values, boolean isUnsigned) {
+   * @param name
+   * @param basetype null => infer from values
+   * @param en  null unless this is an enum type attribute
+   * @param isUnsigned
+     */
+  public Attribute(String name, DataType basetype, EnumTypedef en, boolean isUnsigned)
+  {
     this(name);
-    int n = values.size();
     Object pa;
+    Class c = null;
 
-    Class c = values.get(0).getClass();
-    dataType = DataType.getType(c, isUnsigned);
-    if (c == String.class) {
-      String[] va = new String[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
-
-    } else if (c == Integer.class) {
-      int[] va = new int[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
-
-    } else if (c == Double.class) {
-      double[] va = new double[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
-
-    } else if (c == Float.class) {
-      float[] va = new float[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
-
-    } else if (c == Short.class) {
-      short[] va = new short[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
-
-    } else if (c == Byte.class) {
-      byte[] va = new byte[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
-
-    } else if (c == Long.class) {
-      long[] va = new long[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
-
-    } else {
-      throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
+    dataType = basetype; //default
+    if(en != null) {  // override dataType
+      switch (en.getBaseType()) {
+      case BYTE:
+      case UBYTE:
+        dataType = DataType.ENUM1;
+        break;
+      case SHORT:
+      case USHORT:
+        dataType = DataType.ENUM2;
+        break;
+      case INT:
+      case UINT:
+        dataType = DataType.ENUM4;
+        break;
+      default:
+        throw new IllegalArgumentException("Unsupported attribute type");
+      }
     }
+    if(dataType == null)
+      throw new IllegalArgumentException("Undefined attribute type");
+  }
 
+
+  /**
+     * Construct attribute with list of String or Number values.
+     * @param name
+     * @param basetype null => infer from values
+     * @param en  null unless this is an enum type attribute
+     * @param values    values of the attribute
+     * @param isUnsigned
+   */
+  public Attribute(String name, DataType basetype, EnumTypedef en, List values, boolean isUnsigned) {
+      this(name,
+              (basetype == null ? DataType.getType(values.get(0).getClass(), isUnsigned)
+                      : basetype),
+              en,isUnsigned);
+      int n = values.size();
+      Object pa;
+      Class c = dataType.getPrimitiveClassType();
+      if(c == String.class) {
+        String[] va = new String[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = (String) values.get(i);
+
+      } else if(c == Integer.class) {
+        int[] va = new int[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
+
+      } else if(c == Double.class) {
+        double[] va = new double[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = (Double) values.get(i);
+
+      } else if(c == Float.class) {
+        float[] va = new float[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = (Float) values.get(i);
+
+      } else if(c == Short.class) {
+        short[] va = new short[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = (Short) values.get(i);
+
+      } else if(c == Byte.class) {
+        byte[] va = new byte[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
+
+      } else if(c == Long.class) {
+        long[] va = new long[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = (Long) values.get(i);
+
+      } else {
+        throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
+      }
     setValues(Array.factory(dataType, new int[]{n}, pa));
     setImmutable();
   }

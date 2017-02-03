@@ -1,34 +1,6 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
+ *  See the LICENSE file for more information.
  */
 
 package ucar.httpservices;
@@ -153,6 +125,10 @@ import static ucar.httpservices.HTTPSession.Prop;
  * however, this will occur in the same scope as the method and so method.close()
  * is accessible.
  * </ul>
+ * <p>
+ * For testing purposes, and to allow use of Spring Servlet Mocking,
+ * the final execution action is deferred to a special Executor inner class
+ * (see executeRaw()).
  */
 
 @NotThreadSafe
@@ -162,6 +138,49 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     //////////////////////////////////////////////////
 
     public static boolean TESTING = false;
+
+    public static Executor TESTEXECUTOR = null;
+
+    //////////////////////////////////////////////////
+    // Type Decls
+
+    static public class Executor
+    {
+        protected HttpRequestBase request = null;
+        protected HttpResponse response = null;
+
+        public void reset()
+        {
+            this.request = null;
+            this.response = null;
+        }
+
+        public HttpResponse
+        execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
+                throws HTTPException
+        {
+            this.request = rq;
+            try {
+                this.response = httpclient.execute(targethost, request, session.getContext());
+            } catch (IOException ioe) {
+                throw new HTTPException(ioe);
+            }
+            if(this.response == null)
+                throw new HTTPException("HTTPMethod.execute: Response was null");
+            return this.response;
+        }
+
+        public HttpRequestBase getRequest()
+        {
+            return this.request;
+        }
+
+        public HttpResponse getResponse()
+        {
+            return this.response;
+        }
+    }
+
 
     //////////////////////////////////////////////////
     // Instance fields
@@ -173,8 +192,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     protected HttpEntity content = null;
     protected HTTPSession.Methods methodkind = null;
     protected HTTPMethodStream methodstream = null; // wrapper for strm
-    protected HttpRequestBase lastrequest = null;
-    protected HttpResponse lastresponse = null;
+    protected Executor executor = null;
     protected long[] range = null;
     // State tracking
     protected boolean closed = false;
@@ -199,22 +217,14 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     {
     }
 
-    HTTPMethod(HTTPSession.Methods m, String url)
-            throws HTTPException
-    {
-        this(m, null, url);
-    }
-
-    HTTPMethod(HTTPSession.Methods m, HTTPSession session)
-            throws HTTPException
-    {
-        this(m, session, null);
-    }
-
-    HTTPMethod(HTTPSession.Methods m, HTTPSession session, String url)
+    public HTTPMethod(HTTPSession.Methods m, HTTPSession session, String url)
             throws HTTPException
     {
         if(HTTPSession.TESTING) HTTPMethod.TESTING = true;
+        if(TESTEXECUTOR != null)
+            this.executor = TESTEXECUTOR;
+        else
+            this.executor = new Executor();
         url = HTTPUtil.nullify(url);
         if(url == null && session != null)
             url = session.getSessionURI();
@@ -322,7 +332,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             ;
             methodstream = null;
         }
-        //this.request = null;
         if(session != null) {
             session.removeMethod(this);
             if(localsession) {
@@ -331,7 +340,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             }
         }
         // finally, make this reusable
-        if(this.lastrequest != null) this.lastrequest.reset();
+        if(this.executor != null) this.executor.reset();
     }
 
     //////////////////////////////////////////////////
@@ -387,18 +396,18 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             RequestBuilder rb = buildrequest();
             setcontent(rb);
             setheaders(rb, this.headers);
-            this.lastrequest = buildRequest(rb, this.settings);
             AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.methodurl);
             AuthScope target = HTTPAuthUtil.authscopeUpgrade(session.getSessionScope(), methodscope);
+            // AFAIK, targethost, httpclient, rqb, and session
+            // contain non-overlapping info => we cannot derive one
+            // from any of the others.
             HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
             HttpClientBuilder cb = HttpClients.custom();
-            configClient(cb, settings);
+            configClient(cb, this.settings);
             session.setAuthenticationAndProxy(cb);
             HttpClient httpclient = cb.build();
-            this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
-            if(this.lastresponse == null)
-                throw new HTTPException("HTTPMethod.execute: Response was null");
-            return this.lastresponse;
+            HttpRequestBase rqb = buildRequest(rb, this.settings);
+            return this.executor.execute(rqb, targethost, httpclient, session);
         } catch (IOException ioe) {
             throw new HTTPException(ioe);
         }
@@ -485,12 +494,14 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 
     public int getStatusCode()
     {
-        return (this.lastresponse == null) ? 0 : this.lastresponse.getStatusLine().getStatusCode();
+        if(this.executor == null) return 0;
+        return this.executor.getResponse().getStatusLine().getStatusCode();
     }
 
     public String getStatusLine()
     {
-        return (this.lastresponse == null) ? null : this.lastresponse.getStatusLine().toString();
+        if(this.executor == null) return null;
+        return this.executor.getResponse().getStatusLine().toString();
     }
 
     public String getRequestLine()
@@ -525,8 +536,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         } else { // first time
             HTTPMethodStream stream = null;
             try {
-                if(this.lastresponse == null) return null;
-                stream = new HTTPMethodStream(this.lastresponse.getEntity().getContent(), this);
+                if(this.executor == null) return null;
+                HttpResponse response = this.executor.getResponse();
+                if(response == null) return null;
+                stream = new HTTPMethodStream(response.getEntity().getContent(), this);
             } catch (Exception e) {
                 stream = null;
             }
@@ -551,9 +564,9 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         byte[] content = null;
-        if(this.lastresponse != null)
+        if(this.executor != null && this.executor.getResponse() != null)
             try {
-                content = EntityUtils.toByteArray(this.lastresponse.getEntity());
+                content = EntityUtils.toByteArray(this.executor.getResponse().getEntity());
             } catch (Exception e) {/*ignore*/}
         return content;
     }
@@ -563,10 +576,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         String content = null;
-        if(this.lastresponse != null)
+        if(this.executor != null && this.executor.getResponse() != null)
             try {
                 Charset cset = Charset.forName(charset);
-                content = EntityUtils.toString(this.lastresponse.getEntity(), cset);
+                content = EntityUtils.toString(this.executor.getResponse().getEntity(), cset);
             } catch (Exception e) {
                 throw new IllegalArgumentException(e.getMessage());
             }
@@ -582,17 +595,21 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     public Header getRequestHeader(String name)
     {
         Header[] hdrs = getRequestHeaders();
-        for(Header h : hdrs) {
-            if(h.getName().equals(name))
-                return h;
-        }
+        if(hdrs != null)
+            for(Header h : hdrs) {
+                if(h.getName().equals(name))
+                    return h;
+            }
         return null;
     }
 
     public Header getResponseHeader(String name)
     {
         try {
-            return this.lastresponse == null ? null : this.lastresponse.getFirstHeader(name);
+            if(this.executor == null) return null;
+            HttpResponse rs = this.executor.getResponse();
+            if(rs == null) return null;
+            return rs.getFirstHeader(name);
         } catch (Exception e) {
             return null;
         }
@@ -601,9 +618,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     public Header[] getResponseHeaders()
     {
         try {
-            if(this.lastresponse == null)
-                return null;
-            Header[] hs = this.lastresponse.getAllHeaders();
+            if(this.executor == null) return null;
+            HttpResponse rs = this.executor.getResponse();
+            if(rs == null) return null;
+            Header[] hs = rs.getAllHeaders();
             return hs;
         } catch (Exception e) {
             return null;
@@ -678,7 +696,9 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 
     public Header[] getRequestHeaders()
     {
-        return this.lastrequest == null ? null : this.lastrequest.getAllHeaders();
+        if(this.executor == null) return null;
+        if(this.executor.getRequest() == null) return null;
+        return this.executor.getRequest().getAllHeaders();
     }
 
     //////////////////////////////////////////////////
@@ -704,10 +724,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     }
 
     public HTTPMethod setSOTimeout(int n)
-        {
-            this.session.setSoTimeout(n);
-            return this;
-        }
+    {
+        this.session.setSoTimeout(n);
+        return this;
+    }
 
     public HTTPMethod setUserAgent(String agent)
     {
@@ -782,13 +802,15 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     public HttpMessage debugRequest()
     {
         if(!TESTING) throw new UnsupportedOperationException();
-        return (this.lastrequest);
+        if(this.executor == null) return null;
+        return (this.executor.getRequest());
     }
 
     public HttpResponse debugResponse()
     {
         if(!TESTING) throw new UnsupportedOperationException();
-        return (this.lastresponse);
+        if(this.executor == null) return null;
+        return (this.executor.getResponse());
     }
 
     //////////////////////////////////////////////////

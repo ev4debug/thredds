@@ -934,19 +934,19 @@ public class H4header {
         TagTextN labels = (TagTextN) tag;
         labels.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute(CDM.LONG_NAME, labels.getList(), false));
+        v.addAttribute(new Attribute(CDM.LONG_NAME, DataType.STRING, null, labels.getList(), false));
       }
       if (tag.code == 705) {
         TagTextN units = (TagTextN) tag;
         units.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute(CDM.UNITS, units.getList(), false));
+        v.addAttribute(new Attribute(CDM.UNITS, DataType.STRING, null, units.getList(), false));
       }
       if (tag.code == 706) {
         TagTextN formats = (TagTextN) tag;
         formats.read(dim.rank);
         tag.used = true;
-        v.addAttribute(new Attribute("formats", formats.getList(), false));
+        v.addAttribute(new Attribute("formats", DataType.STRING, null, formats.getList(), false));
       }
       if (tag.code == 707) {
         TagSDminmax minmax = (TagSDminmax) tag;
