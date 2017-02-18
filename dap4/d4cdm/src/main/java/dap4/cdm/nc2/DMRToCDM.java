@@ -305,19 +305,17 @@ public class DMRToCDM
             if(!(basetype.isLegalAttrType()))
                 throw new ForbiddenConversionException("Illegal attribute type:" + basetype.toString());
             DataType cdmtype = CDMTypeFcns.daptype2cdmtype(basetype);
-            EnumTypedef en = (EnumTypedef)(basetype.isEnumType() ? this.nodemap.get(basetype) : null);
-            Object[] dapvalues = dapattr.getValues();
-            List cdmvalues = new ArrayList();
-            for(int i = 0; i < dapvalues.length; i++) {
-                Object o = dapvalues[i];
-                o = CoreTypeFcns.attributeConvert(basetype,o);
-                if(o == null)
-                    throw new ForbiddenConversionException("Illegal attribute type:" + basetype.toString());
-                Object ocdm = CDMTypeFcns.attributeConvert(cdmtype,en,o);
-                cdmvalues.add(ocdm);
-            }
+            DapEnumeration dapen = (basetype.isEnumType() ? (DapEnumeration)basetype : null);
+            Object dapvalues = dapattr.getValues();
+            Object cvt;
+            if(dapen != null)
+                cvt = Convert.convert(dapen,DapType.STRING,dapvalues);
+            else
+                cvt = Convert.convert(basetype,DapType.STRING,dapvalues);
+            List cdmvalues = CDMTypeFcns.listify(cvt);
+            EnumTypedef en = (EnumTypedef)(dapen  != null ? this.nodemap.get(basetype) : null);
             cdmattr = new Attribute(dapattr.getShortName(),
-                    cdmtype, en, cdmvalues, false);
+                                cdmtype, en, cdmvalues, false);
             break;
         case ATTRIBUTESET:
             String setname = dapattr.getShortName();

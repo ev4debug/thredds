@@ -367,8 +367,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return Convert.doubleValue(this.basetype, value);
+            value = Convert.convert(DapType.FLOAT64, this.basetype, value);
+            return (Long) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -386,8 +386,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (float) Convert.doubleValue(this.basetype, value);
+            value = Convert.convert(DapType.FLOAT32, this.basetype, value);
+            return (Float) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -404,8 +404,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return Convert.longValue(this.basetype, value);
+            value = Convert.convert(DapType.INT64, this.basetype, value);
+            return (Long) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -422,8 +422,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (int) Convert.longValue(this.basetype, value);
+            value = Convert.convert(DapType.INT32, this.basetype, value);
+            return (Integer) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -440,8 +440,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (short) Convert.longValue(this.basetype, value);
+            value = Convert.convert(DapType.INT16, this.basetype, value);
+            return (Short) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -458,8 +458,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (byte) (Convert.longValue(basetype, value) & 0xFFL);
+            value = Convert.convert(DapType.INT8, this.basetype, value);
+            return (Byte) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -476,8 +476,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (char) (Convert.longValue(basetype, value) & 0xFFL);
+            value = Convert.convert(DapType.CHAR, this.basetype, value);
+            return (Character) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -494,8 +494,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (Convert.longValue(basetype, value) != 0);
+            value = Convert.convert(DapType.INT64, this.basetype, value);
+            return ((Long) java.lang.reflect.Array.get(value, 0)) != 0;
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }

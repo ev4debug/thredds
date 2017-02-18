@@ -9,6 +9,7 @@ import dap4.cdm.CDMUtil;
 import dap4.cdm.NodeMap;
 import dap4.core.data.DataCursor;
 import dap4.core.dmr.*;
+import dap4.core.util.Convert;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
@@ -722,10 +723,10 @@ public class CDMDSP extends AbstractDSP
         if(!validatecdmtype(attr.getDataType(), values.getElementType()))
             throw new DapException("DapFile: attr type versus attribute data mismatch: " + values.getElementType());
         IndexIterator iter = values.getIndexIterator();
-        Object[] valuelist = new Object[(int) values.getSize()];
-        for(int i = 0; iter.hasNext(); i++) {
-            valuelist[i] = fixvalue(iter.next(), basetype);
-        }
+        Object vec = CDMTypeFcns.createVector(attr.getDataType(),values.getSize());
+        for(int i = 0; iter.hasNext(); i++)
+            java.lang.reflect.Array.set(vec,i,iter.next());
+        String[] valuelist = (String[])Convert.convert(DapType.STRING,basetype,vec);
         dapattr.setValues(valuelist);
         return dapattr;
     }
@@ -1016,7 +1017,7 @@ public class CDMDSP extends AbstractDSP
         return (dprefix.equals(rprefix));
     }
 
-    protected Object
+    /*protected String
     fixvalue(Object o, DapType datatype)
     {
         TypeSort atype = datatype.getTypeSort();
@@ -1064,7 +1065,7 @@ public class CDMDSP extends AbstractDSP
             o = ByteBuffer.wrap(bb);
         } //else { // leave it unchanged
         return o;
-    }
+    } */
 
     //////////////////////////////////////////////////
 

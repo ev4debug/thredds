@@ -292,11 +292,12 @@ abstract public class AbstractDSP implements DSP
         if(a == null)
             this.order = (ByteOrder.LITTLE_ENDIAN);
         else {
-            Object[] v = a.getValues();
-            if(v.length == 0)
+            Object v = a.getValues();
+            int len = java.lang.reflect.Array.getLength(v);
+            if(len == 0)
                 this.order = (ByteOrder.nativeOrder());
             else {
-                String onezero = v[0].toString();
+                String onezero = java.lang.reflect.Array.get(v,0).toString();
                 int islittle = 1;
                 try {
                     islittle = Integer.parseInt(onezero);

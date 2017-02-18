@@ -290,7 +290,7 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
             attr.clearValues();
             SaxEvent value = pull(description, "value");
             if(value != null)
-                attr.setValues(new Object[]{value.value});
+                attr.setValues(new String[]{value.value});
             break;
         case ATTRIBUTESET:
             // clear the contained attributes
@@ -340,7 +340,7 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
         // Since this came from <Value>...</Value>
         // Clean it up
         value = cleanup(value);
-        if(parent != null) parent.setValues(new Object[]{value});
+        if(parent != null) parent.setValues(new String[]{value});
     }
 
     protected String
@@ -379,7 +379,7 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
             textlist.add(value.value);
         }
         if(textlist != null)
-            parent.setValues(textlist.toArray());
+            parent.setValues(textlist.toArray(new String[textlist.size()]));
     }
 
     DapOtherXML
@@ -946,7 +946,7 @@ public class Dap4ParserImpl extends Dap4BisonParser implements Dap4Parser
         if(debug) report("leaveatomicattribute");
         DapAttribute attr = (DapAttribute) scopestack.pop();
         // Ensure that the attribute has at least one value
-        if(attr.getValues().length == 0)
+        if(java.lang.reflect.Array.getLength(attr.getValues()) == 0)
             throw new ParseException("AtomicAttribute: attribute has no values");
     }
 

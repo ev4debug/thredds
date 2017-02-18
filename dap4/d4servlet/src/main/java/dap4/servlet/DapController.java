@@ -529,8 +529,8 @@ abstract public class DapController extends HttpServlet
             dmr.addAttribute(a);
         }
         //ByteOrder order = (ByteOrder) cxt.get(Dap4Util.DAP4ENDIANTAG);
-        Integer oz = (order == ByteOrder.BIG_ENDIAN ? 0 : 1);
-        a.setValues(new Integer[]{oz});
+        String oz = (order == ByteOrder.BIG_ENDIAN ? "0" : "1");
+        a.setValues(new String[]{oz});
     }
 
     /**

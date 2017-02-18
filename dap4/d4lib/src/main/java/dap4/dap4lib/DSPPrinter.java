@@ -381,9 +381,10 @@ public class DSPPrinter
             return buf.toString();
         case Enum:
             DapEnumeration de = (DapEnumeration) basetype;
-            Object v = Array.get(vector, ipos);
-            long l = Convert.longValue(de, v);
-            DapEnumConst dec = de.lookup(l);
+            Object[] v = new Object[1];
+            v[0] = Array.get(vector, ipos);
+            Object lv = Convert.convert(DapType.INT64, de, v);
+            DapEnumConst dec = de.lookup(((long[])lv)[0]);
             return dec.getShortName();
         default:
             break;

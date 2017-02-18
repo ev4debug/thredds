@@ -481,31 +481,26 @@ public class DMRPrinter
         DapType type = attr.getBaseType();
         printXMLAttribute("type", type.getTypeName(), NILFLAGS);
         printer.println(">");
-        Object[] values = attr.getValues();
+        Object values = attr.getValues();
         if(values == null)
             throw new DapException("Attribute with no values:" + attr.getFQN());
         printer.indent();
+        // Do the value conversion to string
+        Object cvt = Convert.convert(DapType.STRING,type,values);
+        String[] svec = (String[])cvt;
         // Special case for char
         if(type == DapType.CHAR) {
             // Print the value as a string of all the characters
             StringBuilder buf = new StringBuilder();
-            for(int i = 0; i < values.length; i++) {
-                Object v = values[i];
-                String vs = getPrintValue(v);
-                if(vs.length() > 0) {// Hack to deal with nul characters
-                    buf.append(vs);
-                }
+            for(int i = 0; i < svec.length; i++) {
+                buf.append(svec[i]);
             }
             String cs = String.format("<Value value=\"%s\"/>", buf.toString());
             printer.marginPrintln(cs);
         } else {
-            for(int i = 0; i < values.length; i++) {
-                Object v = values[i];
-                String vs = getPrintValue(v);
-                if(vs.length() > 0) {// Hack to deal with nul characters
-                    String cs = String.format("<Value value=\"%s\"/>", vs);
-                    printer.marginPrintln(cs);
-                }
+            for(int i = 0; i < svec.length; i++) {
+                String cs = String.format("<Value value=\"%s\"/>", svec[i]);
+                printer.marginPrintln(cs);
             }
         }
         printer.outdent();

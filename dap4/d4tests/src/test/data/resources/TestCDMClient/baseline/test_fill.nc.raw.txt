@@ -7,7 +7,7 @@ netcdf test_fill {
       String v16:_DAP4_Checksum_CRC32 = "0xc9139fe6";
 
     uint uv32;
-      uv32:_FillValue = 17S;
+      uv32:_FillValue = 17;
       String uv32:_DAP4_Checksum_CRC32 = "0x8437b331";
 
   // global attributes:

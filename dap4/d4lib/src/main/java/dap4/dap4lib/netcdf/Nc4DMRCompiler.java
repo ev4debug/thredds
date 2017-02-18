@@ -8,6 +8,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import dap4.core.dmr.*;
+import dap4.core.util.Convert;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
@@ -453,7 +454,7 @@ public class Nc4DMRCompiler
         SizeTByReference countp = new SizeTByReference();
         errcheck(ret = nc4.nc_inq_attlen(gid, vid, name, countp));
         // Get the values of the attribute
-        Object[] values = getAttributeValues(gid, vid, name, base, countp.intValue());
+        String[] values = getAttributeValues(gid, vid, name, base, countp.intValue());
         DapAttribute da = factory.newAttribute(name, (DapType) base.getType());
         da.setValues(values);
         if(isglobal) {
@@ -622,18 +623,19 @@ public class Nc4DMRCompiler
         return names;
     }
 
-    Object[]
-    getAttributeValues(int gid, int vid, String name, TypeNotes base, int count)
+    String[]
+    getAttributeValues(int gid, int vid, String name, TypeNotes tn, int count)
             throws DapException
     {
         int ret;
         // Currently certain types only are allowed.
-        if(!islegalattrtype(base))
-            throw new DapException("Unsupported attribute type: " + base.getType().getShortName());
-        if(isenumtype(base))
-            base = enumbasetype(base);
-        Object valuelist = getRawAttributeValues(base, count, gid, vid, name);
-        Object[] values = convert(count, valuelist, base);
+        if(!islegalattrtype(tn))
+            throw new DapException("Unsupported attribute type: " + tn.getType().getShortName());
+        if(isenumtype(tn))
+            tn = enumbasetype(tn);
+        Object vector = getRawAttributeValues(tn, count, gid, vid, name);
+        DapType basetype = tn.getType();
+        String[] values = (String[])Convert.convert(DapType.STRING, basetype, vector);
         return values;
     }
 
@@ -701,7 +703,7 @@ public class Nc4DMRCompiler
         return values;
     }
 
-    Object[]
+    /*Object[]
     convert(int count, Object src, TypeNotes basetype)
             throws DapException
     {
@@ -771,7 +773,7 @@ public class Nc4DMRCompiler
                 ) {
             throw new DapException(e);
         }
-    }
+    } */
 
     protected void
     errcheck(int ret)
