@@ -320,5 +320,49 @@ abstract public class CoreTypeFcns
         throw new IllegalArgumentException();
     }
 
+
+    static public Object
+    createVector(TypeSort type, long count)
+    {
+        int icount = (int) count;
+        Object vector = null;
+        switch (type) {
+        case Char:
+            vector = new char[icount];
+            break;
+        case Int8:
+        case UInt8:
+            vector = new byte[icount];
+            break;
+        case Int16:
+        case UInt16:
+            vector = new short[icount];
+            break;
+        case Int32:
+        case UInt32:
+            vector = new int[icount];
+            break;
+        case Int64:
+        case UInt64:
+            vector = new long[icount];
+            break;
+        case Float32:
+            vector = new float[icount];
+            break;
+        case Float64:
+            vector = new double[icount];
+            break;
+        case String:
+            vector = new String[icount];
+            break;
+        case Opaque:
+            vector = new ByteBuffer[icount];
+            break;
+        default:
+            throw new ConversionException();
+        }
+        return vector;
+    }
+
 }
 

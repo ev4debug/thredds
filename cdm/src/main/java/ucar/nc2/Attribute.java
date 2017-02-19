@@ -314,7 +314,6 @@ public class Attribute extends CDMNode
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
-    setImmutable();
   }
 
   /**
@@ -393,25 +392,27 @@ public class Attribute extends CDMNode
     */
   public Attribute(String name, DataType dataType, EnumTypedef en)
   {
-    this(name, dataType, en, null, false);
+    this(name);
+    this.dataType = dataType;
+    this.enumtype = en;
     this.nelems = 0;
-    setImmutable();
   }
 
   /**
    * Construct attribute with list of String or Number values.
    *
    * @param name   name of attribute
-   * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    * @param basetype   null => infer from values
    * @param en         null unless this is an enum type attribute
+   * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    * @param isUnsigned
    */
   public Attribute(String name, DataType basetype, EnumTypedef en, List values, boolean isUnsigned) {
-    this(name);
+    this(name,basetype,en);
     int n = (values == null ? 0 : values.size());
     Object pa;
 
+    // Figure out the attribute type
     Class c = values.get(0).getClass();
     dataType = DataType.getType(c, isUnsigned);
     if (c == String.class) {
@@ -524,7 +525,8 @@ public class Attribute extends CDMNode
    * @param arr value of Attribute
    */
   protected void setValues(Array arr) {
-    if (immutable) throw new IllegalStateException("Cant modify");
+    if (immutable)
+      throw new IllegalStateException("Cant modify");
 
     if (arr == null) {
       dataType = DataType.STRING;

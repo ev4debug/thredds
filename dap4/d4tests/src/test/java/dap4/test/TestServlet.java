@@ -162,7 +162,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_sequence_2.syn");
+            chosentests = locate("test_atomic_array.syn");
             prop_visual = true;
             prop_generate = false;
             prop_baseline = false;

@@ -84,7 +84,7 @@ public class TestParserDMR extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_array.nc");
+            chosentests = locate("testall");
             prop_visual = true;
             assert chosentests.size() > 0 : "Not tests chosen";
         } else {

@@ -10,7 +10,6 @@ import dap4.core.util.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +34,7 @@ public class DMRPrinter
     static protected final int PERLINE = 1; // print xml attributes 1 per line
     static protected final int NONAME = 2; // do not print name xml attribute
     static protected final int NONNIL = 4; // print empty xml attributes
+    static protected final int XMLESCAPED = 8; // String is already xml escaped
 
     static protected final String[] GROUPSPECIAL = {
             "_NCProperties",
@@ -235,7 +235,7 @@ public class DMRPrinter
                 assert (value != null);
                 printer.marginPrintln(
                         String.format("<EnumConst name=\"%s\" value=\"%d\"/>",
-                                Escape.entityEscape(econst), value.getValue()));
+                                Escape.entityEscape(econst,null), value.getValue()));
             }
             printMetadata(node);
             printer.outdent();
@@ -363,6 +363,11 @@ public class DMRPrinter
 
     /**
      * PrintXMLAttributes helper function
+     *
+     * @param name
+     * @param value
+     * @param flags
+     * @throws DapException
      */
     protected void
     printXMLAttribute(String name, String value, int flags)
@@ -381,7 +386,8 @@ public class DMRPrinter
 
         if(value != null) {
             // add xml entity escaping
-            value = Escape.entityEscape(value);
+            if((flags & XMLESCAPED) == 0)
+                value = Escape.entityEscape(value,"\"");
             printer.print(value);
         }
         printer.print("\"");
@@ -485,9 +491,8 @@ public class DMRPrinter
         if(values == null)
             throw new DapException("Attribute with no values:" + attr.getFQN());
         printer.indent();
-        // Do the value conversion to string
-        Object cvt = Convert.convert(DapType.STRING,type,values);
-        String[] svec = (String[])cvt;
+        // The values for a DapAttribute are always strings,
+        String[] svec = (String[]) values;
         // Special case for char
         if(type == DapType.CHAR) {
             // Print the value as a string of all the characters
@@ -499,7 +504,8 @@ public class DMRPrinter
             printer.marginPrintln(cs);
         } else {
             for(int i = 0; i < svec.length; i++) {
-                String cs = String.format("<Value value=\"%s\"/>", svec[i]);
+                String s = Escape.entityEscape(svec[i],null);
+                String cs = String.format("<Value value=\"%s\"/>", s);
                 printer.marginPrintln(cs);
             }
         }
@@ -530,7 +536,8 @@ public class DMRPrinter
             if(dim.isShared()) {
                 String fqn = dim.getFQN();
                 assert (fqn != null) : "Illegal Dimension reference";
-                printXMLAttribute("name", fqn, NILFLAGS);
+                fqn = fqnXMLEscape(fqn);
+                printXMLAttribute("name", fqn, XMLESCAPED);
             } else {
                 long size = dim.getSize();// the size for printing purposes
                 printXMLAttribute("size", Long.toString(size), NILFLAGS);
@@ -552,7 +559,8 @@ public class DMRPrinter
             // Separate out name attribute so we can use FQN.
             String name = map.getFQN();
             assert (name != null) : "Illegal <Map> reference";
-            printXMLAttribute("name", name, NILFLAGS);
+            name = fqnXMLEscape(name);
+            printXMLAttribute("name", name, XMLESCAPED);
             printXMLAttributes(map, ce, NONAME);
             if(hasMetadata(map)) {
                 printer.println(">");
@@ -568,14 +576,54 @@ public class DMRPrinter
     //////////////////////////////////////////////////
     // Misc. Static Utilities
 
+    /**
+     * XML escape a dap fqn
+     * and converting '"' to &quot;
+     * Assumes backslash escapes are in effect for '/' and '.'
+     *
+     * @param fqn the backslash escaped fqn
+     * @return escaped string
+     */
+    static public String
+    fqnXMLEscape(String fqn)
+    {
+        // Split the fqn into pieces
+        StringBuilder xml = new StringBuilder();
+        String segment = null;
+        List<String> segments = Escape.backslashsplit(fqn,'/');
+        for(int i=1;i<segments.size()-1;i++) {  // skip leading /
+            segment = segments.get(i);
+            segment = Escape.backslashUnescape(segment); // get to raw name
+            segment = Escape.entityEscape(segment,"\"");// '"' -> &quot;
+            segment = Escape.backslashEscape(segment,"/."); // re-escape
+            xml.append("/");
+            xml.append(segment);
+        }
+        // Last segment might be structure path, so similar processing,
+        // but worry about '.'
+        segment = segments.get(segments.size()-1);
+        segments = Escape.backslashsplit(segment,'.');
+        xml.append("/");
+        for(int i=0;i<segments.size();i++) {
+            segment = segments.get(i);
+            segment = Escape.backslashUnescape(segment); // get to raw name
+            segment = Escape.entityEscape(segment, "\"");// '"' -> &quot;
+            segment = Escape.backslashEscape(segment, "/."); // re-escape
+            if(i > 0) xml.append(".");
+            xml.append(segment);
+        }
+        return xml.toString();
+    }
+
+
     static protected String
     getPrintValue(Object value)
     {
         if(value instanceof String) {
             String sclean = Escape.cleanString((String) value);
-            return Escape.entityEscape((String) value);
+            return Escape.entityEscape((String) value,null);
         } else if(value instanceof Character) {
-            return Escape.entityEscape(((Character) value).toString());
+            return Escape.entityEscape(((Character) value).toString(),null);
         } else
             return value.toString();
     }

@@ -35,7 +35,11 @@ public class Escape
     static private final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~";
 
     // define the printable backslash characters to escape (control chars not included)
-    static public final String BACKSLASHESCAPE = "/\\\"'";
+    // Note that '\\' is always included
+    static public final String BACKSLASHESCAPE = "/.";
+
+    // define the default entity characters to escape
+    static public final String ENTITYESCAPES = "\\<>&\"'";
 
     // Define the alphan characters
 
@@ -47,14 +51,23 @@ public class Escape
 
     /**
      * Escape selected characters in a string using XML entities
+     *
+     * @param s   string to escape
+     * @param wrt which chars to escape
+     * @return escaped string
      */
     static public String
-    entityEscape(String s)
+    entityEscape(String s, String wrt)
     {
+        if(wrt == null)
+            wrt = ENTITYESCAPES;
         StringBuilder escaped = new StringBuilder();
         for(int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            switch (c) {
+            int index = wrt.indexOf(c);
+            if(index < 0)
+                escaped.append(c);
+            else switch (c) {
             case '&':
                 escaped.append('&' + ENTITY_AMP + ';');
                 break;
@@ -164,6 +177,11 @@ public class Escape
      * Escape control chars plus
      * selected other characters in a string using backslash
      * The definitive list is in netcdf-c/ncgen/ncgen.l.
+     *
+     * @param s   the string to escape
+     * @param wrt what printable characters to escape;
+     *            control characters and '\\' are always escaped.
+     * @return
      */
     static public String
     backslashEscape(String s, String wrt)
@@ -193,7 +211,7 @@ public class Escape
                     escaped.append(Escape.toHex((int) c));
                     continue; /* since this is a string */
                 }
-            } else if(wrt.indexOf(c) >= 0)
+            } else if(c == '\\' || wrt.indexOf(c) >= 0)
                 escaped.append('\\');
             escaped.append(c);
         }

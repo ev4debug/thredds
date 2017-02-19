@@ -8,6 +8,7 @@ import dap4.core.dmr.DapEnumeration;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.TypeSort;
 import dap4.core.util.ConversionException;
+import dap4.core.util.CoreTypeFcns;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import ucar.ma2.Array;
@@ -136,7 +137,7 @@ abstract public class CDMTypeFcns
     {
         if(type.getAtomicType() == TypeSort.Enum)
             return createVector(((DapEnumeration) type).getBaseType(), count);
-        return createVector(CDMTypeFcns.daptype2cdmtype(type), count);
+        return CoreTypeFcns.createVector(type.getTypeSort(), count);
     }
 
     static public DataType

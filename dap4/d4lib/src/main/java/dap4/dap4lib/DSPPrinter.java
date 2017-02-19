@@ -381,10 +381,11 @@ public class DSPPrinter
             return buf.toString();
         case Enum:
             DapEnumeration de = (DapEnumeration) basetype;
-            Object[] v = new Object[1];
-            v[0] = Array.get(vector, ipos);
-            Object lv = Convert.convert(DapType.INT64, de, v);
-            DapEnumConst dec = de.lookup(((long[])lv)[0]);
+            Object newvec = CoreTypeFcns.createVector(de.getBaseType().getTypeSort(),1);
+            Object v = java.lang.reflect.Array.get(vector, ipos);
+            java.lang.reflect.Array.set(newvec,0,v);
+            long[] lv  = (long[]) Convert.convert(DapType.INT64, de, newvec);
+            DapEnumConst dec = de.lookup(lv[0]);
             return dec.getShortName();
         default:
             break;
@@ -407,7 +408,7 @@ public class DSPPrinter
     getPrintValue(Object value)
     {
         if(value instanceof String) {
-            return Escape.entityEscape((String) value);
+            return Escape.entityEscape((String) value,null);
         } else
             return value.toString();
     }

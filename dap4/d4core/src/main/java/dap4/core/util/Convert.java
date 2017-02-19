@@ -83,11 +83,15 @@ public abstract class Convert
         TypeSort srcsort = srctype.getTypeSort();
         TypeSort dstsort = dsttype.getTypeSort();
 
-        if(srcsort.isEnumType() || dstsort.isEnumType()) {
-            DapType srcbase, dstbase;
-            srcbase = (srcsort.isEnumType() ? ((DapEnumeration) srctype).getBaseType() : srctype);
-            dstbase = (dstsort.isEnumType() ? ((DapEnumeration) dsttype).getBaseType() : dsttype);
-            return convert(dstbase, srcbase, values);
+        // Handle enumeration cases
+        if(srcsort.isEnumType() &&dstsort.isEnumType())
+            throw new ConversionException("Cannot convert enum to enum");
+        else if(srcsort.isEnumType()) {
+            DapType srcbase = ((DapEnumeration) srctype).getBaseType();
+            return convert(dsttype, srcbase, values);
+        } else if(dstsort.isEnumType()) {
+            DapType dstbase = ((DapEnumeration) dsttype).getBaseType();
+            return convert(dstbase, srctype, values);
         }
 
         assert (!srcsort.isEnumType());

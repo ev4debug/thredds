@@ -126,14 +126,14 @@ abstract public class DapNode
        a single arbitrary piece of state.
     */
 
-    protected Map<Object,Object> annotations = null;
+    protected Map<Object, Object> annotations = null;
 
     public DapNode annotate(Object id, Object value)
     {
         if(this.annotations == null)
             this.annotations = new HashMap<>();
         assert this.annotations.get(id) == null;
-        this.annotations.put(id,value);
+        this.annotations.put(id, value);
         return this;
     }
 
@@ -205,10 +205,10 @@ abstract public class DapNode
     //////////////////////////////////////////////////
     // XML attributes
 
-    public synchronized Map<String,String>
+    public synchronized Map<String, String>
     getXMLAttributes()
     {
-	return this.xmlattributes;
+        return this.xmlattributes;
     }
 
     public synchronized void
@@ -219,7 +219,7 @@ abstract public class DapNode
             this.xmlattributes = new HashMap<String, String>();
         if(this.xmlattributes.containsKey(name))
             throw new DapException("Attempt to add duplicate XML attribute: " + name);
-        this.xmlattributes.put(name,value);
+        this.xmlattributes.put(name, value);
     }
 
     public synchronized void
@@ -373,8 +373,11 @@ abstract public class DapNode
         this.fqn = null;
     }
 
-    // Here, escaped means backslash escaped short name
-    // create on demand
+    /**
+     * Here, escaped means backslash escaped short name
+     *
+     * @return escaped name
+     */
     public String getEscapedShortName()
     {
         if(this.escapedname == null)
@@ -473,7 +476,7 @@ abstract public class DapNode
             case GROUP:
             case ENUMERATION:
                 fqn.append('/');
-                fqn.append(current.getEscapedShortName());
+                fqn.append(Escape.backslashEscape(current.getShortName(),"/."));
                 break;
             // These use '.'
             case STRUCTURE:
