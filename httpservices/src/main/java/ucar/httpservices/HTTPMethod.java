@@ -144,7 +144,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     //////////////////////////////////////////////////
     // Type Decls
 
-    static public class Executor
+    static public abstract class Executor
     {
         protected HttpRequestBase request = null;
         protected HttpResponse response = null;
@@ -155,6 +155,24 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             this.response = null;
         }
 
+        public HttpRequestBase getRequest()
+        {
+            return this.request;
+        }
+
+        public HttpResponse getResponse()
+        {
+            return this.response;
+        }
+
+        abstract public HttpResponse
+        execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
+                throws HTTPException;
+    }
+
+    static public class DefaultExecutor extends Executor
+    {
+        @Override
         public HttpResponse
         execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
                 throws HTTPException
@@ -170,15 +188,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             return this.response;
         }
 
-        public HttpRequestBase getRequest()
-        {
-            return this.request;
-        }
-
-        public HttpResponse getResponse()
-        {
-            return this.response;
-        }
     }
 
 
@@ -224,7 +233,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(TESTEXECUTOR != null)
             this.executor = TESTEXECUTOR;
         else
-            this.executor = new Executor();
+            this.executor = new DefaultExecutor();
         url = HTTPUtil.nullify(url);
         if(url == null && session != null)
             url = session.getSessionURI();

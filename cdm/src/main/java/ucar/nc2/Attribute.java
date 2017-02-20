@@ -5,10 +5,7 @@
 
 package ucar.nc2;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
+import ucar.ma2.*;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
@@ -245,34 +242,43 @@ public class Attribute extends CDMNode
    * @param f      write into this
    * @param strict if true, create strict CDL, escaping names
    */
-  protected void writeCDL(Formatter f, boolean strict) {
+  protected void writeCDL(Formatter f, boolean strict)
+  {
     f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
-    if (isString()) {
+    if(isString()) {
       f.format(" = ");
-      for (int i = 0; i < getLength(); i++) {
-        if (i != 0) f.format(", ");
+      for(int i = 0; i < getLength(); i++) {
+        if(i != 0) f.format(", ");
         String val = getStringValue(i);
-        if (val != null)
+        if(val != null)
           f.format("\"%s\"", encodeString(val));
       }
     } else {
       f.format(" = ");
-      for (int i = 0; i < getLength(); i++) {
-        if (i != 0) f.format(", ");
-        f.format("%s", getNumericValue(i));
-        if (dataType == DataType.FLOAT)
-          f.format("f");
-        else if (dataType == DataType.SHORT) {
-          if (isUnsigned()) f.format("US");
-          else f.format("S");
-        } else if (dataType == DataType.BYTE) {
-          if (isUnsigned()) f.format("UB");
-          else f.format("B");
-        } else if (dataType == DataType.LONG) {
-          if (isUnsigned()) f.format("UL");
-          else f.format("L");
-        } else if (dataType == DataType.INT) {
-          if (isUnsigned()) f.format("U");
+      for(int i = 0; i < getLength(); i++) {
+        if(i != 0) f.format(", ");
+        if(strict && enumtype != null) {
+          Number eval = getNumericValue(i);
+          String econst = enumtype.lookupEnumString(eval.intValue());
+          if(econst == null)
+            throw new ForbiddenConversionException("Unknown enum const value: "+eval);
+           f.format("%s",econst);
+        } else {
+          f.format("%s", getNumericValue(i));
+          if(dataType == DataType.FLOAT)
+            f.format("f");
+          else if(dataType == DataType.SHORT) {
+            if(isUnsigned()) f.format("US");
+            else f.format("S");
+          } else if(dataType == DataType.BYTE) {
+            if(isUnsigned()) f.format("UB");
+            else f.format("B");
+          } else if(dataType == DataType.LONG) {
+            if(isUnsigned()) f.format("UL");
+            else f.format("L");
+          } else if(dataType == DataType.INT) {
+            if(isUnsigned()) f.format("U");
+          }
         }
       }
     }

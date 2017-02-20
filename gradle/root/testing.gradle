@@ -25,6 +25,7 @@ ext {
         logger.warn "Skipping all NotTravis tests: detected that we're running in the Travis environment."
     }
     
+    
     contentRootKey = 'tds.content.root.path'
     isContentRootAvailable = isSystemPropertyAValidDirectory contentRootKey
     

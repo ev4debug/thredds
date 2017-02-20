@@ -1,35 +1,8 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
+ *  See the LICENSE file for more information.
  */
+
 
 package ucar.httpservices;
 
@@ -111,52 +84,52 @@ public class HTTPFactory
 
     static public HTTPMethod Get(HTTPSession session) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Get, session, null);
+        return Get(session, null);
     }
 
     static public HTTPMethod Head(HTTPSession session) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Head, session, null);
+        return Head(session, null);
     }
 
     static public HTTPMethod Put(HTTPSession session) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Put, session, null);
+        return Put(session, null);
     }
 
     static public HTTPMethod Post(HTTPSession session) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Post, session, null);
+        return Post(session, null);
     }
 
     static public HTTPMethod Options(HTTPSession session) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Options, session, null);
+        return Options(session, null);
     }
 
     static public HTTPMethod Get(String legalurl) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Get, null, legalurl);
+        return Get(null, legalurl);
     }
 
     static public HTTPMethod Head(String legalurl) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Head, null, legalurl);
+        return Head(null, legalurl);
     }
 
     static public HTTPMethod Put(String legalurl) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Put, null, legalurl);
+        return Put(null, legalurl);
     }
 
     static public HTTPMethod Post(String legalurl) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Post, null, legalurl);
+        return Post(null, legalurl);
     }
 
     static public HTTPMethod Options(String legalurl) throws HTTPException
     {
-        return makemethod(HTTPSession.Methods.Options, null, legalurl);
+        return Options(null, legalurl);
     }
 
     /**
@@ -169,20 +142,22 @@ public class HTTPFactory
     static protected HTTPMethod makemethod(HTTPSession.Methods m, HTTPSession session, String url)
             throws HTTPException
     {
-        java.lang.Class methodcl = HTTPMethod.class;
-        if(MOCKMETHODCLASS != null)
-            methodcl = MOCKMETHODCLASS;
-        Constructor<HTTPMethod> cons = null;
-        try {
-            cons = methodcl.getConstructor(HTTPSession.Methods.class, HTTPSession.class, String.class);
-        } catch (Exception e) {
-            throw new HTTPException("HTTPFactory: no proper HTTPMethod constructor available", e);
-        }
         HTTPMethod meth = null;
-        try {
-            meth = cons.newInstance(m, session, url);
-        } catch (Exception e) {
-            throw new HTTPException("HTTPFactory: HTTPMethod constructor failed", e);
+        if(MOCKMETHODCLASS == null) { // do the normal case
+            meth = new HTTPMethod(m, session, url);
+        } else {//(MOCKMETHODCLASS != null)
+            java.lang.Class methodcl = MOCKMETHODCLASS;
+            Constructor<HTTPMethod> cons = null;
+            try {
+                cons = methodcl.getConstructor(HTTPSession.Methods.class, HTTPSession.class, String.class);
+            } catch (Exception e) {
+                throw new HTTPException("HTTPFactory: no proper HTTPMethod constructor available", e);
+            }
+            try {
+                meth = cons.newInstance(m, session, url);
+            } catch (Exception e) {
+                throw new HTTPException("HTTPFactory: HTTPMethod constructor failed", e);
+            }
         }
         return meth;
     }

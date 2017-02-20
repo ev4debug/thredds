@@ -368,7 +368,7 @@ import static dap4.core.data.DataCursor.Scheme;
         try {
             Object value = data.read(idx);
             value = Convert.convert(DapType.FLOAT64, this.basetype, value);
-            return (Long) java.lang.reflect.Array.get(value, 0);
+            return (Double) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }

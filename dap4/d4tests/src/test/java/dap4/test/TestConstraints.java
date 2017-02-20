@@ -24,7 +24,7 @@ public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
 
-    static final public boolean DEBUGSERVER = true;
+    static final public boolean DEBUGSERVER = false;
 
     //////////////////////////////////////////////////
     // Constants
@@ -151,8 +151,8 @@ public class TestConstraints extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
-            chosentests.add(locate1(4));
+        if(false) {
+            chosentests.add(locate1(5));
             prop_visual = true;
         } else {
             prop_baseline = false;
