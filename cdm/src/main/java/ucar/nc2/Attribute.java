@@ -389,6 +389,10 @@ public class Attribute extends CDMNode
     this(name, null, null, values, false);
   }
 
+  public Attribute(String name, List values, boolean unsigned) {
+      this(name, null, null, values, unsigned);
+    }
+
    /**
     * Construct an empty attribute with no values
     *
