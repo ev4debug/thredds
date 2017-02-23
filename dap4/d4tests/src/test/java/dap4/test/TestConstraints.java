@@ -24,7 +24,7 @@ public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
 
-    static final public boolean DEBUGSERVER = false;
+    static final public boolean DEBUGSERVER = true;
 
     //////////////////////////////////////////////////
     // Constants

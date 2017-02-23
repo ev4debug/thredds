@@ -134,6 +134,7 @@ import static ucar.httpservices.HTTPSession.Prop;
 @NotThreadSafe
 public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 {
+     static public boolean TRACE = true;
 
     //////////////////////////////////////////////////
 
@@ -165,6 +166,17 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             return this.response;
         }
 
+        static public void
+        trace(HTTPMethod m, HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
+        {
+             System.err.printf("execute: method=%s host=%s url=%s userinfo=%s%n",
+                     m.methodkind,
+                     targethost,
+                     m.methodurl,
+                     m.userinfo
+             );
+        }
+
         abstract public HttpResponse
         execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
                 throws HTTPException;
@@ -172,11 +184,16 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 
     static public class DefaultExecutor extends Executor
     {
+        HTTPMethod m;
+        public DefaultExecutor(HTTPMethod m) {this.m = m;}
+
         @Override
         public HttpResponse
         execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
                 throws HTTPException
         {
+            if(m.TRACE)
+                super.trace(this.m,rq,targethost,httpclient,session);
             this.request = rq;
             try {
                 this.response = httpclient.execute(targethost, request, session.getContext());
@@ -233,7 +250,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(TESTEXECUTOR != null)
             this.executor = TESTEXECUTOR;
         else
-            this.executor = new DefaultExecutor();
+            this.executor = new DefaultExecutor(this);
         url = HTTPUtil.nullify(url);
         if(url == null && session != null)
             url = session.getSessionURI();
