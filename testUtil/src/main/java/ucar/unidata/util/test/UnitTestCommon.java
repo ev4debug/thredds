@@ -44,7 +44,7 @@ abstract public class UnitTestCommon
     static protected String threddsServer = null;
 
     static {
-        // Compute the root pathg
+        // Compute the root path
         threddsroot = locateThreddsRoot();
         assert threddsroot != null : "Cannot locate /thredds parent dir";
         threddsServer = TestDir.remoteTestServer;

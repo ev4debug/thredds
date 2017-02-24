@@ -55,9 +55,8 @@ public enum DataType {
   DOUBLE("double", 8, double.class, false),
 
   // object types
-  STRING("String", 4, String.class, false),     // 32-bit index
-
   SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
+  STRING("String", 4, String.class, false),     // 32-bit index
   STRUCTURE("Structure", 1, StructureData.class, false), // size meaningless
 
   ENUM1("enum1", 1, byte.class, false), // byte
@@ -276,13 +275,12 @@ public enum DataType {
   }
   //      return (short)((b<0)? (short)b + 256 : (short)b);
 
-  /*
+
   public static void main(String[] args) {
     for (int i = 0; i < 260; i++) {
       byte b = (byte) i;
       System.out.printf("%4d = %4d%n", b, unsignedByteToShort(b));
     }
   }
-  */
 
 }

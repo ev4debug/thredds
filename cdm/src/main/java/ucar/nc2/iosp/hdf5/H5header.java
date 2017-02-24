@@ -977,7 +977,7 @@ public class H5header {
       if (dtype == DataType.CHAR)
         return new Attribute(matt.name, ""); // empty char considered to be a 0 length string
       else
-        return new Attribute(matt.name, dtype, null);
+        return new Attribute(matt.name, dtype);
     }
 
     //if (matt.name.equals("DIMENSION_LIST"))
