@@ -28,6 +28,7 @@ import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -43,7 +44,6 @@ public class MockExecutor extends HTTPMethod.Executor
     //////////////////////////////////////////////////
     // Instance variables
 
-    protected MockMvc mockMvc = null;
     protected String resourcepath = null; // absolute path to resource directory
 
     public MockExecutor(String path)
@@ -58,7 +58,7 @@ public class MockExecutor extends HTTPMethod.Executor
     @Override
     public HttpResponse
     execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
-            throws HTTPException
+            throws IOException
     {
         // Extract stuff from the arguments
         URI uri = rq.getURI();
@@ -112,22 +112,22 @@ public class MockExecutor extends HTTPMethod.Executor
         byte[] byteresult = res.getContentAsByteArray();
 
         // Convert to HttpResponse
-        this.response = new BasicHttpResponse(HttpVersion.HTTP_1_1, res.getStatus(), "");
-        if(this.response == null)
+        HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, res.getStatus(), "");
+        if(response == null)
             throw new HTTPException("HTTPMethod.execute: Response was null");
 
         Collection<String> keys = res.getHeaderNames();
         for(String key : keys) {
             List<String> values = res.getHeaders(key);
             for(String v : values) {
-                this.response.addHeader(key, v);
+                response.addHeader(key, v);
             }
         }
         ByteArrayEntity entity = new ByteArrayEntity(byteresult);
         String sct = res.getContentType();
         entity.setContentType(sct);
-        this.response.setEntity(entity);
-        return this.response;
+        response.setEntity(entity);
+        return response;
     }
 }
 
