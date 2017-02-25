@@ -159,8 +159,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
                 throws IOException
         {
-            HttpResponse response;
-            return httpclient.execute(targethost, rq, session.getContext());
+            HttpResponse response = httpclient.execute(targethost, rq, session.getContext());
+            return response;
         }
 
     }
@@ -391,8 +391,12 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             HttpClient httpclient = cb.build();
             HttpRequestBase rqb = buildRequest(rb, this.settings);
             this.lastrequest = rqb;
-            Executor executor = (TESTEXECUTOR == null ? DEFAULTEXECUTOR : TESTEXECUTOR);
-            this.lastresponse = executor.execute(rqb, targethost, httpclient, session);
+            if(TESTEXECUTOR == null)
+                this.lastresponse = httpclient.execute(targethost, rqb, session.getContext());
+            else {
+		System.err.println("Using TESTEXECUTOR"); System.err.flush();
+                this.lastresponse = TESTEXECUTOR.execute(rqb, targethost, httpclient, session);
+	    }
             return this.lastresponse;
         } catch (IOException ioe) {
             throw new HTTPException(ioe);
