@@ -134,7 +134,7 @@ import static ucar.httpservices.HTTPSession.Prop;
 @NotThreadSafe
 public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 {
-    static public boolean TRACE = true;
+     static public boolean TRACE = true;
 
     //////////////////////////////////////////////////
 
@@ -147,25 +147,65 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 
     static public abstract class Executor
     {
+        protected HttpRequestBase request = null;
+        protected HttpResponse response = null;
+
+        public void reset()
+        {
+            this.request = null;
+            this.response = null;
+        }
+
+        public HttpRequestBase getRequest()
+        {
+            return this.request;
+        }
+
+        public HttpResponse getResponse()
+        {
+            return this.response;
+        }
+
+        static public void
+        trace(HTTPMethod m, HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
+        {
+             System.err.printf("execute: method=%s host=%s url=%s userinfo=%s%n",
+                     m.methodkind,
+                     targethost,
+                     m.methodurl,
+                     m.userinfo
+             );
+        }
+
         abstract public HttpResponse
         execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
-                throws IOException;
+                throws HTTPException;
     }
 
-    static protected class DefaultExecutor extends Executor
+    static public class DefaultExecutor extends Executor
     {
+        HTTPMethod m;
+        public DefaultExecutor(HTTPMethod m) {this.m = m;}
+
         @Override
         public HttpResponse
         execute(HttpRequestBase rq, HttpHost targethost, HttpClient httpclient, HTTPSession session)
-                throws IOException
+                throws HTTPException
         {
-            HttpResponse response = httpclient.execute(targethost, rq, session.getContext());
-            return response;
+            if(m.TRACE)
+                super.trace(this.m,rq,targethost,httpclient,session);
+            this.request = rq;
+            try {
+                this.response = httpclient.execute(targethost, request, session.getContext());
+            } catch (IOException ioe) {
+                throw new HTTPException(ioe);
+            }
+            if(this.response == null)
+                throw new HTTPException("HTTPMethod.execute: Response was null");
+            return this.response;
         }
 
     }
-
-    static final protected DefaultExecutor DEFAULTEXECUTOR = new DefaultExecutor();
 
 
     //////////////////////////////////////////////////
@@ -178,12 +218,11 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     protected HttpEntity content = null;
     protected HTTPSession.Methods methodkind = null;
     protected HTTPMethodStream methodstream = null; // wrapper for strm
+    protected Executor executor = null;
     protected long[] range = null;
     // State tracking
     protected boolean closed = false;
     protected boolean executed = false;
-    protected HttpResponse lastresponse = null;
-    protected HttpMessage lastrequest = null;
 
     protected Map<String, String> headers = new HashMap<String, String>();
 
@@ -208,6 +247,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             throws HTTPException
     {
         if(HTTPSession.TESTING) HTTPMethod.TESTING = true;
+        if(TESTEXECUTOR != null)
+            this.executor = TESTEXECUTOR;
+        else
+            this.executor = new DefaultExecutor(this);
         url = HTTPUtil.nullify(url);
         if(url == null && session != null)
             url = session.getSessionURI();
@@ -322,8 +365,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
                 session = null;
             }
         }
-        this.lastresponse = null;
-        this.lastrequest = null;
+        // finally, make this reusable
+        if(this.executor != null) this.executor.reset();
     }
 
     //////////////////////////////////////////////////
@@ -390,14 +433,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             session.setAuthenticationAndProxy(cb);
             HttpClient httpclient = cb.build();
             HttpRequestBase rqb = buildRequest(rb, this.settings);
-            this.lastrequest = rqb;
-            if(TESTEXECUTOR == null)
-                this.lastresponse = httpclient.execute(targethost, rqb, session.getContext());
-            else {
-		System.err.println("Using TESTEXECUTOR"); System.err.flush();
-                this.lastresponse = TESTEXECUTOR.execute(rqb, targethost, httpclient, session);
-	    }
-            return this.lastresponse;
+            return this.executor.execute(rqb, targethost, httpclient, session);
         } catch (IOException ioe) {
             throw new HTTPException(ioe);
         }
@@ -484,14 +520,14 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 
     public int getStatusCode()
     {
-        if(this.lastresponse == null) return 0;
-        return this.lastresponse.getStatusLine().getStatusCode();
+        if(this.executor == null) return 0;
+        return this.executor.getResponse().getStatusLine().getStatusCode();
     }
 
     public String getStatusLine()
     {
-        if(this.lastresponse == null) return null;
-        return this.lastresponse.getStatusLine().toString();
+        if(this.executor == null) return null;
+        return this.executor.getResponse().getStatusLine().toString();
     }
 
     public String getRequestLine()
@@ -526,8 +562,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         } else { // first time
             HTTPMethodStream stream = null;
             try {
-                if(this.lastresponse == null) return null;
-                stream = new HTTPMethodStream(this.lastresponse.getEntity().getContent(), this);
+                if(this.executor == null) return null;
+                HttpResponse response = this.executor.getResponse();
+                if(response == null) return null;
+                stream = new HTTPMethodStream(response.getEntity().getContent(), this);
             } catch (Exception e) {
                 stream = null;
             }
@@ -552,9 +590,9 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         byte[] content = null;
-        if(this.lastresponse != null)
+        if(this.executor != null && this.executor.getResponse() != null)
             try {
-                content = EntityUtils.toByteArray(this.lastresponse.getEntity());
+                content = EntityUtils.toByteArray(this.executor.getResponse().getEntity());
             } catch (Exception e) {/*ignore*/}
         return content;
     }
@@ -564,10 +602,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         String content = null;
-        if(this.lastresponse != null)
+        if(this.executor != null && this.executor.getResponse() != null)
             try {
                 Charset cset = Charset.forName(charset);
-                content = EntityUtils.toString(this.lastresponse.getEntity(), cset);
+                content = EntityUtils.toString(this.executor.getResponse().getEntity(), cset);
             } catch (Exception e) {
                 throw new IllegalArgumentException(e.getMessage());
             }
@@ -591,23 +629,11 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         return null;
     }
 
-    public Header[] getRequestHeaders()
-    {
-        try {
-            HttpMessage rs = this.lastrequest;
-            if(rs == null) return null;
-            Header[] hs = rs.getAllHeaders();
-            return hs;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
     public Header getResponseHeader(String name)
     {
         try {
-            HttpResponse rs = this.lastresponse;
+            if(this.executor == null) return null;
+            HttpResponse rs = this.executor.getResponse();
             if(rs == null) return null;
             return rs.getFirstHeader(name);
         } catch (Exception e) {
@@ -618,7 +644,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     public Header[] getResponseHeaders()
     {
         try {
-            HttpResponse rs = this.lastresponse;
+            if(this.executor == null) return null;
+            HttpResponse rs = this.executor.getResponse();
             if(rs == null) return null;
             Header[] hs = rs.getAllHeaders();
             return hs;
@@ -691,6 +718,13 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     {
         range = new long[]{lo, hi};
         return this;
+    }
+
+    public Header[] getRequestHeaders()
+    {
+        if(this.executor == null) return null;
+        if(this.executor.getRequest() == null) return null;
+        return this.executor.getRequest().getAllHeaders();
     }
 
     //////////////////////////////////////////////////
@@ -794,13 +828,15 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     public HttpMessage debugRequest()
     {
         if(!TESTING) throw new UnsupportedOperationException();
-        return this.lastrequest;
+        if(this.executor == null) return null;
+        return (this.executor.getRequest());
     }
 
     public HttpResponse debugResponse()
     {
         if(!TESTING) throw new UnsupportedOperationException();
-        return this.lastresponse;
+        if(this.executor == null) return null;
+        return (this.executor.getResponse());
     }
 
     //////////////////////////////////////////////////
