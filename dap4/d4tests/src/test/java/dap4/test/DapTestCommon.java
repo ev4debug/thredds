@@ -12,6 +12,12 @@ import dap4.dap4lib.FileDSP;
 import dap4.servlet.DapCache;
 import dap4.servlet.DapController;
 import dap4.servlet.SynDSP;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.Header;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -21,9 +27,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import thredds.core.DatasetManager;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.dap4.Dap4Controller;
+import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
 import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.TestDir;
@@ -34,6 +43,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 @ContextConfiguration
@@ -162,6 +172,97 @@ abstract public class DapTestCommon extends UnitTestCommon
                 throw new DapException("Mocker: no controller");
             this.controller.handleRequest(this.req, this.resp);
             return this.resp.getContentAsByteArray();
+        }
+    }
+
+    // Mocking Support Class for HTTPMethod
+
+    static public class MockExecutor implements HTTPMethod.Executor
+    {
+        protected String resourcepath = null;
+
+        public MockExecutor(String resourcepath)
+        {
+            this.resourcepath = resourcepath;
+        }
+
+        //HttpHost targethost,HttpClient httpclient,HTTPSession session
+        public HttpResponse
+        execute(HttpRequestBase rq)
+                throws IOException
+        {
+            URI uri = rq.getURI();
+            DapController controller = getController(uri);
+            StandaloneMockMvcBuilder mvcbuilder =
+                    MockMvcBuilders.standaloneSetup(controller);
+            mvcbuilder.setValidator(new TestServlet.NullValidator());
+            MockMvc mockMvc = mvcbuilder.build();
+            MockHttpServletRequestBuilder mockrb = MockMvcRequestBuilders.get(uri);
+            // We need to use only the path part
+            mockrb.servletPath(uri.getPath());
+            // Move any headers from rq to mockrb
+            Header[] headers = rq.getAllHeaders();
+            for(int i = 0; i < headers.length; i++) {
+                Header h = headers[i];
+                mockrb.header(h.getName(), h.getValue());
+            }
+            // Since the url has the query parameters,
+            // they will automatically be parsed and added
+            // to the rb parameters.
+
+            // Finally set the resource dir
+            mockrb.requestAttr("RESOURCEDIR", this.resourcepath);
+
+            // Now invoke the servlet
+            MvcResult result;
+            try {
+                result = mockMvc.perform(mockrb).andReturn();
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+            // Collect the output
+            MockHttpServletResponse res = result.getResponse();
+            byte[] byteresult = res.getContentAsByteArray();
+
+            // Convert to HttpResponse
+            HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, res.getStatus(), "");
+            if(response == null)
+                throw new IOException("HTTPMethod.executeMock: Response was null");
+            Collection<String> keys = res.getHeaderNames();
+            // Move headers to the response
+            for(String key : keys) {
+                List<String> values = res.getHeaders(key);
+                for(String v : values) {
+                    response.addHeader(key, v);
+                }
+            }
+            ByteArrayEntity entity = new ByteArrayEntity(byteresult);
+            String sct = res.getContentType();
+            entity.setContentType(sct);
+            response.setEntity(entity);
+            return response;
+        }
+
+        protected DapController
+        getController(URI uri)
+                throws IOException
+        {
+            String path = uri.getPath();
+            path = HTTPUtil.canonicalpath(path);
+            assert path.startsWith("/");
+            String[] pieces = path.split("[/]");
+            assert pieces.length >= 2;
+            // Path is absolute, so pieces[0] will be empty
+            // so pieces[1] should determine the controller
+            DapController controller;
+            if("d4ts".equals(pieces[1])) {
+                controller = new D4TSController();
+            } else if("thredds".equals(pieces[1])) {
+                controller = new Dap4Controller();
+            } else
+                throw new IOException("Unknown controller type " + pieces[1]);
+            return controller;
         }
     }
 
@@ -388,7 +489,7 @@ abstract public class DapTestCommon extends UnitTestCommon
             NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
             NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
                     ucar.nc2.iosp.hdf5.H5iosp.class
-                    );
+            );
         } catch (Exception e) {
             DapLog.warn("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
         }
@@ -428,7 +529,7 @@ abstract public class DapTestCommon extends UnitTestCommon
         assert (testdirf.canRead());
         File[] filelist = testdirf.listFiles();
         System.err.println("\n*******************");
-        System.err.printf("Contents of %s:%n",path);
+        System.err.printf("Contents of %s:%n", path);
         for(int i = 0; i < filelist.length; i++) {
             File file = filelist[i];
             String fname = file.getName();

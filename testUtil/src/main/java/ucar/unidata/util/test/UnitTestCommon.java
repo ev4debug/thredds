@@ -4,6 +4,8 @@
 
 package ucar.unidata.util.test;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpRequestBase;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -663,7 +665,6 @@ abstract public class UnitTestCommon
         }
         return false;
     }
-
 
 }
 
