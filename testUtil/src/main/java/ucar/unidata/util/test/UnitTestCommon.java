@@ -4,8 +4,6 @@
 
 package ucar.unidata.util.test;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpRequestBase;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -37,7 +35,6 @@ abstract public class UnitTestCommon
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
 
-    static public org.slf4j.Logger log;
 
     // NetcdfDataset enhancement to use: need only coord systems
     static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
@@ -665,6 +662,43 @@ abstract public class UnitTestCommon
         }
         return false;
     }
+
+
+    // Replacement for stderr & stdout
+    static public class STDIO
+    {
+        public org.slf4j.Logger log;
+
+        public STDIO(String name)
+        {
+            log = org.slf4j.LoggerFactory.getLogger(name);
+        }
+
+        public void
+        printf(String format, Object... args)
+        {
+            log.info(String.format(format, args));
+        }
+
+        public void
+        println(String msg)
+        {
+            printf("%s%n", msg);
+        }
+
+        public void
+        print(String msg)
+        {
+            printf("%s", msg);
+        }
+
+        public void
+        flush() {}
+    }
+
+    static public STDIO stderr = new STDIO("test");
+    static public STDIO stdout = new STDIO("test");
+
 
 }
 

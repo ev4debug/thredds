@@ -125,7 +125,7 @@ public class HTTPSession implements Closeable
      * Determine wether to use a Pooling connection manager
      * or to manage a bunch of individual connections.
      */
-    static protected final boolean USEPOOL = true;
+    static protected final boolean USEPOOL = false;
 
     // Define all the legal properties
     // Previously taken from class AllClientPNames, but that is now
@@ -608,7 +608,9 @@ public class HTTPSession implements Closeable
     static synchronized public void setGlobalMaxConnections(int n)
     {
         globalsettings.put(Prop.MAX_CONNECTIONS, n);
-        connmgr.setMaxConnections(n);
+        HTTPConnections.setDefaultMaxConections(n);
+        if(connmgr != null)
+            connmgr.setMaxConnections(n);
     }
 
     static synchronized public int getGlobalMaxConnection()

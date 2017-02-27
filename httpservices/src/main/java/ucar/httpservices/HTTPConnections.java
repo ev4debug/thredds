@@ -55,10 +55,21 @@ import java.util.Map;
 @ThreadSafe
 abstract class HTTPConnections
 {
+    static public boolean TRACE = true;
+
     //////////////////////////////////////////////////
     // Constants
 
-    static final int DFALTMAXCONNS = 10;
+    static int DFALTMAXCONNS = 20;
+
+
+    static public int setDefaultMaxConections(int n)
+    {
+        int old = DFALTMAXCONNS;
+        if(n > 0) DFALTMAXCONNS = n;
+        return old;
+    }
+
 
     //////////////////////////////////////////////////
     // Shared Instance variables
@@ -172,7 +183,10 @@ class HTTPConnectionSimple extends HTTPConnections
                     mgrmap.put(mgr, method);
                     this.actualconnections++;
                     await = false;
-                }
+                    if(TRACE)
+                        System.err.println("HTTPConnections: open connection: "+method.hashCode());
+                } else if(TRACE)
+                    throw new IllegalStateException("HTTPConnections: too many connections");
             }
             if(!await)
                 break;
@@ -198,6 +212,8 @@ class HTTPConnectionSimple extends HTTPConnections
             methodmap.remove(method);
             ((BasicHttpClientConnectionManager) mgr).close();
             actualconnections--;
+            if(TRACE)
+                System.err.println("HTTPConnections: close connection: "+method.hashCode());
         }
     }
 
@@ -207,6 +223,8 @@ class HTTPConnectionSimple extends HTTPConnections
         synchronized (this) {
             if(this.closed) return;
             this.closed = true;
+            if(TRACE)
+                System.err.println("HTTPConnections: close with open connections: "+methodmap.size());
             for(HTTPMethod m : methodmap.keySet()) {
                 freeManager(m);
             }
@@ -258,6 +276,8 @@ class HTTPConnectionPool extends HTTPConnections
     public HttpClientConnectionManager newManager(HTTPMethod session)
     {
         synchronized (this) {
+            if(TRACE)
+                System.err.println("HTTPConnections: open connection");
             this.actualconnections++;
             return getPool();
         }
@@ -265,6 +285,8 @@ class HTTPConnectionPool extends HTTPConnections
 
     public void freeManager(HTTPMethod m)
     {
+        if(TRACE)
+            System.err.println("HTTPConnections: close connection");
         this.actualconnections--;
     }
 

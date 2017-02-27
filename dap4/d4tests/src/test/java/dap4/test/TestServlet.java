@@ -196,8 +196,8 @@ public class TestServlet extends DapTestCommon
     doOneTest(TestCase testcase)
             throws Exception
     {
-        System.err.println("Testcase: " + testcase.testinputpath);
-        System.err.println("Baseline: " + testcase.baselinepath);
+        stderr.println("Testcase: " + testcase.testinputpath);
+        stderr.println("Baseline: " + testcase.baselinepath);
         System.err.flush();
         if(PARSEDEBUG) Dap4ParserImpl.setGlobalDebugLevel(1);
         for(String extension : testcase.extensions) {
@@ -242,7 +242,7 @@ public class TestServlet extends DapTestCommon
         } else if(prop_diff) { //compare with baseline
             // Read the baseline file
             String baselinecontent = readfile(testcase.baselinepath + ".dmr");
-            System.err.println("DMR Comparison");
+            stderr.println("DMR Comparison");
             Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, sdmr));
         }
     }
@@ -294,7 +294,7 @@ public class TestServlet extends DapTestCommon
         if(prop_diff) {
             //compare with baseline
             // Read the baseline file
-            System.err.println("Data Comparison:");
+            stderr.println("Data Comparison:");
             String baselinecontent = readfile(testcase.baselinepath + ".dap");
             Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, sdata));
         }

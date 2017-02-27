@@ -449,7 +449,7 @@ abstract public class DapTestCommon extends UnitTestCommon
     {
         String svc = "http://" + this.d4tsserver + "/d4ts";
         if(!checkServer(svc))
-            log.warn("D4TS Server not reachable: " + svc);
+            stderr.println("D4TS Server not reachable: " + svc);
         // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
         d4tsserver = "dap4://" + d4tsserver + "/d4ts";
     }
