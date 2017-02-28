@@ -125,7 +125,7 @@ public class HTTPSession implements Closeable
      * Determine wether to use a Pooling connection manager
      * or to manage a bunch of individual connections.
      */
-    static protected final boolean USEPOOL = false;
+    static protected final boolean USEPOOL = true;
 
     // Define all the legal properties
     // Previously taken from class AllClientPNames, but that is now

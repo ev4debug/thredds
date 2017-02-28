@@ -273,11 +273,11 @@ class HTTPConnectionPool extends HTTPConnections
     }
 
     @Override
-    public HttpClientConnectionManager newManager(HTTPMethod session)
+    public HttpClientConnectionManager newManager(HTTPMethod m)
     {
         synchronized (this) {
             if(TRACE)
-                System.err.println("HTTPConnections: open connection");
+                System.err.println("HTTPConnections: open connection: "+m.hashCode());
             this.actualconnections++;
             return getPool();
         }
@@ -286,7 +286,7 @@ class HTTPConnectionPool extends HTTPConnections
     public void freeManager(HTTPMethod m)
     {
         if(TRACE)
-            System.err.println("HTTPConnections: close connection");
+            System.err.println("HTTPConnections: close connection: "+m.hashCode());
         this.actualconnections--;
     }
 
