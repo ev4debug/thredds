@@ -289,15 +289,17 @@ abstract public class HTTPUtil
         StringBuilder buf = new StringBuilder();
         int i = 0;
         while(i < u.length()) {
-            char c = u.charAt(i++);
+            char c = u.charAt(i);
             if(c == '\\') {
                 if(i + 1 == u.length())
                     throw new URISyntaxException(u, "Trailing '\' at end of url");
                 buf.append("%5c");
-                c = u.charAt(i++);
+                i++;
+                c = u.charAt(i);
                 buf.append(String.format("%%%02x", (int) c));
             } else
                 buf.append(c);
+            i++;
         }
         return new URI(buf.toString());
     }
