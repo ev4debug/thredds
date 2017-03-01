@@ -124,8 +124,10 @@ public class HTTPSession implements Closeable
     /**
      * Determine wether to use a Pooling connection manager
      * or to manage a bunch of individual connections.
+     * Note: there is something wrong with the pooling manager
+     * in Apache httpclient, switch to non-pool until we can figure it out.
      */
-    static protected final boolean USEPOOL = true;
+    static protected final boolean USEPOOL = false;
 
     // Define all the legal properties
     // Previously taken from class AllClientPNames, but that is now
