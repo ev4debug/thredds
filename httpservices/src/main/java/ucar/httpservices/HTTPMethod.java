@@ -279,14 +279,20 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             this.methodstream = null;
         }
         // Force release underlying connection back to the connection manager
-        if(this.lastresponse != null) try {
-            try {
-                // Attempt to keep connection alive by consuming its remaining content
-                EntityUtils.consume(this.lastresponse.getEntity());
-            } finally {
-                HttpClientUtils.closeQuietly(this.lastresponse); // Paranoia
-            }
-        } catch (IOException ignore) {/*ignore*/}
+        if(this.lastresponse != null) {
+            if(false) {
+                try {
+                    try {
+                        // Attempt to keep connection alive by consuming its remaining content
+                        EntityUtils.consume(this.lastresponse.getEntity());
+                    } finally {
+                        HttpClientUtils.closeQuietly(this.lastresponse); // Paranoia
+                    }
+                } catch (IOException ignore) {/*ignore*/}
+            } else
+                HttpClientUtils.closeQuietly(this.lastresponse);
+            this.lastresponse = null;
+        }
         if(session != null) {
             session.removeMethod(this);
             if(localsession) {
@@ -295,7 +301,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             }
         }
         this.lastrequest = null;
-        this.lastresponse = null;
     }
 
     //////////////////////////////////////////////////

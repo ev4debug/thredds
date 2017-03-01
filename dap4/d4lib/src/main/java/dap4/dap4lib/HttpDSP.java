@@ -4,7 +4,6 @@
 
 package dap4.dap4lib;
 
-import dap4.core.data.DSP;
 import dap4.core.dmr.DapDataset;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapDump;
@@ -21,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteOrder;
 
 /**
  * Make a request to a server and convert the reply
@@ -246,28 +244,18 @@ public class HttpDSP extends D4DSP
         long start = System.currentTimeMillis();
         long stop = 0;
         this.status = 0;
-        HTTPMethod method = null;
+        HTTPMethod method = null; // Implicitly passed out to caller via stream
         try {   // Note that we cannot use try with resources because we export the method stream, so method
             // must not be closed.
             method = HTTPFactory.Get(methodurl);
             if(allowCompression)
                 method.setCompression("deflate,gzip");
-
             this.status = method.execute();
-
             if(this.status != HttpStatus.SC_OK) {
                 String msg = method.getResponseAsString();
                 throw new DapException("Request failure: " + method.getStatusText() + ": " + methodurl)
                         .setCode(status);
             }
-            // Pull headers of interest
-            /*not legal
-            Header encodingheader = method.getResponseHeader("Content-Encoding");
-            String byteorder = (encodingheader != null ? encodingheader.getValue() : null);
-            setOrder(byteorder.equalsIgnoreCase("Big-Endian") ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-            if(getOrder() == null)
-                throw new DapException("Missing or ill-formed Content-Encoding header");
-            */
             // Get the response body stream => do not close the method
             return method.getResponseAsStream();
 

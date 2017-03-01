@@ -290,6 +290,7 @@ class HTTPConnectionPool extends HTTPConnections
         if(TRACE)
             System.err.println("HTTPConnections: close connection: "+m.hashCode());
         this.actualconnections--;
+        // Do notneed to reclaim anything for pooling manager
     }
 
     @Override
