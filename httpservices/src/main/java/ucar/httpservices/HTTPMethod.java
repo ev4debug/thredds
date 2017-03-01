@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -269,15 +270,23 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     close()
     {
         if(closed)
-            return; // multiple calls ok
+            return; // recursive calls ok
         closed = true; // mark as closed to prevent recursive calls
         if(methodstream != null) {
             try {
-                methodstream.close();
+                this.methodstream.close(); // May recursr
             } catch (IOException ioe) {/*failure is ok*/}
-            ;
-            methodstream = null;
+            this.methodstream = null;
         }
+        // Force release underlying connection back to the connection manager
+        if(this.lastresponse != null) try {
+            try {
+                // Attempt to keep connection alive by consuming its remaining content
+                EntityUtils.consume(this.lastresponse.getEntity());
+            } finally {
+                HttpClientUtils.closeQuietly(this.lastresponse); // Paranoia
+            }
+        } catch (IOException ignore) {/*ignore*/}
         if(session != null) {
             session.removeMethod(this);
             if(localsession) {

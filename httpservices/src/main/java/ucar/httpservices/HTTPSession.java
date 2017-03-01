@@ -127,7 +127,7 @@ public class HTTPSession implements Closeable
      * Note: there is something wrong with the pooling manager
      * in Apache httpclient, switch to non-pool until we can figure it out.
      */
-    static protected final boolean USEPOOL = false;
+    static protected final boolean USEPOOL = true;
 
     // Define all the legal properties
     // Previously taken from class AllClientPNames, but that is now
