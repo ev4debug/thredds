@@ -57,7 +57,7 @@ import java.util.Map;
 @ThreadSafe
 abstract class HTTPConnections
 {
-    static public boolean TRACE = true;
+    static public boolean TRACE = false;
 
     //////////////////////////////////////////////////
     // Constants
