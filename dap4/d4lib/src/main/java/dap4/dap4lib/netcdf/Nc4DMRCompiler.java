@@ -635,6 +635,15 @@ public class Nc4DMRCompiler
             tn = enumbasetype(tn);
         Object vector = getRawAttributeValues(tn, count, gid, vid, name);
         DapType basetype = tn.getType();
+        // basetype == Char requires special pre-conversion
+        // since the nc file data is coming back as utf-8, not utf-16.
+        if(basetype.isCharType()) {
+            byte[] data = (byte[]) vector;  // raw utf-8
+            String sdata = new String(data,DapUtil.UTF8);
+            char[] cdata = sdata.toCharArray();
+            count = cdata.length;
+            vector = cdata;
+        }
         String[] values = (String[])Convert.convert(DapType.STRING, basetype, vector);
         return values;
     }

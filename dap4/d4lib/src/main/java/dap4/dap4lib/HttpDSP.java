@@ -245,25 +245,43 @@ public class HttpDSP extends D4DSP
         long start = System.currentTimeMillis();
         long stop = 0;
         this.status = 0;
-        HTTPMethod method = null; // Implicitly passed out to caller via stream
-        try {   // Note that we cannot use try with resources because we export the method stream, so method
-            // must not be closed.
-            method = HTTPFactory.Get(methodurl);
-            if(allowCompression)
-                method.setCompression("deflate,gzip");
-            this.status = method.execute();
-            if(this.status != HttpStatus.SC_OK) {
-                String msg = method.getResponseAsString();
-                throw new DapException("Request failure: " + status + ": " + methodurl)
-                        .setCode(status);
+        if(false) {
+            HTTPMethod method = null; // Implicitly passed out to caller via stream
+            try {   // Note that we cannot use try with resources because we export the method stream, so method
+                // must not be closed.
+                method = HTTPFactory.Get(methodurl);
+                if(allowCompression)
+                    method.setCompression("deflate,gzip");
+                this.status = method.execute();
+                if(this.status != HttpStatus.SC_OK) {
+                    String msg = method.getResponseAsString();
+                    throw new DapException("Request failure: " + status + ": " + methodurl)
+                            .setCode(status);
+                }
+                // Get the response body stream => do not close the method
+                return method.getResponseAsStream();
+            } catch (HTTPException e) {
+                if(method != null)
+                    method.close();
+                throw new DapException(e);
             }
-            // Get the response body stream => do not close the method
-            return method.getResponseAsStream();
-
-        } catch (HTTPException e) {
-            if(method != null)
-                method.close();
-            throw new DapException(e);
+        } else {// read whole input
+            try {
+                try (HTTPMethod method = HTTPFactory.Get(methodurl)) {
+                    if(allowCompression)
+                        method.setCompression("deflate,gzip");
+                    this.status = method.execute();
+                    if(this.status != HttpStatus.SC_OK) {
+                        String msg = method.getResponseAsString();
+                        throw new DapException("Request failure: " + status + ": " + methodurl)
+                                .setCode(status);
+                    }
+                    byte[] body = method.getResponseAsBytes();
+                    return new ByteArrayInputStream(body);
+                }
+            } catch (HTTPException e) {
+                throw new DapException(e);
+            }
         }
     }
 
