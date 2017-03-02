@@ -11,6 +11,7 @@ import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.dap4lib.serial.D4DSP;
 import org.apache.http.HttpStatus;
+import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
@@ -253,13 +254,13 @@ public class HttpDSP extends D4DSP
             this.status = method.execute();
             if(this.status != HttpStatus.SC_OK) {
                 String msg = method.getResponseAsString();
-                throw new DapException("Request failure: " + method.getStatusText() + ": " + methodurl)
+                throw new DapException("Request failure: " + status + ": " + methodurl)
                         .setCode(status);
             }
             // Get the response body stream => do not close the method
             return method.getResponseAsStream();
 
-        } catch (Exception e) {
+        } catch (HTTPException e) {
             if(method != null)
                 method.close();
             throw new DapException(e);
