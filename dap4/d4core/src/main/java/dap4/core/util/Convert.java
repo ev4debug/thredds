@@ -3,6 +3,7 @@
 
 package dap4.core.util;
 
+import dap4.core.dmr.DapEnumConst;
 import dap4.core.dmr.DapEnumeration;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.TypeSort;
@@ -83,19 +84,9 @@ public abstract class Convert
         TypeSort srcsort = srctype.getTypeSort();
         TypeSort dstsort = dsttype.getTypeSort();
 
-        // Handle enumeration cases
-        if(srcsort.isEnumType() &&dstsort.isEnumType())
+        // Special actions for enumeration cases
+        if(srcsort.isEnumType() && dstsort.isEnumType())
             throw new ConversionException("Cannot convert enum to enum");
-        else if(srcsort.isEnumType()) {
-            DapType srcbase = ((DapEnumeration) srctype).getBaseType();
-            return convert(dsttype, srcbase, values);
-        } else if(dstsort.isEnumType()) {
-            DapType dstbase = ((DapEnumeration) dsttype).getBaseType();
-            return convert(dstbase, srctype, values);
-        }
-
-        assert (!srcsort.isEnumType());
-        assert (!dstsort.isEnumType());
 
         // We will move the values to a common super type
         // and then down to the dsttype
@@ -209,6 +200,34 @@ public abstract class Convert
         case Opaque:
             opvalues = (ByteBuffer[]) values;
             break;
+        case Enum:
+            // The incoming set of values might be a vector of some kind of integer
+            // or a vector of strings. In the latter case, the string might represent
+            // an integer or represent a enum const name.
+            DapEnumeration srcenum = (DapEnumeration) srctype;
+            DapType enumbase = srcenum.getBaseType();
+            lvalues = new long[count]; // for all cases, this is what we want
+            DapType vectype =  vectorType(values);
+            if(vectype.isIntegerType()) {
+               lvalues = (long[])convert(DapType.INT64,vectype, values);
+            } else if(vectype.isStringType()) {
+                for(int i = 0; i < count; i++) {
+                    String sval = ((String[]) values)[i];
+                    try {// see if this is an integer
+                        lvalues[i] = Long.parseLong(sval);
+                        // See if this is a legal value for the enum
+                        if(srcenum.lookup(lvalues[i]) == null)
+                            throw new ConversionException("Illegal Enum constant: " + sval);
+                    } catch (NumberFormatException nfe) {// not an integer
+                        DapEnumConst dec = srcenum.lookup(sval);
+                        if(dec == null)
+                            throw new ConversionException("Illegal Enum constant: " + sval);
+                        lvalues[i] = dec.getValue();
+                    }
+                }
+            } else
+                throw new ConversionException(String.format("Cannot convert values of type %s to enum",vectype));
+            break;
         default:
             throw new ConversionException("Illegal srctype: " + srctype);
         }
@@ -299,7 +318,22 @@ public abstract class Convert
                         stresult[i] = Double.toString(dvalues[i]);
                     }
                 }
-            } break;
+            }
+            break;
+        case Enum:
+            // If dst is an enumeration, then convert to a vector of basetype
+            if(opvalues != null)
+                throw new ConversionException("Cannot convert opaque to enum");
+            DapEnumeration dstenum = (DapEnumeration) dsttype;
+            if(svalues != null) {
+                lvalues = dstenum.convert(svalues); // treat strings as econst names or ints
+            } else if(dvalues != null) {
+                lvalues = double2long(dvalues);
+            }
+            assert (lvalues != null);
+            // Down convert from long to the basetype of the enum
+            result = convert(dstenum.getBaseType(),DapType.INT64,lvalues);
+            break;
         default:
             throw new ConversionException("Illegal dsttype: " + dsttype);
         }
@@ -352,6 +386,22 @@ public abstract class Convert
             }
         }
         return out;
+    }
+
+    static public DapType
+    vectorType(Object o)
+    {
+        Class c = o.getClass();
+        if(!c.isArray()) return null;
+        if(o instanceof byte[]) return DapType.INT8;
+        if(o instanceof short[]) return DapType.INT16;
+        if(o instanceof int[]) return DapType.INT32;
+        if(o instanceof String[][]) return DapType.STRING;
+        if(o instanceof char[][]) return DapType.CHAR;
+        if(o instanceof float[][]) return DapType.FLOAT32;
+        if(o instanceof double[][]) return DapType.FLOAT64;
+        if(o instanceof ByteBuffer[][]) return DapType.OPAQUE;
+        return null;
     }
 }
     

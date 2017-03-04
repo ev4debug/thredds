@@ -430,14 +430,8 @@ public class Group extends CDMNode implements AttributeContainer {
       for (Attribute att : attributes.getAttributes()) {
         //String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
         if(!Attribute.suppress(att,strict)) {
-          out.format("%s", indent);
-          if(strict && att.getDataType() == DataType.STRING) {
-            // Force type explicitly for string.
-            out.format("string "); // note lower case
-          }
-          // TODO: fix the case where the type is an enum to use the actual enum typedef
-          out.format(":");
-          att.writeCDL(out, strict);
+          out.format("", indent);
+          att.writeCDL(out, strict, null);
           out.format(";");
           if(!strict && (att.getDataType() != DataType.STRING)) out.format(" // %s", att.getDataType());
           out.format("%n");

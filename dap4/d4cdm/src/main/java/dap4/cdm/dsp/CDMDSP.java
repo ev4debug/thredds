@@ -713,10 +713,28 @@ public class CDMDSP extends AbstractDSP
     buildattribute(Attribute attr)
             throws DapException
     {
-        DapType basetype = CDMTypeFcns.cdmtype2daptype(attr.getDataType());
-        if(basetype == null)
+        DapAttribute dapattr = null;
+        DapType cdmbase = CDMTypeFcns.cdmtype2daptype(attr.getDataType());
+        DapType attrtype; // for the DapAttr
+        DapEnumeration dapenum = null;
+        EnumTypedef en = attr.getEnumType();
+        if(en != null) {
+            EnumTypedef trueenumdef = findMatchingEnum(en);
+            // Modify the attr
+            attr.setEnumType(trueenumdef);
+            // Now, map to a DapEnumeration
+            dapenum =  (DapEnumeration)this.nodemap.get(trueenumdef);
+            if(dapenum == null)
+                throw new DapException("DapFile: illegal CDM variable attribute type: "+trueenumdef);
+            attrtype = dapenum;
+            DapType basetype = dapenum.getBaseType();
+            if(basetype != cdmbase)
+                throw new DapException("DapFile: Attribute enumeration base type mismatch");
+        } else
+            attrtype = cdmbase;
+        if(attrtype == null)
             throw new DapException("DapFile: illegal CDM variable attribute type: " + attr.getDataType());
-        DapAttribute dapattr = (DapAttribute) dmrfactory.newAttribute(attr.getShortName(), basetype);
+        dapattr = (DapAttribute) dmrfactory.newAttribute(attr.getShortName(), attrtype);
         recordNode(attr, dapattr);
         // Transfer the values
         Array values = attr.getValues();
@@ -726,7 +744,8 @@ public class CDMDSP extends AbstractDSP
         Object vec = CDMTypeFcns.createVector(attr.getDataType(),values.getSize());
         for(int i = 0; iter.hasNext(); i++)
             java.lang.reflect.Array.set(vec,i,iter.next());
-        String[] valuelist = (String[])Convert.convert(DapType.STRING,basetype,vec);
+        String[] valuelist = null;
+        valuelist = (String[])Convert.convert(DapType.STRING,attrtype,vec);
         dapattr.setValues(valuelist);
         return dapattr;
     }

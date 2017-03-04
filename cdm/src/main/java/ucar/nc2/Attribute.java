@@ -69,8 +69,26 @@ public class Attribute extends CDMNode
    * @return DataType
    */
   public DataType getDataType() {
-    return dataType;
+    return this.dataType;
   }
+
+  public void setDataType(DataType dt)
+  {
+    if(dt == DataType.ENUM4) {
+      int x = 0;
+    }
+    this.dataType = dt;
+  }
+
+  public EnumTypedef getEnumType()
+  {
+      return this.enumtype;
+  }
+
+  public void setEnumType(EnumTypedef en)
+    {
+        this.enumtype = en;
+    }
 
   /**
    * True if value is an array (getLength() > 1)
@@ -196,12 +214,15 @@ public class Attribute extends CDMNode
         }
       case BYTE:
       case UBYTE:
+      case ENUM1:
         return values.getByte(index);
       case SHORT:
       case USHORT:
+      case ENUM2:
         return values.getShort(index);
       case INT:
       case UINT:
+      case ENUM4:
         return values.getInt(index);
       case FLOAT:
         return values.getFloat(index);
@@ -232,7 +253,7 @@ public class Attribute extends CDMNode
 
   public String toString(boolean strict) {
     Formatter f = new Formatter();
-    writeCDL(f, strict);
+    writeCDL(f, strict, null);
     return f.toString();
   }
 
@@ -242,8 +263,16 @@ public class Attribute extends CDMNode
    * @param f      write into this
    * @param strict if true, create strict CDL, escaping names
    */
-  protected void writeCDL(Formatter f, boolean strict)
+  protected void writeCDL(Formatter f, boolean strict, String parentname)
   {
+    if(strict && this.getDataType() == DataType.STRING) {
+      // Force type explicitly for string.
+      f.format("string "); //note lower case and trailing blank
+    } else if(strict && this.getDataType().isEnum()) {
+      f.format("%s ",this.getEnumType().getFullName());
+    }
+    if(strict && parentname != null) f.format(NetcdfFile.makeValidCDLName(parentname));
+    f.format(":");
     f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
     if(isString()) {
       f.format(" = ");
@@ -257,9 +286,13 @@ public class Attribute extends CDMNode
       f.format(" = ");
       for(int i = 0; i < getLength(); i++) {
         if(i != 0) f.format(", ");
-        if(strict && enumtype != null) {
+        if(strict && enumtype != null) { //  might be a name or a number
+          String econst = getStringValue(i);
           Number eval = getNumericValue(i);
-          String econst = enumtype.lookupEnumString(eval.intValue());
+          if(eval != null) {
+            econst = enumtype.lookupEnumString(eval.intValue());
+          } else if(enumtype.lookupEnumInt(econst) == null)
+              econst = null;
           if(econst == null)
             throw new ForbiddenConversionException("Unknown enum const value: "+eval);
            f.format("%s",econst);
@@ -315,8 +348,8 @@ public class Attribute extends CDMNode
   public Attribute(String name, Attribute from) {
     super(name);
     if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
-    this.dataType = from.dataType;
-    this.enumtype = from.enumtype;
+    setDataType(from.dataType);
+    setEnumType(from.enumtype);
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
@@ -330,7 +363,7 @@ public class Attribute extends CDMNode
    */
   public Attribute(String name, String val) {
     super(name);
-    this.dataType = DataType.STRING;
+    setDataType(DataType.STRING);
     if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
     setStringValue(val);
     setImmutable();
@@ -353,7 +386,7 @@ public class Attribute extends CDMNode
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass(), isUnsigned);
-    this.dataType = dt;
+    setDataType(dt);
     Array vala = Array.factory(dt, shape);
     Index ima = vala.getIndex();
     vala.setObject(ima.set0(0), val);
@@ -403,8 +436,9 @@ public class Attribute extends CDMNode
   public Attribute(String name, DataType dataType, EnumTypedef en)
   {
     this(name);
-    this.dataType = dataType;
-    this.enumtype = en;
+    setDataType(dataType);
+    setEnumType(en);
+    assert en == null || dataType.isEnum();
     this.nelems = 0;
   }
 
@@ -419,54 +453,24 @@ public class Attribute extends CDMNode
    */
   public Attribute(String name, DataType basetype, EnumTypedef en, List values, boolean isUnsigned) {
     this(name,basetype,en);
-    int n = (values == null ? 0 : values.size());
-    Object pa;
-
-    // Figure out the attribute type
-    Class c = values.get(0).getClass();
-    dataType = DataType.getType(c, isUnsigned);
-    if (c == String.class) {
-      String[] va = new String[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
-
-    } else if (c == Integer.class) {
-      int[] va = new int[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
-
-    } else if (c == Double.class) {
-      double[] va = new double[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
-
-    } else if (c == Float.class) {
-      float[] va = new float[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
-
-    } else if (c == Short.class) {
-      short[] va = new short[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
-
-    } else if (c == Byte.class) {
-      byte[] va = new byte[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
-
-    } else if (c == Long.class) {
-      long[] va = new long[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
-
-    } else {
-      throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
-    }
-
-    setValues(Array.factory(dataType, new int[]{n}, pa));
+    setValues(values,basetype,isUnsigned);
     setImmutable();
   }
+
+  /**
+     * Construct attribute with Array of values.
+     *
+     * @param name   name of attribute
+     * @param basetype   null => infer from values
+     * @param en         null unless this is an enum type attribute
+     * @param values Array of values; at least 1 member
+     * @param isUnsigned
+     */
+    public Attribute(String name, DataType basetype, EnumTypedef en, Array values, boolean isUnsigned) {
+      this(name,basetype,en);
+      setValues(values);
+      setImmutable();
+    }
 
   /**
    * A copy constructor using a ucar.unidata.util.Parameter.
@@ -507,7 +511,7 @@ public class Attribute extends CDMNode
 
     this.svalue = val;
     this.nelems = 1;
-    this.dataType = DataType.STRING;
+    setDataType(DataType.STRING);
 
     //values = Array.factory(String.class, new int[]{1});
     //values.setObject(values.getIndex(), val);
@@ -530,6 +534,54 @@ public class Attribute extends CDMNode
   }
 
   /**
+   * set the values from a list
+   *
+   * @param values
+   */
+  protected void setValues(List values, DataType dt, boolean isUnsigned)
+  {
+      Object pa;
+      int n = (values == null ? 0 : values.size());
+      Class c = values.get(0).getClass();
+      DataType inferred = DataType.getType(c, dt.isUnsigned());
+      if(!dt.isEnumCompatible(inferred))
+        throw new IllegalArgumentException("Attribute/value type mismatch");
+      if (c == String.class) {
+        String[] va = new String[n];
+        pa = va;
+        for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
+      } else if (c == Integer.class) {
+        int[] va = new int[n];
+        pa = va;
+        for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
+      } else if (c == Double.class) {
+        double[] va = new double[n];
+        pa = va;
+        for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
+      } else if (c == Float.class) {
+        float[] va = new float[n];
+        pa = va;
+        for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
+      } else if (c == Short.class) {
+        short[] va = new short[n];
+        pa = va;
+        for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
+      } else if (c == Byte.class) {
+        byte[] va = new byte[n];
+        pa = va;
+        for (int i = 0; i < n; i++)
+          va[i] = (Byte) values.get(i);
+      } else if (c == Long.class) {
+        long[] va = new long[n];
+        pa = va;
+        for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
+      } else {
+        throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
+      }
+      setValues(Array.factory(dataType, new int[]{n}, pa));
+  }
+
+  /**
    * set the values from an Array
    *
    * @param arr value of Attribute
@@ -548,7 +600,7 @@ public class Attribute extends CDMNode
       if (carr.getRank() == 1) { // common case
         svalue = carr.getString();
         this.nelems = 1;
-        this.dataType = DataType.STRING;
+        setDataType(DataType.STRING);
         return;
       }
       // otherwise its an array of Strings
@@ -582,7 +634,10 @@ public class Attribute extends CDMNode
 
     this.values = arr;
     this.nelems = (int) arr.getSize();
-    this.dataType = DataType.getType(arr);
+    DataType arraytype = DataType.getType(arr);
+    if(this.getEnumType() != null)
+      arraytype = DataType.enumTypeize(arraytype);
+    setDataType(arraytype);
   }
 
   /**

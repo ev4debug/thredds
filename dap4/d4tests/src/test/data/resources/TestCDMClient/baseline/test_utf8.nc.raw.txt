@@ -2,11 +2,11 @@ netcdf test_utf8 {
   dimensions:
     d2 = 2;
   variables:
-    String vs(d2);
-      String vs:_DAP4_Checksum_CRC32 = "0xfce3cd28";
+    string vs(d2);
+      string vs:_DAP4_Checksum_CRC32 = "0xfce3cd28";
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vs =  "Καλημέα",   "Καλημέα"
 }

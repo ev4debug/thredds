@@ -4,54 +4,54 @@ netcdf test_atomic_types {
 
   variables:
     byte v8;
-      String v8:_DAP4_Checksum_CRC32 = "0x3fba6cad";
+      string v8:_DAP4_Checksum_CRC32 = "0x3fba6cad";
 
     ubyte vu8;
-      String vu8:_DAP4_Checksum_CRC32 = "0xff000000";
+      string vu8:_DAP4_Checksum_CRC32 = "0xff000000";
 
     short v16;
-      String v16:_DAP4_Checksum_CRC32 = "0xac6191df";
+      string v16:_DAP4_Checksum_CRC32 = "0xac6191df";
 
     ushort vu16;
-      String vu16:_DAP4_Checksum_CRC32 = "0xffff0000";
+      string vu16:_DAP4_Checksum_CRC32 = "0xffff0000";
 
     int v32;
-      String v32:_DAP4_Checksum_CRC32 = "0x12477cdf";
+      string v32:_DAP4_Checksum_CRC32 = "0x12477cdf";
 
     uint vu32;
-      String vu32:_DAP4_Checksum_CRC32 = "0xffffffff";
+      string vu32:_DAP4_Checksum_CRC32 = "0xffffffff";
 
     long v64;
-      String v64:_DAP4_Checksum_CRC32 = "0xccfc5c3c";
+      string v64:_DAP4_Checksum_CRC32 = "0xccfc5c3c";
 
     ulong vu64;
-      String vu64:_DAP4_Checksum_CRC32 = "0x2144df1c";
+      string vu64:_DAP4_Checksum_CRC32 = "0x2144df1c";
 
     float vf;
-      String vf:_DAP4_Checksum_CRC32 = "0x8c2a1365";
+      string vf:_DAP4_Checksum_CRC32 = "0x8c2a1365";
 
     double vd;
-      String vd:_DAP4_Checksum_CRC32 = "0xf2bacb72";
+      string vd:_DAP4_Checksum_CRC32 = "0xf2bacb72";
 
     char vc;
-      String vc:_DAP4_Checksum_CRC32 = "0xa4deae1d";
+      string vc:_DAP4_Checksum_CRC32 = "0xa4deae1d";
 
-    String vs;
-      String vs:_DAP4_Checksum_CRC32 = "0x3691a6d4";
+    string vs;
+      string vs:_DAP4_Checksum_CRC32 = "0x3691a6d4";
 
     opaque vo;
-      String vo:_DAP4_Checksum_CRC32 = "0xd24ddadd";
+      string vo:_DAP4_Checksum_CRC32 = "0xd24ddadd";
 
     enum cloud_class_t primary_cloud;
-      String primary_cloud:_FillValue = "Missing";
-      String primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
+      cloud_class_t primary_cloud:_FillValue = Missing;
+      string primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
     enum cloud_class_t secondary_cloud;
-      String secondary_cloud:_FillValue = "Missing";
-      String secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
+      cloud_class_t secondary_cloud:_FillValue = Missing;
+      string secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 v8 =-128
 vu8 =255

@@ -492,6 +492,7 @@ public class DMRPrinter
             throw new DapException("Attribute with no values:" + attr.getFQN());
         printer.indent();
         // The values for a DapAttribute are always strings,
+        // but for enums might be either the econst name or the associated integer.
         String[] svec = (String[]) values;
         // Special case for char
         if(type == DapType.CHAR) {

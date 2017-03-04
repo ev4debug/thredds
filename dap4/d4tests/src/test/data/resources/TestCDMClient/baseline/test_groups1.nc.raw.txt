@@ -11,10 +11,10 @@ netcdf test_groups1 {
         dim3 = 7;
       variables:
         int v1(dim1);
-          String v1:_DAP4_Checksum_CRC32 = "0x1d1d272c";
+          string v1:_DAP4_Checksum_CRC32 = "0x1d1d272c";
 
         float v2(dim2);
-          String v2:_DAP4_Checksum_CRC32 = "0x0fe72d43";
+          string v2:_DAP4_Checksum_CRC32 = "0x0fe72d43";
 
     }
 
@@ -23,15 +23,15 @@ netcdf test_groups1 {
         dim3 = 7;
       variables:
         int v1(dim1);
-          String v1:_DAP4_Checksum_CRC32 = "0xa9b4a0fb";
+          string v1:_DAP4_Checksum_CRC32 = "0xa9b4a0fb";
 
         float v3(dim3);
-          String v3:_DAP4_Checksum_CRC32 = "0x29f1e312";
+          string v3:_DAP4_Checksum_CRC32 = "0x29f1e312";
 
     }
   }
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 g/h/v1 =
   {-876354855, -1761252264, 1723477387, -46827465, 1475147969}

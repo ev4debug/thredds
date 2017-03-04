@@ -4,23 +4,23 @@ netcdf test_struct_array.syn {
     dy = 3;
   variables:
     float z(dx);
-      String z:_DAP4_Checksum_CRC32 = "0xbef06d05";
+      string z:_DAP4_Checksum_CRC32 = "0xbef06d05";
 
     float t(dy);
-      String t:_DAP4_Checksum_CRC32 = "0x165934f0";
+      string t:_DAP4_Checksum_CRC32 = "0x165934f0";
 
 
     Structure {
       int x;
-        String x:_CoordinateAxisType = "GeoX";
+        string x:_CoordinateAxisType = "GeoX";
       int y;
-        String y:_CoordinateAxisType = "GeoY";
+        string y:_CoordinateAxisType = "GeoY";
     } s(dx, dy);
-      s:_DAP4_Checksum_CRC32 = "0xd91a250e";
+      string s:_DAP4_Checksum_CRC32 = "0xd91a250e";
 
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 z =
   {0.72765326, 0.785633, 0.513679, 0.24684471}

@@ -178,8 +178,8 @@ public class TestCDMClient extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(true) {
-            chosentests = locate("file:", "test_fill.nc.raw");
+        if(false) {
+            chosentests = locate("file:", "test_anon_dim.syn.2.raw");
             prop_visual = true;
             prop_baseline = false;
         } else {

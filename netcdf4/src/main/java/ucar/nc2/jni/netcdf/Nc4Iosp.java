@@ -742,22 +742,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
     Array data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
-    IndexIterator ii = data.getIndexIterator();
-
-    if (len == 1) {
-      String val = userType.e.lookupEnumString(ii.getIntNext());
-      return new Attribute(attname, val);
-    } else {
-      ArrayObject.D1 attArray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[]{len});
-      for (int i = 0; i < len; i++) {
-        int val = ii.getIntNext();
-        String vals = userType.e.lookupEnumString(val);
-        if (vals == null)
-          throw new IOException("Illegal enum val " + val + " for attribute " + attname);
-        attArray.set(i, vals);
-      }
-      return new Attribute(attname, attArray);
-    }
+    Attribute a = new Attribute(attname,userType.e.getBaseType(),userType.e,data,false);
+    return a;
   }
 
   private Array convertByteBuffer(ByteBuffer bb, int baseType, int shape[]) throws IOException {

@@ -5,11 +5,11 @@ netcdf test_sequence_1.syn {
       int i1;
       short sh1;
     } s(*);
-      s:_DAP4_Checksum_CRC32 = "0x4ac0ac5e";
+      string s:_DAP4_Checksum_CRC32 = "0x4ac0ac5e";
 
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =
   {

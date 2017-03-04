@@ -1,10 +1,10 @@
 netcdf test_one_var {
   variables:
     int t;
-      String t:_DAP4_Checksum_CRC32 = "0xc9e1efe6";
+      string t:_DAP4_Checksum_CRC32 = "0xc9e1efe6";
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 t =17
 }

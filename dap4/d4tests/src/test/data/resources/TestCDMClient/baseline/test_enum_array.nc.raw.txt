@@ -6,11 +6,11 @@ netcdf test_enum_array {
     d5 = 5;
   variables:
     enum cloud_class_t primary_cloud(d5);
-      String primary_cloud:_FillValue = "Missing";
-      String primary_cloud:_DAP4_Checksum_CRC32 = "0xb58a627a";
+      cloud_class_t primary_cloud:_FillValue = Missing;
+      string primary_cloud:_DAP4_Checksum_CRC32 = "0xb58a627a";
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 primary_cloud =
   {0, 2, 0, 1, 127}

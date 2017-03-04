@@ -420,9 +420,6 @@ abstract public class UnitTestCommon
     {
         StringBuilder buf = new StringBuilder();
         File xx = new File(filename);
-        if(!xx.canRead()) {
-            int x = 0;
-        }
         FileReader file = new FileReader(filename);
         BufferedReader rdr = new BufferedReader(file);
         String line;

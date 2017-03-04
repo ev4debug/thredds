@@ -309,11 +309,7 @@ public class Nc4Cursor extends AbstractCursor
                 edgecount = odomToEdges(ithodom, startp, countp, stridep);
                 long memsize = edgecount * elemsize;
                 Nc4Pointer mem = Nc4Pointer.allocate(memsize);
-                try {
                     readcheck(nc4, ret = nc4.nc_get_vars(vi.gid, vi.id, startp, countp, stridep, mem.p));
-                } catch (Error e) {
-                    int x = 0;
-                }
                 partialresult = new ByteBuffer[(int)edgecount];
                 for(int ec=0;ec<edgecount;ec++) {
                     byte[] buf = mem.p.getByteArray(ec*ti.getSize(), (int) ti.getSize());

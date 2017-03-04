@@ -1372,8 +1372,8 @@ abstract public class CDMTypeFcns
     {
         List list = new ArrayList();
         int icount = java.lang.reflect.Array.getLength(vector);
-        for(int i=0;i<icount;i++) {
-            list.add(java.lang.reflect.Array.get(vector,i));
+        for(int i = 0; i < icount; i++) {
+            list.add(java.lang.reflect.Array.get(vector, i));
         }
         return list;
     }

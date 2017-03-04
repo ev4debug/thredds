@@ -380,9 +380,6 @@ abstract public class HTTPUtil
                 Header ceheader = entity.getContentEncoding();
                 if(ceheader != null) {
                     String value = ceheader.getValue();
-                    if(value.trim().toLowerCase().endsWith("-endian")) {
-                        int x = 0;//entity.setContentEncoding(new BasicHeader("Content-Encoding","Identity"));
-                    }
                 }
             }
         }

@@ -12,11 +12,11 @@ netcdf test_struct_nested3.hdf5 {
       } field3;
 
     } x;
-      x:_DAP4_Checksum_CRC32 = "0xc9e1efe6";
+      string x:_DAP4_Checksum_CRC32 = "0xc9e1efe6";
 
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 x =    field3 =        field2 =            field1 =17
 

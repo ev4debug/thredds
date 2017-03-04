@@ -3,15 +3,15 @@ netcdf test_struct_type {
 
     Structure {
       int x;
-        String x:_CoordinateAxisType = "GeoX";
+        string x:_CoordinateAxisType = "GeoX";
       int y;
-        String y:_CoordinateAxisType = "GeoY";
+        string y:_CoordinateAxisType = "GeoY";
     } s;
-      s:_DAP4_Checksum_CRC32 = "0xcf8f9871";
+      string s:_DAP4_Checksum_CRC32 = "0xcf8f9871";
 
 
   // global attributes:
-  String :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =    x =1
     y =-2
