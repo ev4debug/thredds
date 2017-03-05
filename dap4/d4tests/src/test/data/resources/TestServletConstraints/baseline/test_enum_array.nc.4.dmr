@@ -22,7 +22,7 @@
     <Enum name="primary_cloud" enum="/cloud_class_t">
         <Dim size="2"/>
         <Attribute name="_FillValue" type="/cloud_class_t">
-            <Value value="127"/>
+            <Value value="Missing"/>
         </Attribute>
     </Enum>
     <Attribute name="_dap4.ce" type="String">

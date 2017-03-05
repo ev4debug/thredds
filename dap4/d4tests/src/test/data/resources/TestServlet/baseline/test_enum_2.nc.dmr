@@ -25,7 +25,7 @@
     <Group name="h">
         <Enum name="primary_cloud" enum="/cloud_class_t">
             <Attribute name="_FillValue" type="/cloud_class_t">
-                <Value value="127"/>
+                <Value value="Missing"/>
             </Attribute>
         </Enum>
     </Group>

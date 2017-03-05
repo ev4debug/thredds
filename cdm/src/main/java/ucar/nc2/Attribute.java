@@ -419,7 +419,7 @@ public class Attribute extends CDMNode
   }
 
   public Attribute(String name, List values) {
-    this(name, null, null, values, false);
+    this(name, inferType(values), null, values, false);
   }
 
   public Attribute(String name, List values, boolean unsigned) {
@@ -540,43 +540,46 @@ public class Attribute extends CDMNode
    */
   protected void setValues(List values, DataType dt, boolean isUnsigned)
   {
-      Object pa;
-      int n = (values == null ? 0 : values.size());
-      Class c = values.get(0).getClass();
-      DataType inferred = DataType.getType(c, dt.isUnsigned());
-      if(!dt.isEnumCompatible(inferred))
-        throw new IllegalArgumentException("Attribute/value type mismatch");
-      if (c == String.class) {
-        String[] va = new String[n];
-        pa = va;
-        for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
-      } else if (c == Integer.class) {
-        int[] va = new int[n];
-        pa = va;
-        for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
-      } else if (c == Double.class) {
-        double[] va = new double[n];
-        pa = va;
-        for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
-      } else if (c == Float.class) {
-        float[] va = new float[n];
-        pa = va;
-        for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
-      } else if (c == Short.class) {
-        short[] va = new short[n];
-        pa = va;
-        for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
-      } else if (c == Byte.class) {
-        byte[] va = new byte[n];
-        pa = va;
-        for (int i = 0; i < n; i++)
-          va[i] = (Byte) values.get(i);
-      } else if (c == Long.class) {
-        long[] va = new long[n];
-        pa = va;
-        for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
-      } else {
-        throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
+    Object pa;
+    int n = (values == null ? 0 : values.size());
+    switch (dt) {
+    case STRING: {
+      String[] va = new String[n];
+      pa = va;
+      for(int i = 0; i < n; i++) va[i] = (String) values.get(i);
+    } break;
+    case BYTE:case UBYTE: {
+          byte[] va = new byte[n];
+          pa = va;
+          for(int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
+        } break;
+    case SHORT:case USHORT: {
+          short[] va = new short[n];
+          pa = va;
+          for(int i = 0; i < n; i++) va[i] = (Short) values.get(i);
+        } break;
+    case INT:case UINT: {
+      int[] va = new int[n];
+      pa = va;
+      for(int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
+    } break;
+    case LONG:case ULONG: {
+         long[] va = new long[n];
+         pa = va;
+         for(int i = 0; i < n; i++) va[i] = (Long) values.get(i);
+       } break;
+    case FLOAT: {
+            float[] va = new float[n];
+            pa = va;
+            for(int i = 0; i < n; i++) va[i] = (Float) values.get(i);
+          } break;
+    case DOUBLE: {
+             double[] va = new double[n];
+             pa = va;
+             for(int i = 0; i < n; i++) va[i] = (Double) values.get(i);
+           } break;
+    default:
+        throw new IllegalArgumentException("Unexpected type for Attribute = "+dt.toString());
       }
       setValues(Array.factory(dataType, new int[]{n}, pa));
   }
@@ -638,6 +641,17 @@ public class Attribute extends CDMNode
     if(this.getEnumType() != null)
       arraytype = DataType.enumTypeize(arraytype);
     setDataType(arraytype);
+  }
+
+  static protected DataType
+  inferType(List values)
+          throws ForbiddenConversionException
+  {
+    if(values == null || values.size() == 0)
+      throw new IllegalArgumentException();
+    Class c = values.get(0).getClass();
+    DataType inferred = DataType.getType(c, false);
+    return inferred;
   }
 
   /**
