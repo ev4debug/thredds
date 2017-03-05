@@ -235,7 +235,7 @@ public class DMRPrinter
                 assert (value != null);
                 printer.marginPrintln(
                         String.format("<EnumConst name=\"%s\" value=\"%d\"/>",
-                                Escape.entityEscape(econst,null), value.getValue()));
+                                Escape.entityEscape(econst, null), value.getValue()));
             }
             printMetadata(node);
             printer.outdent();
@@ -387,7 +387,7 @@ public class DMRPrinter
         if(value != null) {
             // add xml entity escaping
             if((flags & XMLESCAPED) == 0)
-                value = Escape.entityEscape(value,"\"");
+                value = Escape.entityEscape(value, "\"");
             printer.print(value);
         }
         printer.print("\"");
@@ -503,9 +503,16 @@ public class DMRPrinter
             }
             String cs = String.format("<Value value=\"%s\"/>", buf.toString());
             printer.marginPrintln(cs);
+        } else if(type.isEnumType()) {
+            String[] names = (String[])((DapEnumeration)type).convert(svec,false);
+            for(int i = 0; i < svec.length; i++) {
+                String s = Escape.entityEscape(names[i], null);
+                String cs = String.format("<Value value=\"%s\"/>", s);
+                printer.marginPrintln(cs);
+            }
         } else {
             for(int i = 0; i < svec.length; i++) {
-                String s = Escape.entityEscape(svec[i],null);
+                String s = Escape.entityEscape(svec[i], null);
                 String cs = String.format("<Value value=\"%s\"/>", s);
                 printer.marginPrintln(cs);
             }
@@ -591,21 +598,21 @@ public class DMRPrinter
         // Split the fqn into pieces
         StringBuilder xml = new StringBuilder();
         String segment = null;
-        List<String> segments = Escape.backslashsplit(fqn,'/');
-        for(int i=1;i<segments.size()-1;i++) {  // skip leading /
+        List<String> segments = Escape.backslashsplit(fqn, '/');
+        for(int i = 1; i < segments.size() - 1; i++) {  // skip leading /
             segment = segments.get(i);
             segment = Escape.backslashUnescape(segment); // get to raw name
-            segment = Escape.entityEscape(segment,"\"");// '"' -> &quot;
-            segment = Escape.backslashEscape(segment,"/."); // re-escape
+            segment = Escape.entityEscape(segment, "\"");// '"' -> &quot;
+            segment = Escape.backslashEscape(segment, "/."); // re-escape
             xml.append("/");
             xml.append(segment);
         }
         // Last segment might be structure path, so similar processing,
         // but worry about '.'
-        segment = segments.get(segments.size()-1);
-        segments = Escape.backslashsplit(segment,'.');
+        segment = segments.get(segments.size() - 1);
+        segments = Escape.backslashsplit(segment, '.');
         xml.append("/");
-        for(int i=0;i<segments.size();i++) {
+        for(int i = 0; i < segments.size(); i++) {
             segment = segments.get(i);
             segment = Escape.backslashUnescape(segment); // get to raw name
             segment = Escape.entityEscape(segment, "\"");// '"' -> &quot;
@@ -622,9 +629,9 @@ public class DMRPrinter
     {
         if(value instanceof String) {
             String sclean = Escape.cleanString((String) value);
-            return Escape.entityEscape((String) value,null);
+            return Escape.entityEscape((String) value, null);
         } else if(value instanceof Character) {
-            return Escape.entityEscape(((Character) value).toString(),null);
+            return Escape.entityEscape(((Character) value).toString(), null);
         } else
             return value.toString();
     }

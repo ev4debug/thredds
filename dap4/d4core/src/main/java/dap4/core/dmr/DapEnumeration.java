@@ -118,12 +118,13 @@ public class DapEnumeration extends DapType
     /**
      * Convert a string vector of int strings mixed with econst names
      * to a set of longs only
-     * @param val   vector of int strings mixed with econst names
+     * @param vec   vector of int strings mixed with econst names
+     * @param tolong return a vector of longs else vector of econst names
      * @return
      * @throws ConversionException
      */
-    public long[]
-    convert(String[] vec)
+    public Object
+    convert(String[] vec, boolean tolong)
             throws ConversionException
     {
         int count = vec.length;
@@ -141,7 +142,13 @@ public class DapEnumeration extends DapType
                 lvalues[i] = dec.getValue();
             }
         }
-        return lvalues;
+        if(tolong)
+            return lvalues;
+        // else convert to econst names
+        String[] names = new String[count];
+        for(int i=0;i<count;i++)
+            names[i] = this.lookup(lvalues[i]).getShortName();
+        return names;
     }
 
     public String[]

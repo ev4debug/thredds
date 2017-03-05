@@ -326,7 +326,7 @@ public abstract class Convert
                 throw new ConversionException("Cannot convert opaque to enum");
             DapEnumeration dstenum = (DapEnumeration) dsttype;
             if(svalues != null) {
-                lvalues = dstenum.convert(svalues); // treat strings as econst names or ints
+                lvalues = (long[])dstenum.convert(svalues,true); // treat strings as econst names or ints
             } else if(dvalues != null) {
                 lvalues = double2long(dvalues);
             }
