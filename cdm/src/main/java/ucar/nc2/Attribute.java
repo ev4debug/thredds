@@ -548,17 +548,17 @@ public class Attribute extends CDMNode
       pa = va;
       for(int i = 0; i < n; i++) va[i] = (String) values.get(i);
     } break;
-    case BYTE:case UBYTE: {
+    case BYTE:case UBYTE:case ENUM1: {
           byte[] va = new byte[n];
           pa = va;
           for(int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
         } break;
-    case SHORT:case USHORT: {
+    case SHORT:case USHORT:case ENUM2: {
           short[] va = new short[n];
           pa = va;
           for(int i = 0; i < n; i++) va[i] = (Short) values.get(i);
         } break;
-    case INT:case UINT: {
+    case INT:case UINT:case ENUM4: {
       int[] va = new int[n];
       pa = va;
       for(int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
