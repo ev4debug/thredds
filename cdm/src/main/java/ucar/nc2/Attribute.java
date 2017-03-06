@@ -419,7 +419,7 @@ public class Attribute extends CDMNode
   }
 
   public Attribute(String name, List values) {
-    this(name, inferType(values), null, values, false);
+    this(name, null, null, values, false);
   }
 
   public Attribute(String name, List values, boolean unsigned) {
@@ -452,7 +452,7 @@ public class Attribute extends CDMNode
    * @param isUnsigned
    */
   public Attribute(String name, DataType basetype, EnumTypedef en, List values, boolean isUnsigned) {
-    this(name,basetype,en);
+    this(name,(basetype=(basetype==null?inferType(values):basetype)),en);
     setValues(values,basetype,isUnsigned);
     setImmutable();
   }
@@ -551,22 +551,22 @@ public class Attribute extends CDMNode
     case BYTE:case UBYTE:case ENUM1: {
           byte[] va = new byte[n];
           pa = va;
-          for(int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
+          for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).byteValue();
         } break;
     case SHORT:case USHORT:case ENUM2: {
           short[] va = new short[n];
           pa = va;
-          for(int i = 0; i < n; i++) va[i] = (Short) values.get(i);
+          for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).shortValue();
         } break;
     case INT:case UINT:case ENUM4: {
-      int[] va = new int[n];
-      pa = va;
-      for(int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
-    } break;
+        int[] va = new int[n];
+        pa = va;
+        for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).intValue();
+        } break;
     case LONG:case ULONG: {
          long[] va = new long[n];
          pa = va;
-         for(int i = 0; i < n; i++) va[i] = (Long) values.get(i);
+         for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).longValue();
        } break;
     case FLOAT: {
             float[] va = new float[n];

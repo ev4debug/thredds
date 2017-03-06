@@ -24,7 +24,7 @@ netcdf test_atomic_array {
     opaque vo(d1, d2);
 
     enum cloud_class_t primary_cloud(d5);
-      string primary_cloud:_FillValue = "Missing";
+      cloud_class_t primary_cloud:_FillValue = Missing;
 
   // global attributes:
   string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
