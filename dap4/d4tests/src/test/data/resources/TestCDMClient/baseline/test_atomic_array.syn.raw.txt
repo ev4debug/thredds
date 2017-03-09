@@ -31,7 +31,7 @@ netcdf test_atomic_array.syn {
       string vo:_DAP4_Checksum_CRC32 = "0xd4809521";
 
     enum cloud_class_t primary_cloud(d5);
-      cloud_class_t primary_cloud:_FillValue = Missing;
+      string primary_cloud:_FillValue = "Missing";
       string primary_cloud:_DAP4_Checksum_CRC32 = "0x94b74cf7";
 
   // global attributes:

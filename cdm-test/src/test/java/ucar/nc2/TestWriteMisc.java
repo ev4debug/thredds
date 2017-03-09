@@ -46,7 +46,7 @@ public class TestWriteMisc {
       List<Integer> a = new ArrayList<Integer>();
       a.add(10);
       a.add(240);
-      writer.addVariableAttribute(v, new Attribute(CDM.VALID_RANGE, v.getDataType(), null, a, false));
+      writer.addVariableAttribute(v, new Attribute(CDM.VALID_RANGE, a, false));
 
          /* byte Band1(y, x);
  >     Band1:_Unsigned = "true";

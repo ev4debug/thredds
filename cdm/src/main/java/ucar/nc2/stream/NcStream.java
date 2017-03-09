@@ -492,7 +492,7 @@ public class NcStream {
 
     int len = attp.getLen();
     if (len == 0) // deal with empty attribute
-      return new Attribute(attp.getName(), dtUse, null);
+      return new Attribute(attp.getName(), dtUse);
 
     if (dtUse == DataType.STRING) {
       int lenp = attp.getSdataCount();

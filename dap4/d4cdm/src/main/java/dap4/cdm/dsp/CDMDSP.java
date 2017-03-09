@@ -47,6 +47,8 @@ public class CDMDSP extends AbstractDSP
     // NetcdfDataset enhancement to use: need only coord systems
     static protected Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
+    static final protected String FILLVALUE = "_FillValue";
+
     //////////////////////////////////////////////////
     // Class variables
 
@@ -710,41 +712,43 @@ public class CDMDSP extends AbstractDSP
     }
 
     protected DapAttribute
-    buildattribute(Attribute attr)
+    buildattribute(Attribute cdmattr)
             throws DapException
     {
-        DapAttribute dapattr = null;
-        DapType cdmbase = CDMTypeFcns.cdmtype2daptype(attr.getDataType());
-        DapType attrtype; // for the DapAttr
-        DapEnumeration dapenum = null;
-        EnumTypedef en = attr.getEnumType();
-        if(en != null) {
-            EnumTypedef trueenumdef = findMatchingEnum(en);
+        DapType attrtype = CDMTypeFcns.cdmtype2daptype(cdmattr.getDataType());
+        EnumTypedef cdmenum = cdmattr.getEnumType();
+	boolean enumfillvalue = (cdmattr.getShortName().equals(FILLVALUE)
+				 && cdmenum != null);
+	DapEnumeration dapenum = null;
+
+	// We need to handle _FillValue specially if the
+	// the variable is enum typed.
+	if(enumfillvalue) {
+            cdmenum = findMatchingEnum(cdmenum);
+	    // Make sure the cdm attribute has type string
+            if(!cdmenum.getBaseType().isString())
+                throw new DapException("CDM _FillValue attribute type is not string");
             // Modify the attr
-            attr.setEnumType(trueenumdef);
+            cdmattr.setEnumType(cdmenum);
             // Now, map to a DapEnumeration
-            dapenum =  (DapEnumeration)this.nodemap.get(trueenumdef);
+            dapenum =  (DapEnumeration)this.nodemap.get(cdmenum);
             if(dapenum == null)
-                throw new DapException("DapFile: illegal CDM variable attribute type: "+trueenumdef);
-            attrtype = dapenum;
-            DapType basetype = dapenum.getBaseType();
-            if(basetype != cdmbase)
-                throw new DapException("DapFile: Attribute enumeration base type mismatch");
-        } else
-            attrtype = cdmbase;
+                throw new DapException("Illegal CDM variable attribute type: "+cdmenum);
+	    attrtype = dapenum;
+        }
         if(attrtype == null)
-            throw new DapException("DapFile: illegal CDM variable attribute type: " + attr.getDataType());
-        dapattr = (DapAttribute) dmrfactory.newAttribute(attr.getShortName(), attrtype);
-        recordNode(attr, dapattr);
+            throw new DapException("DapFile: illegal CDM variable attribute type: " + cdmattr.getDataType());
+        DapAttribute dapattr = (DapAttribute) dmrfactory.newAttribute(cdmattr.getShortName(), attrtype);
+        recordNode(cdmattr, dapattr);
         // Transfer the values
-        Array values = attr.getValues();
-        if(!validatecdmtype(attr.getDataType(), values.getElementType()))
-            throw new DapException("DapFile: attr type versus attribute data mismatch: " + values.getElementType());
+        Array values = cdmattr.getValues();
+        if(!validatecdmtype(cdmattr.getDataType(), values.getElementType()))
+	    throw new DapException("Attr type versus attribute data mismatch: " + values.getElementType());
         IndexIterator iter = values.getIndexIterator();
-        Object vec = CDMTypeFcns.createVector(attr.getDataType(),values.getSize());
-        for(int i = 0; iter.hasNext(); i++)
-            java.lang.reflect.Array.set(vec,i,iter.next());
         String[] valuelist = null;
+	Object vec = CDMTypeFcns.createVector(cdmattr.getDataType(),values.getSize());
+        for(int i = 0; iter.hasNext(); i++)
+             java.lang.reflect.Array.set(vec,i,iter.next());
         valuelist = (String[])Convert.convert(DapType.STRING,attrtype,vec);
         dapattr.setValues(valuelist);
         return dapattr;

@@ -43,11 +43,11 @@ netcdf test_atomic_types {
       string vo:_DAP4_Checksum_CRC32 = "0xd24ddadd";
 
     enum cloud_class_t primary_cloud;
-      cloud_class_t primary_cloud:_FillValue = Missing;
+      string primary_cloud:_FillValue = "Missing";
       string primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
     enum cloud_class_t secondary_cloud;
-      cloud_class_t secondary_cloud:_FillValue = Missing;
+      string secondary_cloud:_FillValue = "Missing";
       string secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
 
   // global attributes:

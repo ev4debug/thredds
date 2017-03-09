@@ -314,8 +314,7 @@ public class DMRToCDM
                 cvt = Convert.convert(basetype,DapType.STRING,dapvalues);
             List cdmvalues = CDMTypeFcns.listify(cvt);
             EnumTypedef en = (EnumTypedef)(dapen  != null ? this.nodemap.get(basetype) : null);
-            cdmattr = new Attribute(dapattr.getShortName(),
-                                cdmtype, en, cdmvalues, false);
+            cdmattr = new Attribute(dapattr.getShortName(),cdmvalues, false);
             break;
         case ATTRIBUTESET:
             String setname = dapattr.getShortName();

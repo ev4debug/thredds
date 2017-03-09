@@ -610,7 +610,7 @@ public class NcMLReader {
           String typeS = attElem.getAttributeValue("type");
           DataType dtype = typeS == null ? DataType.STRING : DataType.getType(typeS);
           if (isUnsignedSet) dtype = dtype.withSign(true);
-          addAttribute(parent, new ucar.nc2.Attribute(name, dtype, null));
+          addAttribute(parent, new ucar.nc2.Attribute(name, dtype));
         }
       }
 

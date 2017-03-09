@@ -999,7 +999,7 @@ public class H5header {
         while (nested.hasNext())
           dataList.add(nested.next());
       }
-      result = new Attribute(matt.name, null, null, dataList, matt.mdt.unsigned);
+      result = new Attribute(matt.name, dataList, matt.mdt.unsigned);
 
     } else {
       result = new Attribute(matt.name, attData);
@@ -1461,7 +1461,7 @@ public class H5header {
         List<Integer> chunksize = new ArrayList<>();
         for (int i = 0; i < vinfo.storageSize.length - 1; i++)  // skip last one - its the element size
           chunksize.add(vinfo.storageSize[i]);
-        v.addAttribute(new Attribute(CDM.CHUNK_SIZES, DataType.INT, null,chunksize, true));
+        v.addAttribute(new Attribute(CDM.CHUNK_SIZES, chunksize, true));
       }
     }
 

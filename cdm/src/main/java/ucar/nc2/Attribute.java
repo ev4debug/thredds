@@ -5,7 +5,10 @@
 
 package ucar.nc2;
 
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
@@ -69,7 +72,7 @@ public class Attribute extends CDMNode
    * @return DataType
    */
   public DataType getDataType() {
-    return this.dataType;
+    return dataType;
   }
 
   public void setDataType(DataType dt)
@@ -86,9 +89,9 @@ public class Attribute extends CDMNode
   }
 
   public void setEnumType(EnumTypedef en)
-    {
+  {
         this.enumtype = en;
-    }
+  }
 
   /**
    * True if value is an array (getLength() > 1)
@@ -214,15 +217,12 @@ public class Attribute extends CDMNode
         }
       case BYTE:
       case UBYTE:
-      case ENUM1:
         return values.getByte(index);
       case SHORT:
       case USHORT:
-      case ENUM2:
         return values.getShort(index);
       case INT:
       case UINT:
-      case ENUM4:
         return values.getInt(index);
       case FLOAT:
         return values.getFloat(index);
@@ -263,55 +263,39 @@ public class Attribute extends CDMNode
    * @param f      write into this
    * @param strict if true, create strict CDL, escaping names
    */
-  protected void writeCDL(Formatter f, boolean strict, String parentname)
-  {
-    if(strict && this.getDataType() == DataType.STRING) {
-      // Force type explicitly for string.
+  protected void writeCDL(Formatter f, boolean strict, String parentname) {
+    if(strict && (isString() || this.getEnumType() != null)) 
+     // Force type explicitly for string.
       f.format("string "); //note lower case and trailing blank
-    } else if(strict && this.getDataType().isEnum()) {
-      f.format("%s ",this.getEnumType().getFullName());
-    }
     if(strict && parentname != null) f.format(NetcdfFile.makeValidCDLName(parentname));
     f.format(":");
     f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
-    if(isString()) {
+    if (isString()) {
       f.format(" = ");
-      for(int i = 0; i < getLength(); i++) {
-        if(i != 0) f.format(", ");
+      for (int i = 0; i < getLength(); i++) {
+        if (i != 0) f.format(", ");
         String val = getStringValue(i);
-        if(val != null)
+        if (val != null)
           f.format("\"%s\"", encodeString(val));
       }
     } else {
       f.format(" = ");
-      for(int i = 0; i < getLength(); i++) {
-        if(i != 0) f.format(", ");
-        if(strict && enumtype != null) { //  might be a name or a number
-          String econst = getStringValue(i);
-          Number eval = getNumericValue(i);
-          if(eval != null) {
-            econst = enumtype.lookupEnumString(eval.intValue());
-          } else if(enumtype.lookupEnumInt(econst) == null)
-              econst = null;
-          if(econst == null)
-            throw new ForbiddenConversionException("Unknown enum const value: "+eval);
-           f.format("%s",econst);
-        } else {
-          f.format("%s", getNumericValue(i));
-          if(dataType == DataType.FLOAT)
-            f.format("f");
-          else if(dataType == DataType.SHORT) {
-            if(isUnsigned()) f.format("US");
-            else f.format("S");
-          } else if(dataType == DataType.BYTE) {
-            if(isUnsigned()) f.format("UB");
-            else f.format("B");
-          } else if(dataType == DataType.LONG) {
-            if(isUnsigned()) f.format("UL");
-            else f.format("L");
-          } else if(dataType == DataType.INT) {
-            if(isUnsigned()) f.format("U");
-          }
+      for (int i = 0; i < getLength(); i++) {
+        if (i != 0) f.format(", ");
+        f.format("%s", getNumericValue(i));
+        if (dataType == DataType.FLOAT)
+          f.format("f");
+        else if (dataType == DataType.SHORT) {
+          if (isUnsigned()) f.format("US");
+          else f.format("S");
+        } else if (dataType == DataType.BYTE) {
+          if (isUnsigned()) f.format("UB");
+          else f.format("B");
+        } else if (dataType == DataType.LONG) {
+          if (isUnsigned()) f.format("UL");
+          else f.format("L");
+        } else if (dataType == DataType.INT) {
+          if (isUnsigned()) f.format("U");
         }
       }
     }
@@ -353,6 +337,7 @@ public class Attribute extends CDMNode
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
+    setImmutable();
   }
 
   /**
@@ -401,7 +386,7 @@ public class Attribute extends CDMNode
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
-    this(name,values.getDataType(),null);
+    this(name,values.getDataType());
     setValues(values);
     setImmutable();
   }
@@ -409,51 +394,34 @@ public class Attribute extends CDMNode
   /**
    * Construct an empty attribute with no values
    *
-   * @param name     name of attribute
-   * @param dataType type of Attribute.
-   */
-  public Attribute(String name, DataType dataType) {
-    this(name,
-         dataType == DataType.CHAR ? DataType.STRING : dataType,
-	 null);
+   * @param name
+   * @param dataType
+     */
+  public Attribute(String name, DataType dataType)
+  {
+      this(name);
+      setDataType(dataType);
   }
 
   public Attribute(String name, List values) {
-    this(name, null, null, values, false);
-  }
-
-  public Attribute(String name, List values, boolean unsigned) {
-      this(name, null, null, values, unsigned);
-    }
-
-   /**
-    * Construct an empty attribute with no values
-    *
-    * @param name
-    * @param dataType
-    * @param en
-    */
-  public Attribute(String name, DataType dataType, EnumTypedef en)
-  {
-    this(name);
-    setDataType(dataType);
-    setEnumType(en);
-    assert en == null || dataType.isEnum();
-    this.nelems = 0;
+    this(name, values, false);
   }
 
   /**
    * Construct attribute with list of String or Number values.
-   *
+   * The list determines the attribute type
    * @param name   name of attribute
-   * @param basetype   null => infer from values
-   * @param en         null unless this is an enum type attribute
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
    * @param isUnsigned
    */
-  public Attribute(String name, DataType basetype, EnumTypedef en, List values, boolean isUnsigned) {
-    this(name,(basetype=(basetype==null?inferType(values):basetype)),en);
-    setValues(values,basetype,isUnsigned);
+  public Attribute(String name, List values, boolean isUnsigned) {
+    this(name);
+    if(values == null || values.size() == 0)
+	throw new IllegalArgumentException("Cannot determine attribute's type");
+    int n = values.size();
+    Class c = values.get(0).getClass();
+    setDataType(DataType.getType(c, isUnsigned));
+    setValues(values,isUnsigned);
     setImmutable();
   }
 
@@ -461,16 +429,14 @@ public class Attribute extends CDMNode
      * Construct attribute with Array of values.
      *
      * @param name   name of attribute
-     * @param basetype   null => infer from values
-     * @param en         null unless this is an enum type attribute
      * @param values Array of values; at least 1 member
      * @param isUnsigned
      */
-    public Attribute(String name, DataType basetype, EnumTypedef en, Array values, boolean isUnsigned) {
-      this(name,basetype,en);
-      setValues(values);
-      setImmutable();
-    }
+    public Attribute(String name, Array values, boolean isUnsigned) {
+     this(name,values.getDataType());
+     setValues(values);
+     setImmutable();
+   }
 
   /**
    * A copy constructor using a ucar.unidata.util.Parameter.
@@ -511,7 +477,7 @@ public class Attribute extends CDMNode
 
     this.svalue = val;
     this.nelems = 1;
-    setDataType(DataType.STRING);
+    this.dataType = DataType.STRING;
 
     //values = Array.factory(String.class, new int[]{1});
     //values.setObject(values.getIndex(), val);
@@ -538,51 +504,48 @@ public class Attribute extends CDMNode
    *
    * @param values
    */
-  protected void setValues(List values, DataType dt, boolean isUnsigned)
+  protected void setValues(List values, boolean isUnsigned)
   {
+    if(values == null || values.size() == 0)
+	throw new IllegalArgumentException("Cannot determine attribute's type");
+    int n = values.size();
+    Class c = values.get(0).getClass();
     Object pa;
-    int n = (values == null ? 0 : values.size());
-    switch (dt) {
-    case STRING: {
+
+    if (c == String.class) {
       String[] va = new String[n];
       pa = va;
-      for(int i = 0; i < n; i++) va[i] = (String) values.get(i);
-    } break;
-    case BYTE:case UBYTE:case ENUM1: {
-          byte[] va = new byte[n];
-          pa = va;
-          for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).byteValue();
-        } break;
-    case SHORT:case USHORT:case ENUM2: {
-          short[] va = new short[n];
-          pa = va;
-          for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).shortValue();
-        } break;
-    case INT:case UINT:case ENUM4: {
-        int[] va = new int[n];
-        pa = va;
-        for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).intValue();
-        } break;
-    case LONG:case ULONG: {
-         long[] va = new long[n];
-         pa = va;
-         for(int i = 0; i < n; i++) va[i] = ((Number)values.get(i)).longValue();
-       } break;
-    case FLOAT: {
-            float[] va = new float[n];
-            pa = va;
-            for(int i = 0; i < n; i++) va[i] = (Float) values.get(i);
-          } break;
-    case DOUBLE: {
-             double[] va = new double[n];
-             pa = va;
-             for(int i = 0; i < n; i++) va[i] = (Double) values.get(i);
-           } break;
-    default:
-        throw new IllegalArgumentException("Unexpected type for Attribute = "+dt.toString());
-      }
-      setValues(Array.factory(dataType, new int[]{n}, pa));
+      for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
+    } else if (c == Integer.class) {
+      int[] va = new int[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
+    } else if (c == Double.class) {
+      double[] va = new double[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
+    } else if (c == Float.class) {
+      float[] va = new float[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
+    } else if (c == Short.class) {
+      short[] va = new short[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
+    } else if (c == Byte.class) {
+      byte[] va = new byte[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
+    } else if (c == Long.class) {
+      long[] va = new long[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
+    } else {
+      throw new IllegalArgumentException("Unknown type for Attribute = " + c.getName());
+    }
+    setValues(Array.factory(this.dataType, new int[]{n}, pa));
   }
+
 
   /**
    * set the values from an Array
@@ -590,8 +553,7 @@ public class Attribute extends CDMNode
    * @param arr value of Attribute
    */
   protected void setValues(Array arr) {
-    if (immutable)
-      throw new IllegalStateException("Cant modify");
+    if (immutable) throw new IllegalStateException("Cant modify");
 
     if (arr == null) {
       dataType = DataType.STRING;
@@ -603,7 +565,7 @@ public class Attribute extends CDMNode
       if (carr.getRank() == 1) { // common case
         svalue = carr.getString();
         this.nelems = 1;
-        setDataType(DataType.STRING);
+        this.dataType = DataType.STRING;
         return;
       }
       // otherwise its an array of Strings
@@ -637,21 +599,7 @@ public class Attribute extends CDMNode
 
     this.values = arr;
     this.nelems = (int) arr.getSize();
-    DataType arraytype = DataType.getType(arr);
-    if(this.getEnumType() != null)
-      arraytype = DataType.enumTypeize(arraytype);
-    setDataType(arraytype);
-  }
-
-  static protected DataType
-  inferType(List values)
-          throws ForbiddenConversionException
-  {
-    if(values == null || values.size() == 0)
-      throw new IllegalArgumentException();
-    Class c = values.get(0).getClass();
-    DataType inferred = DataType.getType(c, false);
-    return inferred;
+    this.dataType = DataType.getType(arr);
   }
 
   /**

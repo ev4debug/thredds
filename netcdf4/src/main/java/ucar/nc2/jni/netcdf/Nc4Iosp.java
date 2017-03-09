@@ -742,7 +742,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
     Array data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
-    Attribute a = new Attribute(attname,userType.e.getBaseType(),userType.e,data,false);
+    Attribute a = new Attribute(attname,data,false);
+    a.setEnumType(userType.e);
     return a;
   }
 
