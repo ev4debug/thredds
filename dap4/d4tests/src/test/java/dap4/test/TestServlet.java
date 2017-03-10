@@ -168,7 +168,7 @@ public class TestServlet extends DapTestCommon
             prop_baseline = false;
         } else {
             prop_baseline = false;
-            prop_generate = false;
+            prop_generate = true;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }
