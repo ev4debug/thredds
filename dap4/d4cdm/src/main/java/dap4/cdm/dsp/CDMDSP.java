@@ -724,9 +724,9 @@ public class CDMDSP extends AbstractDSP
         // the variable is enum typed.
         if(enumfillvalue) {
             cdmenum = findMatchingEnum(cdmenum);
-            // Make sure the cdm attribute has type string
-            if(!cdmenum.getBaseType().isString())
-                throw new DapException("CDM _FillValue attribute type is not string");
+            // Make sure the cdm attribute has type enumx
+            if(!cdmenum.getBaseType().isEnum())
+                throw new DapException("CDM _FillValue attribute type is not enumX");
             // Modify the attr
             cdmattr.setEnumType(cdmenum);
             // Now, map to a DapEnumeration
