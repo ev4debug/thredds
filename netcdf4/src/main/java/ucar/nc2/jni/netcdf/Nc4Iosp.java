@@ -741,7 +741,36 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    Array data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
+    Array data = null;
+    if(false) {
+      /* This is incorrect; CDM technically does not support
+      enum valued attributes (see Attribute.java).*/
+      data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
+    } else {
+      /*So, instead use the EnumTypedef to convert to econsts
+       and store as strings.*/
+      String[] econsts = new String[len];
+      EnumTypedef en = userType.e;
+      for(int i = 0; i < len; i++) {
+        long lval = 0;
+        switch (en.getBaseType()) {
+        case ENUM1:
+          lval = bb.get(i);
+          break;
+        case ENUM2:
+          lval = bb.getShort(i);
+          break;
+        case ENUM4:
+          lval = bb.getInt(i);
+          break;
+        }
+        String name = en.lookupEnumString((int) lval);
+        if(name == null)
+          throw new ForbiddenConversionException("Illegal enum const: " + lval);
+        econsts[i] = name;
+      }
+      data = Array.factory(DataType.STRING, new int[]{len}, (Object) econsts);
+    }
     Attribute a = new Attribute(attname,data,false);
     a.setEnumType(userType.e);
     return a;
