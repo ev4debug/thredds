@@ -5,10 +5,7 @@
 
 package ucar.nc2;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
+import ucar.ma2.*;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
@@ -264,19 +261,30 @@ public class Attribute extends CDMNode
    * @param strict if true, create strict CDL, escaping names
    */
   protected void writeCDL(Formatter f, boolean strict, String parentname) {
-    if(strict && (isString() || this.getEnumType() != null)) 
-     // Force type explicitly for string.
+    if(strict && (isString() || this.getEnumType() != null))
+      // Force type explicitly for string.
       f.format("string "); //note lower case and trailing blank
     if(strict && parentname != null) f.format(NetcdfFile.makeValidCDLName(parentname));
     f.format(":");
     f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
     if (isString()) {
       f.format(" = ");
-      for (int i = 0; i < getLength(); i++) {
-        if (i != 0) f.format(", ");
+      for(int i = 0; i < getLength(); i++) {
+        if(i != 0) f.format(", ");
         String val = getStringValue(i);
-        if (val != null)
+        if(val != null)
           f.format("\"%s\"", encodeString(val));
+      }
+    } else if(getEnumType() != null) {
+      f.format(" = ");
+      for (int i = 0; i < getLength(); i++) {
+        if(i != 0) f.format(", ");
+        EnumTypedef en = getEnumType();
+        String econst = getStringValue(i);
+        Integer ecint = en.lookupEnumInt(econst);
+        if(ecint == null)
+           throw new ForbiddenConversionException("Illegal enum constant: "+econst);
+        f.format("\"%s\"", encodeString(econst));
       }
     } else {
       f.format(" = ");
