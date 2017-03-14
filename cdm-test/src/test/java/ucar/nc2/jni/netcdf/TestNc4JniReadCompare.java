@@ -91,8 +91,8 @@ public class TestNc4JniReadCompare {
       jni.setLocation(filename + " (jni)");
 
       Formatter f = new Formatter();
-      CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
-      boolean ok = mind.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter(), false, false, false);
+      CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, false);
+      boolean ok = mind.compare(ncfile, jni, new CompareNetcdf2.Netcdf4ObjectFilter(), true, true, false);
       if (!ok) {
         fail++;
         System.out.printf("--Compare %s%n", filename);
