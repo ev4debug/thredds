@@ -512,7 +512,7 @@ public class Attribute extends CDMNode
    *
    * @param values
    */
-  protected void setValues(List values, boolean isUnsigned)
+  public void setValues(List values, boolean isUnsigned)
   {
     if(values == null || values.size() == 0)
 	throw new IllegalArgumentException("Cannot determine attribute's type");
@@ -560,7 +560,7 @@ public class Attribute extends CDMNode
    *
    * @param arr value of Attribute
    */
-  protected void setValues(Array arr) {
+  public void setValues(Array arr) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
     if (arr == null) {

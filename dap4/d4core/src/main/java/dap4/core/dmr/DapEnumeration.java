@@ -123,8 +123,8 @@ public class DapEnumeration extends DapType
      * @return
      * @throws ConversionException
      */
-    public Object
-    convert(String[] vec, boolean tolong)
+    public String[]
+    convert(String[] vec)
             throws ConversionException
     {
         int count = vec.length;
@@ -142,9 +142,7 @@ public class DapEnumeration extends DapType
                 lvalues[i] = dec.getValue();
             }
         }
-        if(tolong)
-            return lvalues;
-        // else convert to econst names
+        // convert to econst names
         String[] names = new String[count];
         for(int i=0;i<count;i++)
             names[i] = this.lookup(lvalues[i]).getShortName();

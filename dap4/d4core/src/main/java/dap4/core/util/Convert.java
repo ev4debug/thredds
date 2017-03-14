@@ -321,18 +321,25 @@ public abstract class Convert
             }
             break;
         case Enum:
-            // If dst is an enumeration, then convert to a vector of basetype
+            // If dst is an enumeration, then convert to a vector of strings representing
+            // enum const names.
             if(opvalues != null)
                 throw new ConversionException("Cannot convert opaque to enum");
-            DapEnumeration dstenum = (DapEnumeration) dsttype;
+            if(svalues == null && lvalues == null && dvalues != null)
+                lvalues = double2long(dvalues);DapEnumeration dstenum = (DapEnumeration) dsttype;
             if(svalues != null) {
-                lvalues = (long[])dstenum.convert(svalues,true); // treat strings as econst names or ints
-            } else if(dvalues != null) {
-                lvalues = double2long(dvalues);
+                svalues = (String[])dstenum.convert(svalues); // treat strings as econst names or ints
+            } else if(lvalues != null) {
+                // Lookup each lvalue and get corresponding econst name
+                svalues = new String[count];
+                for(int i=0;i<count;i++) {
+                    DapEnumConst ec = dstenum.lookup(lvalues[i]);
+                    if(ec == null)
+                        throw new ConversionException("Illegal Enum Const: " + lvalues[i]);
+                    svalues[i] = ec.getShortName();
+                }
             }
-            assert (lvalues != null);
-            // Down convert from long to the basetype of the enum
-            result = convert(dstenum.getBaseType(),DapType.INT64,lvalues);
+            result = svalues;
             break;
         default:
             throw new ConversionException("Illegal dsttype: " + dsttype);
@@ -396,11 +403,11 @@ public abstract class Convert
         if(o instanceof byte[]) return DapType.INT8;
         if(o instanceof short[]) return DapType.INT16;
         if(o instanceof int[]) return DapType.INT32;
-        if(o instanceof String[][]) return DapType.STRING;
-        if(o instanceof char[][]) return DapType.CHAR;
-        if(o instanceof float[][]) return DapType.FLOAT32;
-        if(o instanceof double[][]) return DapType.FLOAT64;
-        if(o instanceof ByteBuffer[][]) return DapType.OPAQUE;
+        if(o instanceof String[]) return DapType.STRING;
+        if(o instanceof char[]) return DapType.CHAR;
+        if(o instanceof float[]) return DapType.FLOAT32;
+        if(o instanceof double[]) return DapType.FLOAT64;
+        if(o instanceof ByteBuffer[]) return DapType.OPAQUE;
         return null;
     }
 }

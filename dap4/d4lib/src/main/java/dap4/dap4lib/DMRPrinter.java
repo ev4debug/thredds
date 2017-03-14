@@ -504,7 +504,7 @@ public class DMRPrinter
             String cs = String.format("<Value value=\"%s\"/>", buf.toString());
             printer.marginPrintln(cs);
         } else if(type.isEnumType()) {
-            String[] names = (String[])((DapEnumeration)type).convert(svec,false);
+            String[] names = (String[])((DapEnumeration)type).convert(svec);
             for(int i = 0; i < svec.length; i++) {
                 String s = Escape.entityEscape(names[i], null);
                 String cs = String.format("<Value value=\"%s\"/>", s);
