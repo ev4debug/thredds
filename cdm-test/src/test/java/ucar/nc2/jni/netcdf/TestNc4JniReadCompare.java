@@ -91,6 +91,7 @@ public class TestNc4JniReadCompare {
       jni.setLocation(filename + " (jni)");
       System.err.print("Test input: "+ncfile.getLocation());
       System.err.print("Baseline: "+jni.getLocation());
+      System.err.flush();
 
       Formatter f = new Formatter();
       CompareNetcdf2 mind = new CompareNetcdf2(f, true, true, false);
