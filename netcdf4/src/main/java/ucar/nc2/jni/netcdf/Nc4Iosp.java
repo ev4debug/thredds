@@ -44,6 +44,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
@@ -77,12 +78,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  static private Nc4prototypes nc4;
+  static private Nc4prototypes nc4 = null;
   static public final String JNA_PATH = "jna.library.path";
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
 
-  static public final String UCARTAG = "ucar";
-  static public final String TRANSLATECONTROL = UCARTAG + ".translate";
+  static public final String TRANSLATECONTROL = "ucar.translate";
   static public final String TRANSLATE_NONE = "none";
   static public final String TRANSLATE_NC4 = "nc4";
 
@@ -169,12 +169,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    *
    * @return true if present
    */
-  public static synchronized boolean isClibraryPresent() {
+  static public synchronized boolean isClibraryPresent() {
     if (isClibraryPresent == null) {
       isClibraryPresent = load() != null;
     }
-
     return isClibraryPresent;
+  }
+
+  static public synchronized Nc4prototypes getCLibrary()
+  {
+      return isClibraryPresent() ? nc4 : null;
   }
 
   /**
@@ -203,7 +207,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean fill = true;
   private int ncid = -1;        // file id
   private int format = 0;       // from nc_inq_format
-  private boolean isClosed = false;
+  private boolean isClosed;
 
   private Map<Integer, UserType> userTypes = new HashMap<>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<>();     // group -> nc4 grpid
@@ -238,9 +242,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @return  {@code true} if {@code raf} is a valid HDF-5 file and the NetCDF C library is available.
    * @throws IOException  if an I/O error occurs.
    */
-  public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    if (H5header.isValidFile(raf)) {
-      if (isClibraryPresent()) {
+  public boolean isValidFile(RandomAccessFile raf) throws IOException
+  {
+    int format = NCheader.checkFileType(raf);
+    boolean valid = false;
+    switch (format) {
+    case NCheader.NC_FORMAT_NETCDF4:
+    case NCheader.NC_FORMAT_64BIT_DATA:
+      valid = true;
+      break;
+    default: break;// everything else is invalid
+    }
+    if(valid) {
+      if(isClibraryPresent()) {
         return true;
       } else {
         log.debug("File is valid but the NetCDF-4 native library isn't installed: {}", raf.getLocation());
@@ -299,6 +313,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     IntByReference ncidp = new IntByReference();
     int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    isClosed = false;
     ncid = ncidp.getValue();
 
     // format
@@ -362,43 +378,50 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private void makeDimensions(Group4 g4) throws IOException {
-    IntByReference ndimsp = new IntByReference();
-    int ret = nc4.nc_inq_ndims(g4.grpid, ndimsp);
+    // We need this in order to allocate the correct length for dimIdsInGroup.
+    IntByReference numDimsInGoup_p = new IntByReference();
+    int ret = nc4.nc_inq_ndims(g4.grpid, numDimsInGoup_p);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    int[] dimids = new int[ndimsp.getValue()];
-    ret = nc4.nc_inq_dimids(g4.grpid, ndimsp, dimids, 0);
+    IntByReference numDimidsInGroup_p = new IntByReference();
+    int[] dimIdsInGroup = new int[numDimsInGoup_p.getValue()];
+    ret = nc4.nc_inq_dimids(g4.grpid, numDimidsInGroup_p, dimIdsInGroup, 0);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    IntByReference nunlimdimsp = new IntByReference();
-    int[] unlimdimids = new int[Nc4prototypes.NC_MAX_DIMS];
-    ret = nc4.nc_inq_unlimdims(g4.grpid, nunlimdimsp, unlimdimids);
+    assert numDimsInGoup_p.getValue() == numDimidsInGroup_p.getValue() :
+            String.format("Number of dimensions in group (%s) differed from number of dimension IDs in group (%s).",
+                    numDimsInGoup_p.getValue(), numDimidsInGroup_p.getValue());
+
+    // We need this in order to allocate the correct length for unlimitedDimIdsInGroup.
+    IntByReference numUnlimitedDimsInGroup_p = new IntByReference();
+    ret = nc4.nc_inq_unlimdims(g4.grpid, numUnlimitedDimsInGroup_p, null);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    int ndims = ndimsp.getValue();
-    for (int i = 0; i < ndims; i++) {
-      byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
-      SizeTByReference lenp = new SizeTByReference();
-      ret = nc4.nc_inq_dim(g4.grpid, dimids[i], name, lenp);
+    int[] unlimitedDimIdsInGroup = new int[numUnlimitedDimsInGroup_p.getValue()];
+    ret = nc4.nc_inq_unlimdims(g4.grpid, numUnlimitedDimsInGroup_p, unlimitedDimIdsInGroup);
+    if (ret != 0)
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    // Ensure array is sorted so that we can use binarySearch on it.
+    Arrays.sort(unlimitedDimIdsInGroup);
+
+    for (int dimId : dimIdsInGroup) {
+      byte[] dimNameBytes = new byte[Nc4prototypes.NC_MAX_NAME + 1];
+      SizeTByReference dimLength_p = new SizeTByReference();
+      ret = nc4.nc_inq_dim(g4.grpid, dimId, dimNameBytes, dimLength_p);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-      String dname = makeString(name);
 
-      boolean isUnlimited = containsInt(nunlimdimsp.getValue(), unlimdimids, i);
-      Dimension dim = new Dimension(dname, lenp.getValue().intValue(), true, isUnlimited, false);
-      ncfile.addDimension(g4.g, dim);
-      log.debug("add Dimension {} ({})", dim, dimids[i]);
-    }
-  }
+      String dimName = makeString(dimNameBytes);
+      boolean isUnlimited = Arrays.binarySearch(unlimitedDimIdsInGroup, dimId) >= 0;
 
-  private boolean containsInt(int n, int[] have, int want) {
-    for (int i = 0; i < n; i++) {
-      if (have[i] == want) return true;
+      Dimension dimension = new Dimension(dimName, dimLength_p.getValue().intValue(), true, isUnlimited, false);
+      ncfile.addDimension(g4.g, dimension);
+      log.debug("add Dimension {} ({})", dimension, dimId);
     }
-    return false;
   }
 
   private void updateDimensions(Group g) throws IOException {
@@ -741,23 +764,39 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    Array data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
-    IndexIterator ii = data.getIndexIterator();
-
-    if (len == 1) {
-      String val = userType.e.lookupEnumString(ii.getIntNext());
-      return new Attribute(attname, val);
+    Array data = null;
+    if(false) {
+      /* This is incorrect; CDM technically does not support
+      enum valued attributes (see Attribute.java).*/
+      data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
     } else {
-      ArrayObject.D1 attArray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[]{len});
-      for (int i = 0; i < len; i++) {
-        int val = ii.getIntNext();
-        String vals = userType.e.lookupEnumString(val);
-        if (vals == null)
-          throw new IOException("Illegal enum val " + val + " for attribute " + attname);
-        attArray.set(i, vals);
+      /*So, instead use the EnumTypedef to convert to econsts
+       and store as strings.*/
+      String[] econsts = new String[len];
+      EnumTypedef en = userType.e;
+      for(int i = 0; i < len; i++) {
+        long lval = 0;
+        switch (en.getBaseType()) {
+        case ENUM1:
+          lval = bb.get(i);
+          break;
+        case ENUM2:
+          lval = bb.getShort(i);
+          break;
+        case ENUM4:
+          lval = bb.getInt(i);
+          break;
+        }
+        String name = en.lookupEnumString((int) lval);
+        if(name == null)
+          throw new ForbiddenConversionException("Illegal enum const: " + lval);
+        econsts[i] = name;
       }
-      return new Attribute(attname, attArray);
+      data = Array.factory(DataType.STRING, new int[]{len}, (Object) econsts);
     }
+    Attribute a = new Attribute(attname,data,false);
+    a.setEnumType(userType.e);
+    return a;
   }
 
   private Array convertByteBuffer(ByteBuffer bb, int baseType, int shape[]) throws IOException {
@@ -1508,7 +1547,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section);
   }
 
-  private Array readDataSection(int grpid, int varid, int typeid, Section section)
+  Array readDataSection(int grpid, int varid, int typeid, Section section)
           throws IOException, InvalidRangeException {
     // general sectioning with strides
     SizeT[] origin = convertSizeT(section.getOrigin());
@@ -1558,6 +1597,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_INT:
+      case Nc4prototypes.NC_UINT:
         int[] vali = new int[len];
 
         ret = isUnsigned ? nc4.nc_get_vars_uint(grpid, varid, origin, shape, stride, vali)
@@ -1568,6 +1608,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_INT64:
+      case Nc4prototypes.NC_UINT64:
         long[] vall = new long[len];
         ret = isUnsigned ? nc4.nc_get_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
                 : nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
@@ -1577,6 +1618,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_SHORT:
+      case Nc4prototypes.NC_USHORT:
         short[] vals = new short[len];
         ret = isUnsigned ? nc4.nc_get_vars_ushort(grpid, varid, origin, shape, stride, vals)
                 : nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
@@ -2318,6 +2360,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ret = nc4.nc_create(filename, createMode(), ncidp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    isClosed = false;
     ncid = ncidp.getValue();
 
     _setFill();
@@ -2385,8 +2429,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // dimensions
     for (Dimension dim : g4.g.getDimensions()) {
-      int dimid = addDimension(g4.grpid, dim.getShortName(), dim.getLength());
+      int dimLength = dim.isUnlimited() ? Nc4prototypes.NC_UNLIMITED : dim.getLength();
+      int dimid = addDimension(g4.grpid, dim.getShortName(), dimLength);
       g4.dimHash.put(dim, dimid);
+
       if (debugWrite)
         System.out.printf(" create dim '%s' len=%d id=%d in group %d%n", dim.getShortName(), dim.getLength(), dimid, g4.grpid);
     }

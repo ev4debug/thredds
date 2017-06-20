@@ -34,6 +34,7 @@
 package ucar.httpservices;
 
 import org.apache.http.*;
+import org.apache.http.client.methods.HttpRequestWrapper;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
@@ -93,17 +94,17 @@ abstract public class HTTPUtil
             response = null;
         }
 
-        synchronized HttpRequest getRequest()
+        synchronized public HttpRequest getRequest()
         {
             return this.request;
         }
 
-        synchronized HttpResponse getResponse()
+        synchronized public HttpResponse getResponse()
         {
             return this.response;
         }
 
-        synchronized HttpContext getContext()
+        synchronized public HttpContext getContext()
         {
             return this.context;
         }
@@ -206,7 +207,16 @@ abstract public class HTTPUtil
     //////////////////////////////////////////////////
     // Misc.
 
-    static byte[]
+    static public byte[]
+    readbinaryfile(File f)
+            throws IOException
+    {
+        try (FileInputStream fis = new FileInputStream(f)) {
+            return readbinaryfile(fis);
+        }
+    }
+
+    static public byte[]
     readbinaryfile(InputStream stream)
             throws IOException
     {
@@ -289,15 +299,17 @@ abstract public class HTTPUtil
         StringBuilder buf = new StringBuilder();
         int i = 0;
         while(i < u.length()) {
-            char c = u.charAt(i++);
+            char c = u.charAt(i);
             if(c == '\\') {
                 if(i + 1 == u.length())
                     throw new URISyntaxException(u, "Trailing '\' at end of url");
                 buf.append("%5c");
-                c = u.charAt(i++);
+                i++;
+                c = u.charAt(i);
                 buf.append(String.format("%%%02x", (int) c));
             } else
                 buf.append(c);
+            i++;
         }
         return new URI(buf.toString());
     }
@@ -378,9 +390,6 @@ abstract public class HTTPUtil
                 Header ceheader = entity.getContentEncoding();
                 if(ceheader != null) {
                     String value = ceheader.getValue();
-                    if(value.trim().toLowerCase().endsWith("-endian")) {
-                        int x = 0;//entity.setContentEncoding(new BasicHeader("Content-Encoding","Identity"));
-                    }
                 }
             }
         }
@@ -407,7 +416,7 @@ abstract public class HTTPUtil
      * @param s the string to check for length
      * @return null if s.length() == 0, s otherwise
      */
-    static String nullify(String s)
+    static public String nullify(String s)
     {
         if(s != null && s.length() == 0) s = null;
         return s;
@@ -474,7 +483,7 @@ abstract public class HTTPUtil
         return b.toString();
     }
 
-    static protected void
+    static public void
     canonicalpath(StringBuilder s)
     {
         if(s == null || s.length() == 0)
@@ -487,7 +496,7 @@ abstract public class HTTPUtil
             s.replace(index, index + 1, "/");
         }
         boolean isabs = (s.charAt(0) == '/'); // remember
-        for(;;) { // kill any leading '/'s
+        for(; ; ) { // kill any leading '/'s
             if(s.length() == 0 || s.charAt(0) != '/') break;
             s.deleteCharAt(0);
         }
@@ -497,8 +506,9 @@ abstract public class HTTPUtil
         if(hasdrive)
             s.setCharAt(0, Character.toLowerCase(s.charAt(0)));
 
-        while(s.charAt(s.length() - 1) == '/')
+        while(s.length() > 0 && s.charAt(s.length() - 1) == '/') {
             s.deleteCharAt(s.length() - 1); // kill any trailing '/'s
+        }
 
         // Add back leading '/', if any
         if(!hasdrive && isabs)
@@ -574,4 +584,35 @@ abstract public class HTTPUtil
             b.insert(0, '/');
         return b.toString();
     }
+
+    static public String
+    readtextfile(InputStream stream)
+               throws IOException
+    {
+        InputStreamReader rdr = new InputStreamReader(stream, UTF8);
+        return readtextfile(rdr);
+    }
+
+    static public String
+    readtextfile(Reader rdr)
+            throws IOException
+    {
+        StringBuilder buf = new StringBuilder();
+        for(; ; ) {
+            int c = rdr.read();
+            if(c < 0) break;
+            buf.append((char) c);
+        }
+        return buf.toString();
+    }
+
+    static public void
+    writebinaryfile(byte[] content, File dst)
+            throws IOException
+    {
+        FileOutputStream fos = new FileOutputStream(dst);
+        fos.write(content);
+        fos.close();
+    }
+
 }

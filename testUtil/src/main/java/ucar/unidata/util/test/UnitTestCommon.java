@@ -4,8 +4,10 @@
 
 package ucar.unidata.util.test;
 
+import org.junit.rules.TemporaryFolder;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPUtil;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -14,10 +16,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +34,6 @@ abstract public class UnitTestCommon
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
 
-    static public org.slf4j.Logger log;
 
     // NetcdfDataset enhancement to use: need only coord systems
     static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
@@ -67,7 +65,16 @@ abstract public class UnitTestCommon
         // Walk up the user.dir path looking for a node that has
         // all the directories in SUBROOTS.
 
-        String path = System.getProperty("user.dir");
+        // It appears that under Jenkins, the Java property "user.dir" is
+        // set incorrectly for our purposes. In this case, we want
+        // to use the WORKSPACE environment variable set by Jenkins.
+        String workspace = System.getenv("WORKSPACE");
+        System.err.println("WORKSPACE=" + (workspace == null ? "null" : workspace));
+        System.err.flush();
+
+        String userdir = System.getProperty("user.dir");
+
+        String path = (workspace != null ? workspace : userdir); // Pick one
 
         // clean up the path
         path = path.replace('\\', '/'); // only use forward slash
@@ -320,6 +327,9 @@ abstract public class UnitTestCommon
     static public String
     compare(String tag, String baseline, String testresult)
     {
+	// Check for empty testresult
+        if(testresult.trim().length() == 0)
+	    return ">>>> EMPTY TEST RESULT";
         try {
             // Diff the two print results
             Diff diff = new Diff(tag);
@@ -412,9 +422,6 @@ abstract public class UnitTestCommon
     {
         StringBuilder buf = new StringBuilder();
         File xx = new File(filename);
-        if(!xx.canRead()) {
-            int x = 0;
-        }
         FileReader file = new FileReader(filename);
         BufferedReader rdr = new BufferedReader(file);
         String line;
@@ -562,9 +569,6 @@ abstract public class UnitTestCommon
             int index = path.lastIndexOf("/");
             if(index < 0) index = 0;
             if(index > 0) path.delete(0, index + 1);
-            index = path.lastIndexOf(".");
-            if(index >= 0)
-                path.delete(index, path.length());
             if(suffix != null) {
                 path.append('.');
                 path.append(suffix);
@@ -658,6 +662,63 @@ abstract public class UnitTestCommon
         return false;
     }
 
+
+    // Replacement for stderr & stdout
+    static public class STDIO
+    {
+        public org.slf4j.Logger log;
+
+        public STDIO(String name)
+        {
+            log = org.slf4j.LoggerFactory.getLogger(name);
+        }
+
+        public void
+        printf(String format, Object... args)
+        {
+            log.info(String.format(format, args));
+        }
+
+        public void
+        println(String msg)
+        {
+            printf("%s%n", msg);
+        }
+
+        public void
+        print(String msg)
+        {
+            printf("%s", msg);
+        }
+
+        public void
+        flush()
+        {
+        }
+    }
+
+    static public STDIO stderr = new STDIO("test");
+    static public STDIO stdout = new STDIO("test");
+
+    static TemporaryFolder temporaryfolder = null;
+
+    static public File
+    makeTemporaryDir(String name)
+            throws IOException
+    {
+        if(temporaryfolder == null)
+            temporaryfolder = new TemporaryFolder();
+        return temporaryfolder.newFolder(name);
+    }
+
+    static public File
+    makeTemporaryFile(String name)
+            throws IOException
+    {
+        if(temporaryfolder == null)
+            temporaryfolder = new TemporaryFolder();
+        return temporaryfolder.newFile(name);
+    }
 
 }
 

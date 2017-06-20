@@ -24,8 +24,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Formatter;
 import java.util.List;
+
+import static org.springframework.web.util.HtmlUtils.htmlEscape;
 
 /**
  * Global Exception handling
@@ -52,7 +56,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("Service Not Allowed: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
+    return new ResponseEntity<>("Service Not Allowed: " + htmlEscape(ex.getMessage()), responseHeaders, HttpStatus.FORBIDDEN);
   }
 
   @ExceptionHandler(RequestTooLargeException.class)
@@ -61,7 +65,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("Request Too Large: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
+    return new ResponseEntity<>("Request Too Large: " + htmlEscape(ex.getMessage()), responseHeaders, HttpStatus.FORBIDDEN);
   }
 
   @ExceptionHandler(FileNotFoundException.class)
@@ -70,7 +74,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("FileNotFound: " + ex.getMessage(), responseHeaders, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>("FileNotFound: " + htmlEscape(ex.getMessage()), responseHeaders, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(IOException.class)
@@ -86,7 +90,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>(
-            "IOException sending File " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+            "IOException sending File " + htmlEscape(ex.getMessage()), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
@@ -98,9 +102,9 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     String mess = ex.getMessage();
 
     if (mess != null && mess.startsWith("RequestTooLarge")) // RequestTooLargeException only avail in tds module
-      return new ResponseEntity<>("Request Too Large: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
+      return new ResponseEntity<>("Request Too Large: " + htmlEscape(mess), responseHeaders, HttpStatus.FORBIDDEN);
     else
-      return new ResponseEntity<>("IllegalArgumentException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("IllegalArgumentException: " + htmlEscape(mess), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(NcssException.class)
@@ -109,7 +113,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("Invalid Request: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>("Invalid Request: " + htmlEscape(ex.getMessage()), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(org.springframework.web.bind.ServletRequestBindingException.class)
@@ -118,7 +122,7 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("Invalid Request: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>("Invalid Request: " + htmlEscape(ex.getMessage()), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(BindException.class)
@@ -154,7 +158,14 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("Throwable exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+    String msg = ex.getMessage();
+      StringWriter sw = new StringWriter();
+      PrintWriter p = new PrintWriter(sw);
+      ex.printStackTrace(p);
+      p.close();
+      sw.close();
+      msg = sw.toString();
+    return new ResponseEntity<>("Throwable exception handled : " + htmlEscape(msg), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   /////////////////////////////////////////////

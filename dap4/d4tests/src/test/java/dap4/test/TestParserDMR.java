@@ -7,8 +7,8 @@ package dap4.test;
 import dap4.core.dmr.DMRFactory;
 import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.ErrorResponse;
+import dap4.core.dmr.parser.DOM4Parser;
 import dap4.core.dmr.parser.Dap4Parser;
-import dap4.core.dmr.parser.Dap4ParserImpl;
 import dap4.core.dmr.parser.ParseUtil;
 import dap4.dap4lib.DMRPrinter;
 import org.junit.Assert;
@@ -84,7 +84,9 @@ public class TestParserDMR extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_atomic_types");
+            chosentests = locate("test_struct_nested.hdf5");
+            prop_visual = true;
+            assert chosentests.size() > 0 : "No tests chosen";
         } else {
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
@@ -210,7 +212,7 @@ public class TestParserDMR extends DapTestCommon
 
         document = readfile(testinput);
 
-        Dap4Parser parser = new Dap4ParserImpl(new DMRFactory());
+        Dap4Parser parser = new DOM4Parser(new DMRFactory());
         if(PARSEDEBUG || debug)
             parser.setDebugLevel(1);
 
@@ -228,24 +230,26 @@ public class TestParserDMR extends DapTestCommon
         // Dump the parsed DMR for comparison purposes
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        DMRPrinter dapprinter = new DMRPrinter(dmr,pw);
-        dapprinter.print();
+        DMRPrinter dapprinter = new DMRPrinter(dmr, pw);
+        dapprinter.testprint();
         pw.close();
         sw.close();
         String testresult = sw.toString();
 
-        if(prop_visual)
-            visual(testcase.name, testresult);
+        // Read the baseline file
+        String baselinecontent;
+        if(BACKCOMPARE)
+            baselinecontent = document;
+        else
+            baselinecontent = readfile(baseline);
+        if(prop_visual) {
+            visual("Baseline", baselinecontent);
+            visual("Output", testresult);
+        }
 
         if(prop_baseline) {
             writefile(baseline, testresult);
         } else if(prop_diff) { //compare with baseline
-            // Read the baseline file
-            String baselinecontent;
-            if(BACKCOMPARE)
-                baselinecontent = document;
-            else
-                baselinecontent = readfile(baseline);
             Assert.assertTrue("Files are different",
                     same(getTitle(), baselinecontent, testresult));
         }

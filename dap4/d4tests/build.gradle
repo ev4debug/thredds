@@ -15,11 +15,9 @@ dependencies {
     testCompile project(':dap4:d4cdm')
     testCompile project(':cdm')
     testCompile project(':httpservices')
-
-    def tdsDep = testCompile project(':tds')
-    configure(tdsDep) {
-        // We don't want tds's logger. We'll provide our own (in testing.gradle).
-        exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
+    
+    testCompile(project(":tds")) {
+        exclude module: "log4j-slf4j-impl"  // We don't want TDS's logger binding.
     }
 
     testCompile libraries["javax.servlet-api"]
@@ -38,22 +36,21 @@ dependencies {
 test {
     systemProperties['testargs'] = System.getProperty("testargs", "")
     
-    // Temporarily disabled to allow GitHub PR #724 to pass, which was causing a log jam.
-    // include 'dap4/test/TestConstraints.class'
-
     include 'dap4/test/TestCDMClient.class'
+    include 'dap4/test/TestConstraints.class'
+    include 'dap4/test/TestDSP.class'
     include 'dap4/test/TestDSR.class'
-//    include 'dap4/test/TestFilters.class'
-//    include 'dap4/test/TestFrontPage.class'
-//    include 'dap4/test/TestH5Iosp.class'
-//    include 'dap4/test/TestHyrax.class'
     include 'dap4/test/TestNc4Iosp.class'
     include 'dap4/test/TestParserCE.class'
     include 'dap4/test/TestParserDMR.class'
-//    include 'dap4/test/TestPrinter.class'
-//    include 'dap4/test/TestSerial.class'
     include 'dap4/test/TestServlet.class'
     include 'dap4/test/TestServletConstraints.class'
+    include 'dap4/test/TestFrontPage.class'
+    //include 'dap4/test/TestFilters.class'
+    //include 'dap4/test/TestH5Iosp.class'
+    //include 'dap4/test/TestHyrax.class'
+    //include 'dap4/test/TestPrinter.class'
+    //include 'dap4/test/TestSerial.class'
 }
 
 gretty {

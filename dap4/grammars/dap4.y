@@ -1,3 +1,15 @@
+/*
+Thredds no longer uses bison for parsing the
+dap4 metadata.  Rather, it uses a standard DOM
+parser which then traverses to create the
+intermediate representation (the same as the
+action of the Bison parser).  This grammar and
+the code in ../d4core/src/main/java/dap4/core/dmr/parser/bison
+are left in place for now.
+
+Note that the constraint parser (CE) still uses Bison.
+*/
+
 %language "Java"
 %debug
 %error-verbose
@@ -72,7 +84,7 @@ System.err.printf("near %s%n",getLocator());
 %token <SaxEvent> ATTR_BASE ATTR_BASETYPE ATTR_DAPVERSION ATTR_DMRVERSION
 %token <SaxEvent> ATTR_ENUM ATTR_HREF ATTR_NAME ATTR_NAMESPACE
 %token <SaxEvent> ATTR_NS ATTR_SIZE ATTR_TYPE ATTR_VALUE 
-%token <SaxEvent> ATTR_HTTPCODE
+%token <SaxEvent> ATTR_HTTPCODE ATTR_SPECIAL
 
 %token <SaxEvent> TEXT
 
@@ -121,7 +133,7 @@ group:
 
 groupprefix:
 	GROUP_
-	ATTR_NAME
+	xml_attribute_map /*ATTR_NAME*/
 		{entergroup($2);}
 	;
 
@@ -203,7 +215,7 @@ atomicvariable:
 
 atomicvariableprefix:
 	atomictype_
-	ATTR_NAME
+	xml_attribute_map /*ATTR_NAME*/
 		{enteratomicvariable($1,$2);}
 	;
 
@@ -288,7 +300,7 @@ structurevariable:
 
 structurevariableprefix:
 	STRUCTURE_
-	ATTR_NAME
+	xml_attribute_map /*ATTR_NAME*/
 		{enterstructurevariable($2);}
 	;
 
@@ -309,7 +321,7 @@ sequencevariable:
 
 sequencevariableprefix:
 	SEQUENCE_
-	ATTR_NAME
+	xml_attribute_map /*ATTR_NAME*/
 		{entersequencevariable($2);}
 	;
 
@@ -451,6 +463,7 @@ xml_attribute:
 	| ATTR_SIZE
 	| ATTR_TYPE
 	| ATTR_VALUE
+	| ATTR_SPECIAL
 	| UNKNOWN_ATTR
 	;
 

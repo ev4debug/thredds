@@ -10,7 +10,7 @@ dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4lib')
     compile project(':dap4:d4servlet')
-    provided libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-core"]
@@ -29,6 +29,7 @@ def d4testsResourcesCopySpec = copySpec {
         include('*.syn')
         include('*.nc')
         include('*.hdf5')
+        include('*.raw')
     }
     /* ignore for now
     from(new File(d4testsResourcesDir, "testfiles/dmr/")) {

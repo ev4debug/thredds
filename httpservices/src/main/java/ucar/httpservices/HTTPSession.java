@@ -1,34 +1,6 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
+ *  See the LICENSE file for more information.
  */
 
 package ucar.httpservices;
@@ -196,6 +168,11 @@ public class HTTPSession implements Closeable
 
     static final String[] KNOWNCOMPRESSORS = {"gzip", "deflate"};
 
+    // Define -Dflags for various properties
+    static final String DCONNTIMEOUT = "tds.http.conntimeout";
+    static final String DSOTIMEOUT = "tds.http.sotimeout";
+    static final String DMAXCONNS = "tds.http.maxconns";
+
     //////////////////////////////////////////////////////////////////////////
 
     static final boolean IGNORECERTS = false;
@@ -297,7 +274,7 @@ public class HTTPSession implements Closeable
         public HttpResponse response = null;
     }
         */
-    static /*package*/ enum Methods
+    static public enum Methods
     {
         Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
         private final String name;
@@ -432,11 +409,21 @@ public class HTTPSession implements Closeable
         buildkeystores(authcontrols);
         buildsslfactory(authcontrols);
         authcontrols.setReadOnly(true);
+	processDFlags(); // Other than the auth flags
         connmgr.addProtocol("https", (ConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
-        setGlobalUserAgent(DFALTUSERAGENT);
-        setGlobalMaxConnections(DFALTMAXCONNS);
-        setGlobalConnectionTimeout(DFALTCONNTIMEOUT);
-        setGlobalSoTimeout(DFALTSOTIMEOUT);
+    }
+
+    static protected int
+    getDPropInt(String key)
+    {
+	String p = System.getProperty(key);
+	if(p == null) return -1;
+	try {
+	    int i = Integer.parseInt(p);
+	    return i;
+	} catch (NumberFormatException nfe) {
+	    return -1;
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -619,6 +606,18 @@ public class HTTPSession implements Closeable
             authcontrols.put(AuthProp.SSLFACTORY, globalsslfactory);
     }
 
+    static synchronized void
+    processDFlags()
+    {
+        // Pull overrides from command line
+	int seconds = getDPropInt(DCONNTIMEOUT);
+        if(seconds > 0) setGlobalConnectionTimeout(seconds*1000);
+	seconds = getDPropInt(DSOTIMEOUT);
+        if(seconds > 0) setGlobalSoTimeout(seconds*1000);
+	int conns = getDPropInt(DMAXCONNS);
+	if(conns > 0) setGlobalMaxConnections(conns);
+    }
+
     //////////////////////////////////////////////////////////////////////////
     // Static Methods (Mostly global accessors)
     // Synchronized as a rule.
@@ -636,7 +635,9 @@ public class HTTPSession implements Closeable
     static synchronized public void setGlobalMaxConnections(int n)
     {
         globalsettings.put(Prop.MAX_CONNECTIONS, n);
-        connmgr.setMaxConnections(n);
+        HTTPConnections.setDefaultMaxConections(n);
+        if(connmgr != null)
+            connmgr.setMaxConnections(n);
     }
 
     static synchronized public int getGlobalMaxConnection()
@@ -1264,7 +1265,7 @@ public class HTTPSession implements Closeable
     }
 
     /*package scope*/
-    Map<Prop, Object> mergedSettings()
+    public Map<Prop, Object> mergedSettings()
     {
         Map<Prop, Object> merged;
         synchronized (this) {// keep coverity happy
@@ -1382,7 +1383,8 @@ public class HTTPSession implements Closeable
         sessionList.add(session);
     }
 
-    static synchronized public void debugHeaders(boolean print)
+    static synchronized public void
+    setInterceptors(boolean print)
     {
         if(!TESTING) throw new UnsupportedOperationException();
         HTTPUtil.InterceptRequest rq = new HTTPUtil.InterceptRequest();
@@ -1405,7 +1407,7 @@ public class HTTPSession implements Closeable
     }
 
     public static void
-    debugReset()
+    resetInterceptors()
     {
         if(!TESTING) throw new UnsupportedOperationException();
         for(HttpRequestInterceptor hri : reqintercepts) {
